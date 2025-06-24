@@ -8,6 +8,24 @@ servers:
   - url: /api/v1
 
 paths:
+  /tokens:
+    post:
+      tags:
+        - token
+      summary: Issue token
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/IssueTokenRequest'
+      responses:
+        '200':
+          description: issued token.
+          content:
+            application/token:
+              schema:
+                $ref: '#/components/schemas/Token'
   /servers:
     get:
       tags:
@@ -147,3 +165,19 @@ components:
         tag:
           type: string
           description: Image tag
+    Token:
+      type: object
+      required:
+        - token
+      properties:
+        token:
+          type: string
+          description: JWT string
+    IssueTokenRequest:
+      type: object
+      required:
+        - namespace
+      properties:
+        namespace:
+          type: string
+          description: namespace

@@ -54,9 +54,7 @@ server/
 ### 4.2 具体的な依存ルール
 
 1. Controller
-
    - Service への依存可
-
 2. Service
    - Controller への依存禁止
 
@@ -73,10 +71,12 @@ server/
   - 一覧表示: `index`
   - 詳細表示: `detail`
   - 作成: `create`
+  - 発行: `issue`
   - 更新: `update`
   - 削除: `delete`
 - Service
   - 取得: `get〇〇`
   - 作成: `create〇〇`
+  - 発行: `issue〇〇`
   - 更新: `update〇〇`
   - 削除: `delete〇〇`

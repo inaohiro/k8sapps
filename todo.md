@@ -15,3 +15,4 @@
 - プラン一覧
   - free, pro, max ?
   - db から取得
+- [x] opentelemetry 計装
