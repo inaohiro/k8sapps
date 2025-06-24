@@ -14,14 +14,14 @@ import (
 
 func Controller() http.Handler {
 	r := chi.NewRouter()
-	r.Get("/", serverIndex)
-	r.Get("/{serverID}", serverDetail)
-	r.Post("/", serverCreate)
-	r.Delete("/{serverID}", serverDelete)
+	r.Get("/", podIndex)
+	r.Get("/{podID}", podDetail)
+	r.Post("/", podCreate)
+	r.Delete("/{podID}", podDelete)
 	return r
 }
 
-func serverIndex(w http.ResponseWriter, r *http.Request) {
+func podIndex(w http.ResponseWriter, r *http.Request) {
 	clientset, err := core.GetKubeClient()
 	if err != nil {
 		http.Error(w, "Failed to create k8s client: "+err.Error(), http.StatusInternalServerError)
@@ -36,18 +36,18 @@ func serverIndex(w http.ResponseWriter, r *http.Request) {
 	json.NewEncoder(w).Encode(pods.Items)
 }
 
-func serverDetail(w http.ResponseWriter, r *http.Request) {
-	serverID := chi.URLParam(r, "serverID")
+func podDetail(w http.ResponseWriter, r *http.Request) {
+	podID := chi.URLParam(r, "podID")
 	clientset, err := core.GetKubeClient()
 	if err != nil {
 		http.Error(w, "Failed to create k8s client: "+err.Error(), http.StatusInternalServerError)
 		return
 	}
-	// serverID is expected as namespace/name
+	// podID is expected as namespace/name
 	var namespace, name string
-	_, err = fmt.Sscanf(serverID, "%[^/]/%s", &namespace, &name)
+	_, err = fmt.Sscanf(podID, "%[^/]/%s", &namespace, &name)
 	if err != nil {
-		http.Error(w, "serverID must be in namespace/name format", http.StatusBadRequest)
+		http.Error(w, "podID must be in namespace/name format", http.StatusBadRequest)
 		return
 	}
 	pod, err := clientset.CoreV1().Pods(namespace).Get(r.Context(), name, metav1.GetOptions{})
@@ -59,7 +59,7 @@ func serverDetail(w http.ResponseWriter, r *http.Request) {
 	json.NewEncoder(w).Encode(pod)
 }
 
-func serverCreate(w http.ResponseWriter, r *http.Request) {
+func podCreate(w http.ResponseWriter, r *http.Request) {
 	clientset, err := core.GetKubeClient()
 	if err != nil {
 		http.Error(w, "Failed to create k8s client: "+err.Error(), http.StatusInternalServerError)
@@ -70,7 +70,6 @@ func serverCreate(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, "Invalid request body: "+err.Error(), http.StatusBadRequest)
 		return
 	}
-	// Marshal and unmarshal to concrete type
 	podBytes, err := json.Marshal(podSpec)
 	if err != nil {
 		http.Error(w, "Failed to marshal pod spec: "+err.Error(), http.StatusBadRequest)
@@ -90,17 +89,17 @@ func serverCreate(w http.ResponseWriter, r *http.Request) {
 	json.NewEncoder(w).Encode(created)
 }
 
-func serverDelete(w http.ResponseWriter, r *http.Request) {
-	serverID := chi.URLParam(r, "serverID")
+func podDelete(w http.ResponseWriter, r *http.Request) {
+	podID := chi.URLParam(r, "podID")
 	clientset, err := core.GetKubeClient()
 	if err != nil {
 		http.Error(w, "Failed to create k8s client: "+err.Error(), http.StatusInternalServerError)
 		return
 	}
 	var namespace, name string
-	_, err = fmt.Sscanf(serverID, "%[^/]/%s", &namespace, &name)
+	_, err = fmt.Sscanf(podID, "%[^/]/%s", &namespace, &name)
 	if err != nil {
-		http.Error(w, "serverID must be in namespace/name format", http.StatusBadRequest)
+		http.Error(w, "podID must be in namespace/name format", http.StatusBadRequest)
 		return
 	}
 	err = clientset.CoreV1().Pods(namespace).Delete(r.Context(), name, metav1.DeleteOptions{})
