@@ -1,7 +1,7 @@
 package main
 
 import (
-	"inpodk8soperation/server"
+	"k8soperation/server"
 	"net/http"
 	"time"
 

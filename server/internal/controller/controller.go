@@ -5,7 +5,7 @@ import (
 	"fmt"
 	"net/http"
 
-	"inpodk8soperation/core"
+	"k8soperation/core"
 
 	"github.com/go-chi/chi/v5"
 	corev1 "k8s.io/api/core/v1"

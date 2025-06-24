@@ -1,4 +1,4 @@
-module inpodk8soperation
+module k8soperation
 
 go 1.24.0
 
