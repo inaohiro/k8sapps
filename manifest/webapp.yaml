@@ -33,9 +33,17 @@ kind: Deployment
 metadata:
   name: webapp
   namespace: default
+  labels:
+    app: webapp
 spec:
   replicas: 1
+  selector:
+    matchLabels:
+      app: webapp
   template:
+    metadata:
+      labels:
+        app: webapp
     spec:
       serviceAccountName: admin-sa
       containers:
@@ -46,14 +54,16 @@ spec:
               protocol: TCP
 ---
 apiVersion: v1
-kind: service
+kind: Service
 metadata:
   name: webapp
   namespace: default
+  labels:
+    app: webapp
 spec:
   type: LoadBalancer
   selector:
-    name: webapp
+    app: webapp
   ports:
     - port: 8080
       targetPort: 8080
