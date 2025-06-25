@@ -34,7 +34,7 @@ func InitDB() {
 	}
 	user := os.Getenv("DB_USER")
 	if user == "" {
-		user = "user"
+		user = "root"
 	}
 	password := os.Getenv("DB_PASSWORD")
 	if password == "" {

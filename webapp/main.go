@@ -5,6 +5,7 @@ import (
 	"fmt"
 	myotel "k8soperation/core/otel"
 	"k8soperation/deployment"
+	"k8soperation/flavor"
 	"k8soperation/image"
 	"k8soperation/pod"
 	"k8soperation/service"
@@ -121,6 +122,7 @@ func main() {
 	authMux.Mount("/deployments", deployment.Routes)
 	authMux.Mount("/services", service.Routes)
 	authMux.Mount("/images", image.Routes)
+	authMux.Mount("/flavors", flavor.Routes)
 
 	port := os.Getenv("HTTP_PORT")
 	if port == "" {

@@ -21,6 +21,17 @@ spec:
           ports:
             - containerPort: 3306
               protocol: TCP
+          volumeMounts:
+            - name: db-sql
+              mountPath: /docker-entrypoint-initdb.d
+              readOnly: true
+          envFrom:
+            - configMapRef:
+                name: db-env
+      volumes:
+        - name: db-sql
+          configMap:
+            name: db-sql
 ---
 apiVersion: v1
 kind: Service
@@ -36,3 +47,46 @@ spec:
   ports:
     - port: 3306
       targetPort: 3306
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: db-env
+  namespace: default
+data:
+  MYSQL_ROOT_PASSWORD: password
+  MYSQL_DATABASE: db
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: db-sql
+  namespace: default
+data:
+  0-init.sql: |
+    SET CHARACTER_SET_CLIENT = utf8mb4;
+    SET CHARACTER_SET_CONNECTION = utf8mb4;
+
+    CREATE DATABASE IF NOT EXISTS db DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci;
+
+  1-schema.sql: |
+    SET CHARACTER_SET_CLIENT = utf8mb4;
+    SET CHARACTER_SET_CONNECTION = utf8mb4;
+
+    USE db;
+
+    DROP TABLE IF EXISTS images;
+    CREATE TABLE images
+    (
+      name  VARCHAR(64) NOT NULL COMMENT 'コンテナイメージ名',
+      PRIMARY KEY (name)
+    )
+      COMMENT = 'コンテナイメージ';
+
+    DROP TABLE IF EXISTS flavors;
+    CREATE TABLE flavors
+    (
+      name  VARCHAR(64) NOT NULL COMMENT 'フレーバー名',
+      PRIMARY KEY (name)
+    )
+      COMMENT = 'フレーバー';
