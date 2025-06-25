@@ -16,10 +16,10 @@ import (
 )
 
 var (
-	db *sqlx.DB
+	Db *sqlx.DB
 )
 
-func init() {
+func InitDB() {
 	host := os.Getenv("DB_HOST")
 	if host == "" {
 		host = "db"
@@ -62,6 +62,5 @@ func init() {
 		panic(err)
 	}
 
-	db = _db
-
+	Db = _db
 }
