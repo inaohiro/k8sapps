@@ -1,58 +1,3 @@
-apiVersion: apps/v1
-kind: Deployment
-metadata:
-  name: prometheus
-  labels:
-    app: prometheus
-  namespace: default
-spec:
-  replicas: 1
-  selector:
-    matchLabels:
-      app: prometheus
-  template:
-    metadata:
-      labels:
-        app: prometheus
-    spec:
-      containers:
-        - name: prometheus
-          image: quay.io/prometheus/prometheus:v3.4.1
-          imagePullPolicy: IfNotPresent
-          command:
-            - --config.file=/etc/prometheus/prometheus.yml
-            - --web.route-prefix=/
-            - --web.enable-otlp-receiver
-            - --enable-feature=exemplar-storage
-            - --web.enable-remote-write-receiver
-            - --enable-feature=native-histograms
-          ports:
-            - containerPort: 9090
-              protocol: TCP
-          volumeMounts:
-            - name: prometheus-config
-              mountPath: /etc/prometheus
-              readOnly: true
-      volumes:
-        - name: prometheus-config
-          configMap:
-            name: prometheus-config
----
-apiVersion: v1
-kind: Service
-metadata:
-  labels:
-    app: prometheus
-  name: prometheus
-  namespace: default
-spec:
-  type: NodePort
-  selector:
-    app: prometheus
-  ports:
-    - port: 9090
-      targetPort: 9090
----
 apiVersion: v1
 kind: ConfigMap
 metadata:
@@ -81,3 +26,58 @@ data:
       - job_name: 'tempo'
         static_configs:
           - targets: [ 'tempo:3200' ]
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: prometheus
+  labels:
+    app: prometheus
+  namespace: default
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: prometheus
+  template:
+    metadata:
+      labels:
+        app: prometheus
+    spec:
+      containers:
+        - name: prometheus
+          image: quay.io/prometheus/prometheus:v3.4.1
+          imagePullPolicy: IfNotPresent
+          command:
+            - --config.file=/etc/prometheus/prometheus.yaml
+            - --web.route-prefix=/
+            - --web.enable-otlp-receiver
+            - --enable-feature=exemplar-storage
+            - --web.enable-remote-write-receiver
+            - --enable-feature=native-histograms
+          ports:
+            - containerPort: 9090
+              protocol: TCP
+          volumeMounts:
+            - name: prometheus-config
+              mountPath: /etc/prometheus
+              readOnly: true
+      volumes:
+        - name: prometheus-config
+          configMap:
+            name: prometheus-config
+---
+apiVersion: v1
+kind: Service
+metadata:
+  labels:
+    app: prometheus
+  name: prometheus
+  namespace: default
+spec:
+  type: LoadBalancer
+  selector:
+    app: prometheus
+  ports:
+    - port: 9090
+      targetPort: 9090
