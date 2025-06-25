@@ -68,7 +68,7 @@ metadata:
   name: tempo-config
   namespace: default
 data:
-  tempo.yaml: |
+  config.yaml: |
     stream_over_http_enabled: true
     server:
       http_listen_port: 3200
