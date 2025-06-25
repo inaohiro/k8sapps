@@ -25,7 +25,7 @@ data:
           otlp:
             protocols:
               grpc:
-                endpoint: "tempo:4317"
+                endpoint: "0.0.0.0:4317"
 
       ingester:
         max_block_duration: 5m
@@ -84,9 +84,8 @@ spec:
           image: grafana/tempo:2.8.1
           imagePullPolicy: IfNotPresent
           args:
-            - --storage.trace.backend=local
-            - --storage.trace.local.path=/tmp/tempo/traces
-            - --storage.trace.wal.path=/tmp/tempo/wal
+            - -config.file
+            - /etc/tempo/config.yaml
           ports:
             - containerPort: 3200
               protocol: TCP
