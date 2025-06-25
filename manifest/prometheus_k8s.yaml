@@ -22,7 +22,7 @@ data:
     scrape_configs:
       - job_name: 'prometheus'
         static_configs:
-          - targets: [ 'localhost:9090' ]
+          - targets: [ 'prometheus:9090' ]
       - job_name: 'tempo'
         static_configs:
           - targets: [ 'tempo:3200' ]
@@ -48,7 +48,7 @@ spec:
         - name: prometheus
           image: quay.io/prometheus/prometheus:v3.4.1
           imagePullPolicy: IfNotPresent
-          command:
+          args:
             - --config.file=/etc/prometheus/prometheus.yaml
             - --web.route-prefix=/
             - --web.enable-otlp-receiver
