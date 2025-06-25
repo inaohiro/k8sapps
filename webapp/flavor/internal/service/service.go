@@ -2,7 +2,7 @@ package service
 
 import (
 	"context"
-	"k8soperation/flavor/models"
+	"k8soperation/flavor/internal/models"
 )
 
 func ListFlavors(ctx context.Context) (any, error) {
