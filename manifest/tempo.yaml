@@ -32,7 +32,7 @@ spec:
               protocol: TCP
           volumeMounts:
             - name: tempo-config
-              mountPath: /etc
+              mountPath: /etc/tempo
               readOnly: true
             - name: tempo-data
               mountPath: /var/tempo
