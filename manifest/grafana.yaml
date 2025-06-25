@@ -48,7 +48,7 @@ metadata:
   name: grafana
   namespace: default
 spec:
-  type: NodePort
+  type: LoadBalancer
   selector:
     app: grafana
   ports:
