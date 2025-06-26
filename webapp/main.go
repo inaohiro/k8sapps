@@ -9,7 +9,6 @@ import (
 	"k8soperation/image"
 	"k8soperation/pod"
 	"k8soperation/service"
-	"k8soperation/token"
 	"log"
 	"net/http"
 	"os"
@@ -115,14 +114,11 @@ func main() {
 	r.Use(middleware.Timeout(10 * time.Second))
 	r.Use(myotel.Middleware)
 
-	// r.Mount("/token", token.Routes)
-
-	authMux := r.With(token.TokenParseMiddleware)
-	authMux.Mount("/pods", pod.Routes)
-	authMux.Mount("/deployments", deployment.Routes)
-	authMux.Mount("/services", service.Routes)
-	authMux.Mount("/images", image.Routes)
-	authMux.Mount("/flavors", flavor.Routes)
+	r.Mount("/api/{namespace}/pods", pod.Routes)
+	r.Mount("/api/{namespace}/deployments", deployment.Routes)
+	r.Mount("/api/{namespace}/services", service.Routes)
+	r.Mount("/api/{namespace}/images", image.Routes)
+	r.Mount("/api/{namespace}/flavors", flavor.Routes)
 
 	port := os.Getenv("HTTP_PORT")
 	if port == "" {

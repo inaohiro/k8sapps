@@ -11,13 +11,13 @@ import (
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 )
 
-// ListDeployments returns all deployments in all namespaces
-func ListDeployments(ctx context.Context) ([]appsv1.Deployment, error) {
+// ListDeployments returns all deployments in a specific namespace
+func ListDeployments(ctx context.Context, namespace string) ([]appsv1.Deployment, error) {
 	clientset, err := core.GetKubeClient()
 	if err != nil {
 		return nil, fmt.Errorf("Failed to create k8s client: %w", err)
 	}
-	deployments, err := clientset.AppsV1().Deployments("").List(ctx, metav1.ListOptions{})
+	deployments, err := clientset.AppsV1().Deployments(namespace).List(ctx, metav1.ListOptions{})
 	if err != nil {
 		return nil, fmt.Errorf("Failed to list deployments: %w", err)
 	}

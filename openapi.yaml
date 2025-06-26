@@ -8,7 +8,9 @@ servers:
   - url: /api/v1
 
 paths:
-  /deployments:
+  /api/{namespace}/deployments:
+    parameters:
+      - $ref: '#/components/parameters/Namespace'
     get:
       tags:
         - deployment
@@ -42,18 +44,19 @@ paths:
               schema:
                 $ref: '#/components/schemas/Deployment'
 
-  /deployments/{deploymentId}:
+  /api/{namespace}/deployments/{deploymentId}:
+    parameters:
+      - $ref: '#/components/parameters/Namespace'
+      - name: deploymentId
+        in: path
+        required: true
+        schema:
+          type: string
     get:
       tags:
         - deployment
       summary: Get deployment details
       description: Get details of a specific deployment (Kubernetes Deployment).
-      parameters:
-        - name: deploymentId
-          in: path
-          required: true
-          schema:
-            type: string
       responses:
         '200':
           description: Deployment details.
@@ -68,19 +71,15 @@ paths:
         - deployment
       summary: Delete deployment
       description: Delete a specific deployment (Kubernetes Deployment).
-      parameters:
-        - name: deploymentId
-          in: path
-          required: true
-          schema:
-            type: string
       responses:
         '204':
           description: Deployment deleted.
         '404':
           description: Deployment not found.
 
-  /images:
+  /api/{namespace}/images:
+    parameters:
+      - $ref: '#/components/parameters/Namespace'
     get:
       tags:
         - image
@@ -95,7 +94,9 @@ paths:
                 type: array
                 items:
                   $ref: '#/components/schemas/Image'
-  /pods:
+  /api/{namespace}/pods:
+    parameters:
+      - $ref: '#/components/parameters/Namespace'
     get:
       tags:
         - pod
@@ -129,18 +130,19 @@ paths:
               schema:
                 $ref: '#/components/schemas/Pod'
 
-  /pods/{podId}:
+  /api/{namespace}/pods/{podId}:
+    parameters:
+      - $ref: '#/components/parameters/Namespace'
+      - name: podId
+        in: path
+        required: true
+        schema:
+          type: string
     get:
       tags:
         - pod
       summary: Get pod details
       description: Get details of a specific pod.
-      parameters:
-        - name: podId
-          in: path
-          required: true
-          schema:
-            type: string
       responses:
         '200':
           description: Pod details.
@@ -155,19 +157,15 @@ paths:
         - pod
       summary: Delete pod
       description: Delete a specific pod.
-      parameters:
-        - name: podId
-          in: path
-          required: true
-          schema:
-            type: string
       responses:
         '204':
           description: Pod deleted.
         '404':
           description: Pod not found.
 
-  /services:
+  /api/{namespace}/services:
+    parameters:
+      - $ref: '#/components/parameters/Namespace'
     get:
       tags:
         - service
@@ -201,18 +199,19 @@ paths:
               schema:
                 $ref: '#/components/schemas/Service'
 
-  /services/{serviceId}:
+  /api/{namespace}/services/{serviceId}:
+    parameters:
+      - $ref: '#/components/parameters/Namespace'
+      - name: serviceId
+        in: path
+        required: true
+        schema:
+          type: string
     get:
       tags:
         - service
       summary: Get service details
       description: Get details of a specific service.
-      parameters:
-        - name: serviceId
-          in: path
-          required: true
-          schema:
-            type: string
       responses:
         '200':
           description: Service details.
@@ -227,12 +226,6 @@ paths:
         - service
       summary: Delete service
       description: Delete a specific service.
-      parameters:
-        - name: serviceId
-          in: path
-          required: true
-          schema:
-            type: string
       responses:
         '204':
           description: Service deleted.
@@ -240,6 +233,13 @@ paths:
           description: Service not found.
 
 components:
+  parameters:
+    Namespace:
+      name: namespace
+      in: path
+      required: true
+      schema:
+        type: string
   schemas:
     Deployment:
       type: object
@@ -278,6 +278,14 @@ components:
         image:
           type: string
           description: Image name
+        replicas:
+          type: integer
+          description: Number of replicas
+        port:
+          type: array
+          description: List of ports
+          items:
+            type: integer
     Image:
       type: object
       required:
