@@ -9,7 +9,7 @@ import (
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 )
 
-func ListServices(ctx context.Context, namespace string) ([]models.ServiceDTO, error) {
+func ListServices(ctx context.Context, namespace string) ([]models.Service, error) {
 	clientset, err := core.GetKubeClient()
 	if err != nil {
 		return nil, err
@@ -21,7 +21,7 @@ func ListServices(ctx context.Context, namespace string) ([]models.ServiceDTO, e
 	return models.FromKubeServiceList(services.Items), nil
 }
 
-func GetService(ctx context.Context, namespace, name string) (*models.ServiceDTO, error) {
+func GetService(ctx context.Context, namespace, name string) (*models.Service, error) {
 	clientset, err := core.GetKubeClient()
 	if err != nil {
 		return nil, err
@@ -34,7 +34,7 @@ func GetService(ctx context.Context, namespace, name string) (*models.ServiceDTO
 	return &dto, nil
 }
 
-func CreateService(ctx context.Context, namespace string, dto models.ServiceCreate) (*models.ServiceDTO, error) {
+func CreateService(ctx context.Context, namespace string, dto models.ServiceCreate) (*models.Service, error) {
 	clientset, err := core.GetKubeClient()
 	if err != nil {
 		return nil, err
