@@ -41,3 +41,34 @@ func (d DeploymentCreate) ToKubeDeployment() *appsv1.Deployment {
 		},
 	}
 }
+
+// client-go の Deployment から API 用 Deployment DTO へ変換
+func FromKubeDeployment(dep *appsv1.Deployment) Deployment {
+	status := "Unknown"
+	if dep.Status.AvailableReplicas > 0 {
+		status = "Running"
+	} else if dep.Status.Replicas > 0 {
+		status = "Pending"
+	}
+	image := ""
+	if len(dep.Spec.Template.Spec.Containers) > 0 {
+		image = dep.Spec.Template.Spec.Containers[0].Image
+	}
+	return Deployment{
+		Id:        string(dep.UID),
+		Name:      dep.Name,
+		Status:    status,
+		Image:     image,
+		CreatedAt: dep.CreationTimestamp.Time,
+	}
+}
+
+// 複数変換
+func FromKubeDeploymentList(list []appsv1.Deployment) []Deployment {
+	result := make([]Deployment, 0, len(list))
+	for _, d := range list {
+		copy := d // avoid pointer issue
+		result = append(result, FromKubeDeployment(&copy))
+	}
+	return result
+}

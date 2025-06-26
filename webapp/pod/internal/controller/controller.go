@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"net/http"
 
+	"k8soperation/pod/internal/models"
 	"k8soperation/pod/internal/service"
 
 	"github.com/go-chi/chi/v5"
@@ -42,12 +43,14 @@ func podDetail(w http.ResponseWriter, r *http.Request) {
 }
 
 func podCreate(w http.ResponseWriter, r *http.Request) {
-	var podSpec map[string]interface{}
-	if err := json.NewDecoder(r.Body).Decode(&podSpec); err != nil {
+	var req models.PodCreateRequest
+	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
 		http.Error(w, "Invalid request body: "+err.Error(), http.StatusBadRequest)
 		return
 	}
-	created, err := service.CreatePod(r.Context(), podSpec)
+	podDTO := models.FromRequest(req)
+	namespace := chi.URLParam(r, "namespace")
+	created, err := service.CreatePod(r.Context(), namespace, podDTO)
 	if err != nil {
 		http.Error(w, "Failed to create pod: "+err.Error(), http.StatusInternalServerError)
 		return

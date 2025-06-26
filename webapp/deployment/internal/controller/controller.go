@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"net/http"
 
+	"k8soperation/core"
 	"k8soperation/deployment/internal/models"
 	"k8soperation/deployment/internal/service"
 
@@ -26,8 +27,7 @@ func deploymentIndex(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
-	w.Header().Set("Content-Type", "application/json")
-	json.NewEncoder(w).Encode(deployments)
+	core.WriteJSON(w, http.StatusOK, deployments)
 }
 
 func deploymentDetail(w http.ResponseWriter, r *http.Request) {
@@ -38,24 +38,23 @@ func deploymentDetail(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
-	w.Header().Set("Content-Type", "application/json")
-	json.NewEncoder(w).Encode(deployment)
+	core.WriteJSON(w, http.StatusOK, deployment)
 }
 
 func deploymentCreate(w http.ResponseWriter, r *http.Request) {
 	namespace := chi.URLParam(r, "namespace")
-	var req models.DeploymentCreate
+	var req models.DeploymentCreateRequest
 	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
 		http.Error(w, "Invalid request body: "+err.Error(), http.StatusBadRequest)
 		return
 	}
-	created, err := service.CreateDeployment(r.Context(), namespace, req)
+	dto := models.FromRequest(req)
+	created, err := service.CreateDeployment(r.Context(), namespace, dto)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
-	w.Header().Set("Content-Type", "application/json")
-	json.NewEncoder(w).Encode(created)
+	core.WriteJSON(w, http.StatusCreated, created)
 }
 
 func deploymentDelete(w http.ResponseWriter, r *http.Request) {

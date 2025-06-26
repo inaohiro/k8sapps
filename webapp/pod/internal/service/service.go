@@ -2,16 +2,16 @@ package service
 
 import (
 	"context"
-	"encoding/json"
 
 	"k8soperation/core"
 
-	corev1 "k8s.io/api/core/v1"
+	"k8soperation/pod/internal/models"
+
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 )
 
 // ListPods returns a list of pods in the given namespace
-func ListPods(ctx context.Context, namespace string) ([]corev1.Pod, error) {
+func ListPods(ctx context.Context, namespace string) ([]models.Pod, error) {
 	clientset, err := core.GetKubeClient()
 	if err != nil {
 		return nil, err
@@ -20,11 +20,11 @@ func ListPods(ctx context.Context, namespace string) ([]corev1.Pod, error) {
 	if err != nil {
 		return nil, err
 	}
-	return pods.Items, nil
+	return models.FromKubePodList(pods.Items), nil
 }
 
 // GetPod returns a pod by name in the given namespace
-func GetPod(ctx context.Context, namespace, podID string) (*corev1.Pod, error) {
+func GetPod(ctx context.Context, namespace, podID string) (*models.Pod, error) {
 	clientset, err := core.GetKubeClient()
 	if err != nil {
 		return nil, err
@@ -33,28 +33,24 @@ func GetPod(ctx context.Context, namespace, podID string) (*corev1.Pod, error) {
 	if err != nil {
 		return nil, err
 	}
-	return pod, nil
+	dto := models.FromKubePod(pod)
+	return &dto, nil
 }
 
-// CreatePod creates a new pod from a generic map spec
-func CreatePod(ctx context.Context, podSpec map[string]interface{}) (*corev1.Pod, error) {
+// CreatePod creates a new pod from a PodCreate DTO
+func CreatePod(ctx context.Context, namespace string, pod models.PodCreate) (*models.Pod, error) {
 	clientset, err := core.GetKubeClient()
 	if err != nil {
 		return nil, err
 	}
-	podBytes, err := json.Marshal(podSpec)
+	podObj := pod.ToKubePod()
+	podObj.Namespace = namespace
+	created, err := clientset.CoreV1().Pods(namespace).Create(ctx, podObj, metav1.CreateOptions{})
 	if err != nil {
 		return nil, err
 	}
-	var podObj = &corev1.Pod{}
-	if err := json.Unmarshal(podBytes, podObj); err != nil {
-		return nil, err
-	}
-	created, err := clientset.CoreV1().Pods(podObj.Namespace).Create(ctx, podObj, metav1.CreateOptions{})
-	if err != nil {
-		return nil, err
-	}
-	return created, nil
+	dto := models.FromKubePod(created)
+	return &dto, nil
 }
 
 // DeletePod deletes a pod by name in the given namespace

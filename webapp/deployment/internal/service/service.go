@@ -7,12 +7,11 @@ import (
 	"k8soperation/core"
 	"k8soperation/deployment/internal/models"
 
-	appsv1 "k8s.io/api/apps/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 )
 
 // ListDeployments returns all deployments in a specific namespace
-func ListDeployments(ctx context.Context, namespace string) ([]appsv1.Deployment, error) {
+func ListDeployments(ctx context.Context, namespace string) ([]models.Deployment, error) {
 	clientset, err := core.GetKubeClient()
 	if err != nil {
 		return nil, fmt.Errorf("Failed to create k8s client: %w", err)
@@ -21,11 +20,11 @@ func ListDeployments(ctx context.Context, namespace string) ([]appsv1.Deployment
 	if err != nil {
 		return nil, fmt.Errorf("Failed to list deployments: %w", err)
 	}
-	return deployments.Items, nil
+	return models.FromKubeDeploymentList(deployments.Items), nil
 }
 
 // GetDeployment returns a deployment by namespace and name
-func GetDeployment(ctx context.Context, namespace, name string) (*appsv1.Deployment, error) {
+func GetDeployment(ctx context.Context, namespace, name string) (*models.Deployment, error) {
 	clientset, err := core.GetKubeClient()
 	if err != nil {
 		return nil, fmt.Errorf("Failed to create k8s client: %w", err)
@@ -34,11 +33,12 @@ func GetDeployment(ctx context.Context, namespace, name string) (*appsv1.Deploym
 	if err != nil {
 		return nil, fmt.Errorf("Failed to get deployment: %w", err)
 	}
-	return deployment, nil
+	dto := models.FromKubeDeployment(deployment)
+	return &dto, nil
 }
 
 // CreateDeployment creates a deployment from a DeploymentCreate DTO
-func CreateDeployment(ctx context.Context, namespace string, dto models.DeploymentCreate) (*appsv1.Deployment, error) {
+func CreateDeployment(ctx context.Context, namespace string, dto models.DeploymentCreate) (*models.Deployment, error) {
 	clientset, err := core.GetKubeClient()
 	if err != nil {
 		return nil, fmt.Errorf("Failed to create k8s client: %w", err)
@@ -48,7 +48,8 @@ func CreateDeployment(ctx context.Context, namespace string, dto models.Deployme
 	if err != nil {
 		return nil, fmt.Errorf("Failed to create deployment: %w", err)
 	}
-	return created, nil
+	dtoResult := models.FromKubeDeployment(created)
+	return &dtoResult, nil
 }
 
 // DeleteDeployment deletes a deployment by namespace and name
