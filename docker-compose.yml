@@ -1,0 +1,18 @@
+services:
+  auth:
+    build:
+      context: ./auth
+      dockerfile: ../dockerfiles/Dockerfile.go
+    image: auth
+
+  gateway:
+    build:
+      context: ./gateway
+      dockerfile: ../dockerfiles/Dockerfile.go
+    image: gateway
+
+  webapp:
+    build:
+      context: ./webapp
+      dockerfile: ../dockerfiles/Dockerfile.go
+    image: webapp

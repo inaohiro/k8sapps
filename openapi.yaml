@@ -1,4 +1,4 @@
-openapi: 3.0.3
+openapi: 3.1.0
 info:
   title: Kubernetes Deployment API
   version: 1.0.0
@@ -8,24 +8,6 @@ servers:
   - url: /api/v1
 
 paths:
-  /tokens:
-    post:
-      tags:
-        - token
-      summary: Issue token
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/IssueTokenRequest'
-      responses:
-        '200':
-          description: issued token.
-          content:
-            application/token:
-              schema:
-                $ref: '#/components/schemas/Token'
   /deployments:
     get:
       tags:

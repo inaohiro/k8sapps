@@ -115,7 +115,7 @@ func main() {
 	r.Use(middleware.Timeout(10 * time.Second))
 	r.Use(myotel.Middleware)
 
-	r.Mount("/token", token.Routes)
+	// r.Mount("/token", token.Routes)
 
 	authMux := r.With(token.TokenParseMiddleware)
 	authMux.Mount("/pods", pod.Routes)
