@@ -17,6 +17,7 @@ import (
 
 	_ "embed"
 
+	"go.opentelemetry.io/contrib/instrumentation/net/http/otelhttp"
 	"go.opentelemetry.io/otel"
 	"go.opentelemetry.io/otel/exporters/otlp/otlpmetric/otlpmetricgrpc"
 	"go.opentelemetry.io/otel/exporters/otlp/otlptrace/otlptracegrpc"
@@ -153,9 +154,9 @@ func main() {
 	mux := http.NewServeMux()
 	for _, route := range routes {
 		if route.Auth {
-			mux.HandleFunc(route.Pattern, authHandler)
+			mux.Handle(route.Pattern, otelhttp.NewHandler(http.HandlerFunc(authHandler), route.Pattern))
 		} else {
-			mux.HandleFunc(route.Pattern, handler)
+			mux.Handle(route.Pattern, otelhttp.NewHandler(http.HandlerFunc(handler), route.Pattern))
 		}
 	}
 

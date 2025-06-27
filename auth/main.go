@@ -15,6 +15,7 @@ import (
 
 	"github.com/golang-jwt/jwt/v5"
 
+	"go.opentelemetry.io/contrib/instrumentation/net/http/otelhttp"
 	"go.opentelemetry.io/otel"
 	"go.opentelemetry.io/otel/exporters/otlp/otlpmetric/otlpmetricgrpc"
 	"go.opentelemetry.io/otel/exporters/otlp/otlptrace/otlptracegrpc"
@@ -113,8 +114,8 @@ func main() {
 	}
 
 	mux := http.NewServeMux()
-	mux.HandleFunc("POST /tokens", issueToken)
-	mux.HandleFunc("GET /tokens", verifyToken)
+	mux.Handle("POST /tokens", otelhttp.NewHandler(http.HandlerFunc(issueToken), "POST /tokens"))
+	mux.Handle("GET /tokens", otelhttp.NewHandler(http.HandlerFunc(verifyToken), "GET /tokens"))
 
 	http.ListenAndServe(fmt.Sprintf(":%s", port), mux)
 }

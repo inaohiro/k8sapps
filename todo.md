@@ -1,12 +1,4 @@
-- トークン発行 API
-  - jwt
-  - トークン発行時に namespace を指定
-- token 検証 middleware
-  - jwt 内の namespace を取得
-- server を deployment, service に変更
-  - 言葉を揃える
-- openapi レスポンスに一致する dto
-- レイヤー分け
+- フロントエンド実装
 - イメージ一覧
   - db から取得
   - 1つの有効なイメージ + 大量の無効なイメージ

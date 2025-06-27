@@ -4,7 +4,7 @@ metadata:
   name: auth-env
   namespace: default
 data:
-  HTTP_PORT: 8080
+  HTTP_PORT: "8080"
   OTEL_EXPORTER_OTLP_ENDPOINT: "http://otel-collector:4317"
 ---
 apiVersion: apps/v1

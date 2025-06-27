@@ -39,6 +39,11 @@ spec:
         - name: grafana-provisioning
           configMap:
             name: grafana-provisioning
+            items:
+              - key: datasources.yaml
+                path: datasources/datasources.yaml
+              - key: demo-dashboard.json
+                path: dashbaords/demo/demo-dashboard.json
 ---
 apiVersion: v1
 kind: Service
