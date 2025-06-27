@@ -45,7 +45,7 @@ spec:
               - key: demo.yaml
                 path: dashboards/demo.yaml
               - key: demo-dashboard.json
-                path: dashbaords/demo/demo-dashboard.json
+                path: dashboards/demo/demo-dashboard.json
 ---
 apiVersion: v1
 kind: Service
