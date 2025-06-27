@@ -1,4 +1,4 @@
-import step1 from "./step1";
+import step1 from "./step1.js";
 // import step2 from "./step2";
 // import step3 from "./step3";
 

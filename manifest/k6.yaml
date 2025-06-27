@@ -86,7 +86,6 @@ data:
       return Math.random().toString(32).substring(2);
     }
 
-
 ---
 apiVersion: apps/v1
 kind: Deployment
@@ -108,9 +107,11 @@ spec:
       containers:
         - name: k6
           image: grafana/k6
-          args:
+          command:
+            - k6
+            - run
             - -o
-            - experimental-opentelmetry
+            - experimental-opentelemetry
             - /opt/k6/scripts/scripts.js
           envFrom:
             - configMapRef:
