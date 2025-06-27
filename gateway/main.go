@@ -55,7 +55,7 @@ func initResource() *sdkresource.Resource {
 			sdkresource.WithContainer(),
 			sdkresource.WithHost(),
 			sdkresource.WithAttributes(
-				semconv.ServiceNameKey.String("webapp"),
+				semconv.ServiceNameKey.String("gateway"),
 				semconv.ServiceVersionKey.String("1.0.0"),
 			),
 		)

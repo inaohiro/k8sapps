@@ -40,7 +40,7 @@ func initResource() *sdkresource.Resource {
 			sdkresource.WithContainer(),
 			sdkresource.WithHost(),
 			sdkresource.WithAttributes(
-				semconv.ServiceNameKey.String("webapp"),
+				semconv.ServiceNameKey.String("auth"),
 				semconv.ServiceVersionKey.String("1.0.0"),
 			),
 		)
