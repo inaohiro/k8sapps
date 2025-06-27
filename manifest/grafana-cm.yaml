@@ -66,6 +66,18 @@ data:
           datasourceUid: prometheus
         streamingEnabled:
           search: true
+  demo.yaml: |
+    apiVersion: 1
+    providers:
+      - name: "Demo"
+        orgId: 1
+        folder: "Demo"
+        folderUid: "demo"
+        type: file
+        disableDeletion: true
+        editable: true
+        options:
+          path: /etc/grafana/provisioning/dashboards/demo
   demo-dashboard.json: |
     {
       "annotations": {

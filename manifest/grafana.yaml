@@ -42,6 +42,8 @@ spec:
             items:
               - key: datasources.yaml
                 path: datasources/datasources.yaml
+              - key: demo.yaml
+                path: dashboards/demo.yaml
               - key: demo-dashboard.json
                 path: dashbaords/demo/demo-dashboard.json
 ---
