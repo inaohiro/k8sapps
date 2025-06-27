@@ -108,7 +108,7 @@ spec:
       containers:
         - name: k6
           image: grafana/k6
-          command:
+          args:
             - -o
             - experimental-opentelmetry
             - /opt/k6/scripts/scripts.js
