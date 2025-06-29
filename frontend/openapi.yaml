@@ -1,0 +1,480 @@
+openapi: 3.0.0
+info:
+  title: Kubernetes Deployment API
+  version: 1.0.0
+  description: API for managing Kubernetes Deployments.
+
+servers:
+  - url: http://localhost:8080
+
+paths:
+  /tokens:
+    get:
+      tags:
+        - token
+      summary: Verify token
+      parameters:
+        - in: header
+          name: Authorization
+          schema:
+            type: string
+          required: true
+      responses:
+        '200':
+          description: token is valid.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Namespace"
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+    post:
+      tags:
+        - token
+      summary: Issue token
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/IssueTokenRequest'
+      responses:
+        '200':
+          description: issued token.
+          content:
+            application/token:
+              schema:
+                $ref: '#/components/schemas/Token'
+
+  /deployments:
+    get:
+      tags:
+        - deployment
+      summary: List deployments
+      description: Get a list of all deployments (Kubernetes Deployments).
+      responses:
+        '200':
+          description: A list of deployments.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Deployment'
+    post:
+      tags:
+        - deployment
+      summary: Create deployment
+      description: Create a new deployment (Kubernetes Deployment).
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/DeploymentCreateRequest'
+      responses:
+        '201':
+          description: Deployment created.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Deployment'
+
+  /deployments/{deploymentId}:
+    parameters:
+      - name: deploymentId
+        in: path
+        required: true
+        schema:
+          type: string
+    get:
+      tags:
+        - deployment
+      summary: Get deployment details
+      description: Get details of a specific deployment (Kubernetes Deployment).
+      responses:
+        '200':
+          description: Deployment details.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Deployment'
+        '404':
+          description: Deployment not found.
+    delete:
+      tags:
+        - deployment
+      summary: Delete deployment
+      description: Delete a specific deployment (Kubernetes Deployment).
+      responses:
+        '204':
+          description: Deployment deleted.
+        '404':
+          description: Deployment not found.
+
+  /images:
+    get:
+      tags:
+        - image
+      summary: List images
+      description: Get a list of available images.
+      responses:
+        '200':
+          description: A list of images.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Image'
+
+  /pods:
+    get:
+      tags:
+        - pod
+      summary: List pods
+      description: Get a list of all pods.
+      responses:
+        '200':
+          description: A list of pods.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Pod'
+    post:
+      tags:
+        - pod
+      summary: Create pod
+      description: Create a new pod.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PodCreateRequest'
+      responses:
+        '201':
+          description: Pod created.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Pod'
+
+  /pods/{podId}:
+    parameters:
+      - name: podId
+        in: path
+        required: true
+        schema:
+          type: string
+    get:
+      tags:
+        - pod
+      summary: Get pod details
+      description: Get details of a specific pod.
+      responses:
+        '200':
+          description: Pod details.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Pod'
+        '404':
+          description: Pod not found.
+    delete:
+      tags:
+        - pod
+      summary: Delete pod
+      description: Delete a specific pod.
+      responses:
+        '204':
+          description: Pod deleted.
+        '404':
+          description: Pod not found.
+
+  /services:
+    get:
+      tags:
+        - service
+      summary: List services
+      description: Get a list of all services.
+      responses:
+        '200':
+          description: A list of services.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Service'
+    post:
+      tags:
+        - service
+      summary: Create service
+      description: Create a new service.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ServiceCreateRequest'
+      responses:
+        '201':
+          description: Service created.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Service'
+
+  /services/{serviceId}:
+    parameters:
+      - name: serviceId
+        in: path
+        required: true
+        schema:
+          type: string
+    get:
+      tags:
+        - service
+      summary: Get service details
+      description: Get details of a specific service.
+      responses:
+        '200':
+          description: Service details.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Service'
+        '404':
+          description: Service not found.
+    delete:
+      tags:
+        - service
+      summary: Delete service
+      description: Delete a specific service.
+      responses:
+        '204':
+          description: Service deleted.
+        '404':
+          description: Service not found.
+
+components:
+  schemas:
+    Deployment:
+      type: object
+      required:
+        - id
+        - name
+        - status
+        - image
+        - created_at
+      properties:
+        id:
+          type: string
+          description: Deployment ID
+        name:
+          type: string
+          description: Deployment name
+        status:
+          type: string
+          description: Deployment status
+        image:
+          type: string
+          description: Image name
+        created_at:
+          type: string
+          format: date-time
+          description: Creation timestamp
+    DeploymentCreateRequest:
+      type: object
+      required:
+        - name
+        - image
+      properties:
+        name:
+          type: string
+          description: Deployment name
+        image:
+          type: string
+          description: Image name
+        replicas:
+          type: integer
+          description: Number of replicas
+        port:
+          type: array
+          description: List of ports
+          items:
+            type: integer
+    Image:
+      type: object
+      required:
+        - name
+        - tag
+      properties:
+        name:
+          type: string
+          description: Image name
+        tag:
+          type: string
+          description: Image tag
+    Token:
+      type: object
+      required:
+        - token
+      properties:
+        token:
+          type: string
+          description: JWT string
+    IssueTokenRequest:
+      type: object
+      required:
+        - namespace
+      properties:
+        namespace:
+          type: string
+          description: namespace
+    Pod:
+      type: object
+      required:
+        - id
+        - name
+        - status
+        - image
+        - created_at
+      properties:
+        id:
+          type: string
+          description: Pod ID
+        name:
+          type: string
+          description: Pod name
+        status:
+          type: string
+          description: Pod status
+        image:
+          type: string
+          description: Image name
+        created_at:
+          type: string
+          format: date-time
+          description: Creation timestamp
+    PodCreateRequest:
+      type: object
+      required:
+        - name
+        - image
+      properties:
+        name:
+          type: string
+          description: Pod name
+        image:
+          type: string
+          description: Image name
+    Service:
+      type: object
+      required:
+        - id
+        - name
+        - type
+        - clusterIP
+        - ports
+        - created_at
+      properties:
+        id:
+          type: string
+          description: Service ID
+        name:
+          type: string
+          description: Service name
+        type:
+          type: string
+          description: Service type (e.g., ClusterIP, NodePort, LoadBalancer)
+        clusterIP:
+          type: string
+          description: Cluster IP address
+        ports:
+          type: array
+          description: List of service ports
+          items:
+            $ref: '#/components/schemas/ServicePort'
+        created_at:
+          type: string
+          format: date-time
+          description: Creation timestamp
+    ServicePort:
+      type: object
+      required:
+        - port
+        - targetPort
+        - protocol
+      properties:
+        name:
+          type: string
+          description: Port name (optional)
+        port:
+          type: integer
+          description: Service port
+        targetPort:
+          type: integer
+          description: Target port
+        protocol:
+          type: string
+          description: Protocol (e.g., TCP, UDP)
+    ServiceCreateRequest:
+      type: object
+      required:
+        - name
+        - type
+        - ports
+      properties:
+        name:
+          type: string
+          description: Service name
+        type:
+          type: string
+          description: Service type (e.g., ClusterIP, NodePort, LoadBalancer)
+        ports:
+          type: array
+          description: List of service ports
+          items:
+            $ref: '#/components/schemas/ServicePort'
+
+    Error:
+      type: object
+      required:
+        - error
+      properties:
+        error:
+          type: string
+          example: unauthorized
+    Namespace:
+      type: object
+      required:
+        - namespace
+      properties:
+        namespace:
+          type: string
+          description: namespace
+          example: default
+    Token:
+      type: object
+      required:
+        - token
+      properties:
+        token:
+          type: string
+          description: JWT string
+    IssueTokenRequest:
+      type: object
+      required:
+        - namespace
+      properties:
+        namespace:
+          type: string
+          description: namespace
