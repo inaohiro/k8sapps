@@ -13,6 +13,7 @@ import (
 	"os/signal"
 	"path"
 	"strconv"
+	"strings"
 	"sync"
 
 	_ "embed"
@@ -234,7 +235,7 @@ func proxy(next http.Handler) http.Handler {
 
 		// トークン検証が成功したらアプリケーションにリクエスト送信
 		// 元のリクエストパスに /api/{namespace} をつける
-		app_url.Path = path.Join(app_url.Path, "api", namespace, r.URL.Path)
+		app_url.Path = path.Join("api", namespace, strings.Join(strings.Split(r.URL.Path, "/")[1:], "/"))
 		defer func() {
 			app_url.Path = ""
 		}()
