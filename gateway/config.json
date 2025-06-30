@@ -6,7 +6,7 @@
     "proxy": false
   },
   {
-    "pattern": "/api",
+    "pattern": "/api/",
     "issue_token": false,
     "verify_token": true,
     "proxy": true
