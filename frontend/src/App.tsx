@@ -6,20 +6,9 @@ import DeploymentsPage from './DeploymentsPage';
 import ServicesPage from './ServicesPage';
 import PodsPage from './PodsPage';
 import DeploymentCreatePage from './DeploymentCreatePage';
+import { AppPage } from './App.page';
+import { pageAtom } from './store/store';
 
-export type PageState =
-  | { type: 'token-issue' }
-  | { type: 'deployments-list' }
-  | { type: 'deployments-create' }
-  | { type: 'deployments-detail'; id: string }
-  | { type: 'services-list' }
-  | { type: 'services-create' }
-  | { type: 'services-detail'; id: string }
-  | { type: 'pods-list' }
-  | { type: 'pods-create' }
-  | { type: 'pods-detail'; id: string };
-
-export const pageAtom = atom<PageState>({ type: 'deployments-list' });
 
 export function App() {
   const { hasToken, refresh } = useToken();
@@ -57,19 +46,5 @@ export function App() {
       content = <div>Not implemented</div>;
   }
 
-  return (
-    <div className="min-h-screen bg-gray-50">
-      <div className="flex justify-end p-4 bg-white shadow">
-        <button
-          onClick={handleReissueClick}
-          className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 transition"
-        >
-          トークン再発行
-        </button>
-      </div>
-      <div className="max-w-3xl mx-auto mt-8">
-        {content}
-      </div>
-    </div>
-  );
+  return <AppPage content={content} handleReissueToken={handleReissueClick} />
 }
