@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { useToken } from './hooks/useToken';
 
 const DeploymentCreatePage: React.FC = () => {
   const [name, setName] = useState('');
@@ -6,6 +7,7 @@ const DeploymentCreatePage: React.FC = () => {
   const [status, setStatus] = useState('');
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState(false);
+  const {token} = useToken();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -14,7 +16,9 @@ const DeploymentCreatePage: React.FC = () => {
     try {
       const res = await fetch(`/api/deployments`, {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: { 'Content-Type': 'application/json',
+          "Authorization": `Bearer ${token}`
+         },
         body: JSON.stringify({ name, image, status }),
       });
       if (!res.ok) throw new Error('Failed to create deployment');

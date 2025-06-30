@@ -1,12 +1,18 @@
 import React, { useEffect, useState } from 'react';
+import { useToken } from './hooks/useToken';
 
 const ServicesPage = () => {
   const [services, setServices] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const {token} = useToken();
 
   useEffect(() => {
-    fetch(`/api/services`)
+    fetch(`/api/services`, {
+      headers: {
+        "Authorization": `Bearer ${token}`
+      }
+    })
       .then((res) => {
         if (!res.ok) throw new Error('Failed to fetch services');
         return res.json();

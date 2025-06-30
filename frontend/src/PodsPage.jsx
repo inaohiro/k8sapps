@@ -1,12 +1,18 @@
 import React, { useEffect, useState } from 'react';
+import { useToken } from './hooks/useToken';
 
 const PodsPage = () => {
   const [pods, setPods] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const {token} = useToken();
 
   useEffect(() => {
-    fetch(`/api/pods`)
+    fetch(`/api/pods`, {
+      headers: {
+        "Authorization": `Bearer ${token}`
+      }
+    })
       .then((res) => {
         if (!res.ok) throw new Error('Failed to fetch pods');
         return res.json();

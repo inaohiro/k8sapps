@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react';
+import { useToken } from './hooks/useToken';
 
 interface Deployment {
   id: string;
@@ -11,9 +12,14 @@ const DeploymentsPage: React.FC = () => {
   const [deployments, setDeployments] = useState<Deployment[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const { token } = useToken()
 
   useEffect(() => {
-    fetch(`/api/deployments`)
+    fetch(`/api/deployments`, {
+      headers: {
+        "Authorization": `Bearer ${token}`
+      }
+    })
       .then((res) => {
         if (!res.ok) throw new Error('Failed to fetch deployments');
         return res.json();
