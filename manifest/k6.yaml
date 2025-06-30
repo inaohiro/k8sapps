@@ -6,7 +6,7 @@ metadata:
 data:
   K6_OTEL_GRPC_EXPORTER_INSECURE: "true"
   K6_OTEL_MTRICS_PREFIX: "k6_"
-  K6_OTEL_GRPC_EXPORTER_ENDPOINT: "http://otel-collector:4317"
+  K6_OTEL_GRPC_EXPORTER_ENDPOINT: "otel-collector:4317"
 ---
 apiVersion: v1
 kind: ConfigMap
@@ -15,7 +15,7 @@ metadata:
   namespace: default
 data:
   scripts.js: |
-    import step1 from "./step1";
+    import step1 from "./step1.js";
     // import step2 from "./step2";
     // import step3 from "./step3";
 
@@ -107,12 +107,9 @@ spec:
       containers:
         - name: k6
           image: grafana/k6
-          command:
-            - k6
-            - run
-            - -o
-            - experimental-opentelemetry
-            - /opt/k6/scripts/scripts.js
+          # TODO: loop
+          command: ["/bin/sh", "-c"]
+          args: ["k6 run -o experimental-opentelemetry /opt/k6/scripts/scripts.js && exit 1"]
           envFrom:
             - configMapRef:
                 name: k6-env
