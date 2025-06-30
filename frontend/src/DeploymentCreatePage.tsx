@@ -12,8 +12,7 @@ const DeploymentCreatePage: React.FC = () => {
     setError(null);
     setSuccess(false);
     try {
-      const apiUrl = import.meta.env.VITE_API_URL;
-      const res = await fetch(`${apiUrl}/deployments`, {
+      const res = await fetch(`/api/deployments`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ name, image, status }),

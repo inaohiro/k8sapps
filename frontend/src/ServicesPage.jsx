@@ -6,8 +6,7 @@ const ServicesPage = () => {
   const [error, setError] = useState(null);
 
   useEffect(() => {
-    const apiUrl = import.meta.env.VITE_API_URL;
-    fetch(`${apiUrl}/services`)
+    fetch(`/api/services`)
       .then((res) => {
         if (!res.ok) throw new Error('Failed to fetch services');
         return res.json();

@@ -13,8 +13,7 @@ const DeploymentsPage: React.FC = () => {
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    const apiUrl = import.meta.env.VITE_API_URL;
-    fetch(`${apiUrl}/deployments`)
+    fetch(`/api/deployments`)
       .then((res) => {
         if (!res.ok) throw new Error('Failed to fetch deployments');
         return res.json();

@@ -12,8 +12,7 @@ const TokenIssuePage: React.FC<TokenIssuePageProps> = ({ onTokenIssued }) => {
     e.preventDefault();
     setError('');
     try {
-      const apiUrl = import.meta.env.VITE_API_URL;
-      const res = await fetch(`${apiUrl}/tokens`, {
+      const res = await fetch(`api/tokens`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ namespace }),
