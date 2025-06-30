@@ -1,10 +1,14 @@
 [
   {
-    "pattern": "POST /tokens",
-    "auth": false
+    "pattern": "POST /api/tokens",
+    "issue_token": true,
+    "verify_token": false,
+    "proxy": false
   },
   {
-    "pattern": "/",
-    "auth": true
+    "pattern": "/api",
+    "issue_token": false,
+    "verify_token": true,
+    "proxy": true
   }
 ]

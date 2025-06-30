@@ -37,8 +37,10 @@ var (
 )
 
 type Route struct {
-	Pattern string `json:"pattern"`
-	Auth    bool   `json:"auth"`
+	Pattern     string `json:"pattern"`
+	IssueToken  bool   `json:"issue_token"`
+	VerifyToken bool   `json:"verify_token"`
+	Proxy       bool   `json:"proxy"`
 }
 
 var (
@@ -153,11 +155,18 @@ func main() {
 
 	mux := http.NewServeMux()
 	for _, route := range routes {
-		if route.Auth {
-			mux.Handle(route.Pattern, otelhttp.NewHandler(http.HandlerFunc(authHandler), route.Pattern))
-		} else {
-			mux.Handle(route.Pattern, otelhttp.NewHandler(http.HandlerFunc(handler), route.Pattern))
+		handler := nopHandler()
+		if route.Proxy {
+			handler = proxy(handler)
 		}
+		if route.VerifyToken {
+			handler = tokenVerify(handler)
+		}
+		if route.IssueToken {
+			handler = issueToken(handler)
+		}
+
+		mux.Handle(route.Pattern, otelhttp.NewHandler(handler, route.Pattern))
 	}
 
 	http.ListenAndServe(fmt.Sprintf(":%s", port), mux)
@@ -168,96 +177,117 @@ type VerifyTokenResponse struct {
 	Error     string `json:"error"`
 }
 
-// token の検証, webapp へリクエスト送信
-func authHandler(w http.ResponseWriter, r *http.Request) {
+type contextKeyNamespace struct{}
 
-	// トークン検証
-	auth_url.Path = path.Join(auth_url.Path, "tokens")
-	defer func() {
-		auth_url.Path = ""
-	}()
-	req, err := http.NewRequest(http.MethodGet, auth_url.String(), nil)
-	if err != nil {
-		slog.Error(err.Error())
-		writeJSON(w, http.StatusInternalServerError, map[string]string{"message": err.Error()})
-		return
-	}
-	// Authorization ヘッダが付いているはず
-	// トークン検証 API につけて送信
-	req.Header = r.Header
-	resp, err := http.DefaultClient.Do(req)
-	if err != nil {
-		slog.Error(err.Error())
-		writeJSON(w, http.StatusInternalServerError, map[string]string{"message": err.Error()})
-		return
-	}
-	defer resp.Body.Close()
-	_body, err := io.ReadAll(resp.Body)
-	if err != nil {
-		slog.Error(err.Error())
-		writeJSON(w, http.StatusInternalServerError, map[string]string{"message": err.Error()})
-		return
-	}
-	var verifyTokenResponse VerifyTokenResponse
-	if err := json.Unmarshal(_body, &verifyTokenResponse); err != nil {
-		slog.Error(err.Error())
-		writeJSON(w, http.StatusInternalServerError, map[string]string{"message": err.Error()})
-		return
-	}
-	if resp.StatusCode >= 400 {
-		slog.Error("トークン検証に失敗しました", slog.String("error", verifyTokenResponse.Error))
-		writeJSON(w, resp.StatusCode, map[string]string{"message": verifyTokenResponse.Error})
-		return
-	}
+func tokenVerify(next http.Handler) http.Handler {
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 
-	// トークン検証が成功したらアプリケーションにリクエスト送信
-	// 元のリクエストパスに /api/{namespace} をつける
-	app_url.Path = path.Join(app_url.Path, "api", verifyTokenResponse.Namespace, r.URL.Path)
-	defer func() {
-		app_url.Path = ""
-	}()
-	req, err = http.NewRequest(r.Method, app_url.String(), r.Body)
-	if err != nil {
-		slog.Error(err.Error())
-		writeJSON(w, http.StatusInternalServerError, map[string]string{"message": err.Error()})
-		return
-	}
-	resp, err = http.DefaultClient.Do(req)
-	if err != nil {
-		slog.Error(err.Error())
-		writeJSON(w, http.StatusInternalServerError, map[string]string{"message": err.Error()})
-		return
-	}
+		// トークン検証
+		auth_url.Path = path.Join(auth_url.Path, "tokens")
+		defer func() {
+			auth_url.Path = ""
+		}()
+		req, err := http.NewRequest(http.MethodGet, auth_url.String(), nil)
+		if err != nil {
+			slog.Error(err.Error())
+			writeJSON(w, http.StatusInternalServerError, map[string]string{"message": err.Error()})
+			return
+		}
+		// Authorization ヘッダが付いているはず
+		// トークン検証 API につけて送信
+		req.Header = r.Header
+		resp, err := http.DefaultClient.Do(req)
+		if err != nil {
+			slog.Error(err.Error())
+			writeJSON(w, http.StatusInternalServerError, map[string]string{"message": err.Error()})
+			return
+		}
+		defer resp.Body.Close()
+		_body, err := io.ReadAll(resp.Body)
+		if err != nil {
+			slog.Error(err.Error())
+			writeJSON(w, http.StatusInternalServerError, map[string]string{"message": err.Error()})
+			return
+		}
+		var verifyTokenResponse VerifyTokenResponse
+		if err := json.Unmarshal(_body, &verifyTokenResponse); err != nil {
+			slog.Error(err.Error())
+			writeJSON(w, http.StatusInternalServerError, map[string]string{"message": err.Error()})
+			return
+		}
+		if resp.StatusCode >= 400 {
+			slog.Error("トークン検証に失敗しました", slog.String("error", verifyTokenResponse.Error))
+			writeJSON(w, resp.StatusCode, map[string]string{"message": verifyTokenResponse.Error})
+			return
+		}
 
-	w.WriteHeader(resp.StatusCode)
-	io.Copy(w, resp.Body)
+		next.ServeHTTP(w, r.WithContext(context.WithValue(r.Context(), contextKeyNamespace{}, verifyTokenResponse.Namespace)))
+	})
 }
 
-// token 発行のみ
-func handler(w http.ResponseWriter, r *http.Request) {
+func proxy(next http.Handler) http.Handler {
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		next.ServeHTTP(w, r)
 
-	// トークン発行
-	auth_url.Path = path.Join(auth_url.Path, "tokens")
-	defer func() {
-		auth_url.Path = ""
-	}()
-	req, err := http.NewRequest(http.MethodPost, auth_url.String(), r.Body)
-	if err != nil {
-		slog.Error(err.Error())
-		writeJSON(w, http.StatusInternalServerError, map[string]string{"message": err.Error()})
-		return
-	}
-	req.Header = r.Header
-	resp, err := http.DefaultClient.Do(req)
-	if err != nil {
-		slog.Error(err.Error())
-		writeJSON(w, http.StatusInternalServerError, map[string]string{"message": err.Error()})
-		return
-	}
+		// proxy するには token 検証が必要
+		namespace := r.Context().Value(contextKeyNamespace{}).(string)
 
-	// そのままレスポンスを返す
-	w.WriteHeader(resp.StatusCode)
-	io.Copy(w, resp.Body)
+		// トークン検証が成功したらアプリケーションにリクエスト送信
+		// 元のリクエストパスに /api/{namespace} をつける
+		app_url.Path = path.Join(app_url.Path, "api", namespace, r.URL.Path)
+		defer func() {
+			app_url.Path = ""
+		}()
+		req, err := http.NewRequest(r.Method, app_url.String(), r.Body)
+		if err != nil {
+			slog.Error(err.Error())
+			writeJSON(w, http.StatusInternalServerError, map[string]string{"message": err.Error()})
+			return
+		}
+		resp, err := http.DefaultClient.Do(req)
+		if err != nil {
+			slog.Error(err.Error())
+			writeJSON(w, http.StatusInternalServerError, map[string]string{"message": err.Error()})
+			return
+		}
+
+		w.WriteHeader(resp.StatusCode)
+		io.Copy(w, resp.Body)
+	})
+}
+
+func issueToken(next http.Handler) http.Handler {
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		next.ServeHTTP(w, r)
+
+		// トークン発行
+		auth_url.Path = path.Join(auth_url.Path, "tokens")
+		defer func() {
+			auth_url.Path = ""
+		}()
+		req, err := http.NewRequest(http.MethodPost, auth_url.String(), r.Body)
+		if err != nil {
+			slog.Error(err.Error())
+			writeJSON(w, http.StatusInternalServerError, map[string]string{"message": err.Error()})
+			return
+		}
+		req.Header = r.Header
+		resp, err := http.DefaultClient.Do(req)
+		if err != nil {
+			slog.Error(err.Error())
+			writeJSON(w, http.StatusInternalServerError, map[string]string{"message": err.Error()})
+			return
+		}
+
+		// そのままレスポンスを返す
+		w.WriteHeader(resp.StatusCode)
+		io.Copy(w, resp.Body)
+	})
+}
+
+func nopHandler() http.Handler {
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+	})
 }
 
 func writeJSON(w http.ResponseWriter, status int, v interface{}) {
