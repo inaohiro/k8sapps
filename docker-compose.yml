@@ -16,3 +16,9 @@ services:
       context: ./webapp
       dockerfile: ../dockerfiles/Dockerfile.go
     image: webapp
+
+  nginx:
+    build:
+      context: ./frontend
+      dockerfile: ../dockerfiles/Dockerfile.nginx
+    image: nginx
