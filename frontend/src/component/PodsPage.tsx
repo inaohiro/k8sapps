@@ -1,11 +1,19 @@
 import React, { useEffect, useState } from 'react';
-import { useToken } from './hooks/useToken';
+import { useToken } from '../hooks/useToken';
 
-const PodsPage = () => {
-  const [pods, setPods] = useState([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
-  const {token} = useToken();
+interface Pod {
+  id: string;
+  name: string;
+  status: string;
+  image: string;
+  created_at: string;
+}
+
+const PodsPage: React.FC = () => {
+  const [pods, setPods] = useState<Pod[]>([]);
+  const [loading, setLoading] = useState<boolean>(true);
+  const [error, setError] = useState<string | null>(null);
+  const { token } = useToken();
 
   useEffect(() => {
     fetch(`/api/pods`, {
@@ -17,15 +25,15 @@ const PodsPage = () => {
         if (!res.ok) throw new Error('Failed to fetch pods');
         return res.json();
       })
-      .then((data) => {
+      .then((data: Pod[]) => {
         setPods(data);
         setLoading(false);
       })
-      .catch((err) => {
+      .catch((err: Error) => {
         setError(err.message);
         setLoading(false);
       });
-  }, []);
+  }, [token]);
 
   if (loading) return <div>Loading...</div>;
   if (error) return <div>Error: {error}</div>;
@@ -36,7 +44,7 @@ const PodsPage = () => {
       <ul>
         {pods.map((pod) => (
           <li key={pod.id}>
-            <strong>{pod.name}</strong> (Status: {pod.status}, Node: {pod.node})
+            <strong>{pod.name}</strong> (Status: {pod.status}, Image: {pod.image}, Created At: {pod.created_at})
           </li>
         ))}
       </ul>

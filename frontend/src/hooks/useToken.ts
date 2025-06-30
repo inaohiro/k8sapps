@@ -6,12 +6,10 @@ function getCookie(name: string): string | null {
 }
 
 export function useToken() {
-  const [token, setToken] = useState(() => getCookie('token'));
+  const token = getCookie('token');
+  const setToken = (token: string) => {
+    document.cookie = `token=${token}; path=/`;
+  }
 
-  // cookieのtokenを再取得するための関数
-  const refresh = useCallback(() => {
-    setToken(getCookie('token'));
-  }, []);
-
-  return { token, hasToken: !!token, refresh };
+  return { token, setToken } as const;
 }

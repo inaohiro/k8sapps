@@ -1,13 +1,37 @@
-import React, { useState } from 'react';
-import { useToken } from './hooks/useToken';
+import React, { useEffect, useState } from 'react';
+import { useToken } from '../hooks/useToken';
+
+interface Image {
+  name: string;
+  tag: string;
+}
 
 const DeploymentCreatePage: React.FC = () => {
   const [name, setName] = useState('');
   const [image, setImage] = useState('');
-  const [status, setStatus] = useState('');
+  const [images, setImages] = useState<Image[]>([]);
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState(false);
   const {token} = useToken();
+
+  useEffect(() => {
+    fetch('/api/images', {
+      headers: {
+        "Authorization": `Bearer ${token}`
+      }
+    })
+      .then((res) => {
+        if (!res.ok) throw new Error('Failed to fetch images');
+        return res.json();
+      })
+      .then((data: Image[]) => {
+        setImages(data);
+        if (data.length > 0) setImage(`${data[0].name}:${data[0].tag}`);
+      })
+      .catch((err: Error) => {
+        setError(err.message);
+      });
+  }, [token]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -19,13 +43,12 @@ const DeploymentCreatePage: React.FC = () => {
         headers: { 'Content-Type': 'application/json',
           "Authorization": `Bearer ${token}`
          },
-        body: JSON.stringify({ name, image, status }),
+        body: JSON.stringify({ name, image }),
       });
       if (!res.ok) throw new Error('Failed to create deployment');
       setSuccess(true);
       setName('');
-      setImage('');
-      setStatus('');
+      setImage(images.length > 0 ? `${images[0].name}:${images[0].tag}` : '');
     } catch (err: any) {
       setError(err.message);
     }
@@ -42,12 +65,13 @@ const DeploymentCreatePage: React.FC = () => {
         </div>
         <div style={{ marginBottom: 12 }}>
           <label>イメージ<br />
-            <input value={image} onChange={e => setImage(e.target.value)} required />
-          </label>
-        </div>
-        <div style={{ marginBottom: 12 }}>
-          <label>ステータス<br />
-            <input value={status} onChange={e => setStatus(e.target.value)} />
+            <select value={image} onChange={e => setImage(e.target.value)} required>
+              {images.map(img => (
+                <option key={`${img.name}:${img.tag}`} value={`${img.name}:${img.tag}`}>
+                  {img.name}:{img.tag}
+                </option>
+              ))}
+            </select>
           </label>
         </div>
         <button type="submit">作成</button>

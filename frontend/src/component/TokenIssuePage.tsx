@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { useIssueToken } from '../hooks/useIssueToken';
 
 interface TokenIssuePageProps {
   onTokenIssued: () => void;
@@ -6,23 +7,17 @@ interface TokenIssuePageProps {
 
 const TokenIssuePage: React.FC<TokenIssuePageProps> = ({ onTokenIssued }) => {
   const [namespace, setNamespace] = useState('');
-  const [error, setError] = useState('');
+  const { issueToken, loading, error } = useIssueToken();
+  const [localError, setLocalError] = useState('');
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    setError('');
-    try {
-      const res = await fetch(`api/tokens`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ namespace }),
-      });
-      if (!res.ok) throw new Error('トークン発行に失敗しました');
-      const data = await res.json();
-      document.cookie = `token=${data.token}; path=/`;
+    setLocalError('');
+    const token = await issueToken(namespace);
+    if (token) {
       onTokenIssued();
-    } catch (err: any) {
-      setError(err.message);
+    } else {
+      setLocalError(error || '');
     }
   };
 
@@ -34,9 +29,9 @@ const TokenIssuePage: React.FC<TokenIssuePageProps> = ({ onTokenIssued }) => {
           Namespace:
           <input value={namespace} onChange={e => setNamespace(e.target.value)} required />
         </label>
-        <button type="submit">発行</button>
+        <button type="submit" disabled={loading}>発行</button>
       </form>
-      {error && <div style={{color: 'red'}}>{error}</div>}
+      {(localError || error) && <div style={{color: 'red'}}>{localError || error}</div>}
     </div>
   );
 };

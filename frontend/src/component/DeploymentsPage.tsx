@@ -1,5 +1,7 @@
+import { useSetAtom } from 'jotai';
 import React, { useEffect, useState } from 'react';
-import { useToken } from './hooks/useToken';
+import { pageAtom } from 'src/store/store';
+import { useToken } from '../hooks/useToken';
 
 interface Deployment {
   id: string;
@@ -13,6 +15,7 @@ const DeploymentsPage: React.FC = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const { token } = useToken()
+  const setPageState  = useSetAtom(pageAtom);
 
   useEffect(() => {
     fetch(`/api/deployments`, {
@@ -42,7 +45,7 @@ const DeploymentsPage: React.FC = () => {
       <h1>Deployments</h1>
       <button
         onClick={() => {
-          window.location.href = '/deployments/new';
+          setPageState({type: 'deployments-create' })
         }}
         style={{ marginBottom: '1em' }}
       >

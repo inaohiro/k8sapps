@@ -1,11 +1,27 @@
 import React, { useEffect, useState } from 'react';
-import { useToken } from './hooks/useToken';
+import { useToken } from '../hooks/useToken';
 
-const ServicesPage = () => {
-  const [services, setServices] = useState([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
-  const {token} = useToken();
+interface ServicePort {
+  name?: string;
+  port: number;
+  targetPort: number;
+  protocol: string;
+}
+
+interface Service {
+  id: string;
+  name: string;
+  type: string;
+  clusterIP: string;
+  ports: ServicePort[];
+  created_at: string;
+}
+
+const ServicesPage: React.FC = () => {
+  const [services, setServices] = useState<Service[]>([]);
+  const [loading, setLoading] = useState<boolean>(true);
+  const [error, setError] = useState<string | null>(null);
+  const { token } = useToken();
 
   useEffect(() => {
     fetch(`/api/services`, {
@@ -17,15 +33,15 @@ const ServicesPage = () => {
         if (!res.ok) throw new Error('Failed to fetch services');
         return res.json();
       })
-      .then((data) => {
+      .then((data: Service[]) => {
         setServices(data);
         setLoading(false);
       })
-      .catch((err) => {
+      .catch((err: Error) => {
         setError(err.message);
         setLoading(false);
       });
-  }, []);
+  }, [token]);
 
   if (loading) return <div>Loading...</div>;
   if (error) return <div>Error: {error}</div>;
