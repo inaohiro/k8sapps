@@ -1,5 +1,5 @@
-import React, { useEffect, useState } from 'react';
-import { useToken } from '../hooks/useToken';
+import React, { useEffect, useState } from "react";
+import { useToken } from "../hooks/useToken";
 
 interface ServicePort {
   name?: string;
@@ -26,11 +26,11 @@ const ServicesPage: React.FC = () => {
   useEffect(() => {
     fetch(`/api/services`, {
       headers: {
-        "Authorization": `Bearer ${token}`
-      }
+        Authorization: `Bearer ${token}`,
+      },
     })
       .then((res) => {
-        if (!res.ok) throw new Error('Failed to fetch services');
+        if (!res.ok) throw new Error("Failed to fetch services");
         return res.json();
       })
       .then((data: Service[]) => {

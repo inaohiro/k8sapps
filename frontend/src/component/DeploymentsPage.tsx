@@ -1,7 +1,7 @@
-import { useSetAtom } from 'jotai';
-import React, { useEffect, useState } from 'react';
-import { useToken } from '../hooks/useToken';
-import { pageAtom } from '../store/store';
+import { useSetAtom } from "jotai";
+import React, { useEffect, useState } from "react";
+import { useToken } from "../hooks/useToken";
+import { pageAtom } from "../store/store";
 
 interface Deployment {
   id: string;
@@ -14,17 +14,17 @@ const DeploymentsPage: React.FC = () => {
   const [deployments, setDeployments] = useState<Deployment[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const { token } = useToken()
-  const setPageState  = useSetAtom(pageAtom);
+  const { token } = useToken();
+  const setPageState = useSetAtom(pageAtom);
 
   useEffect(() => {
     fetch(`/api/deployments`, {
       headers: {
-        "Authorization": `Bearer ${token}`
-      }
+        Authorization: `Bearer ${token}`,
+      },
     })
       .then((res) => {
-        if (!res.ok) throw new Error('Failed to fetch deployments');
+        if (!res.ok) throw new Error("Failed to fetch deployments");
         return res.json();
       })
       .then((data) => {
@@ -45,9 +45,9 @@ const DeploymentsPage: React.FC = () => {
       <h1>Deployments</h1>
       <button
         onClick={() => {
-          setPageState({type: 'deployments-create' })
+          setPageState({ type: "deployments-create" });
         }}
-        style={{ marginBottom: '1em' }}
+        style={{ marginBottom: "1em" }}
       >
         + 新規 Deployment 作成
       </button>

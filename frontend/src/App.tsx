@@ -1,13 +1,12 @@
-import { useAtom } from 'jotai';
-import React, { useEffect } from 'react';
-import { AppPage } from './App.page';
-import DeploymentCreatePage from './component/DeploymentCreatePage';
-import DeploymentsPage from './component/DeploymentsPage';
-import PodsPage from './component/PodsPage';
-import ServicesPage from './component/ServicesPage';
-import { useIssueToken } from './hooks/useIssueToken';
-import { pageAtom } from './store/store';
-
+import { useAtom } from "jotai";
+import React, { useEffect } from "react";
+import { AppPage } from "./App.page";
+import DeploymentCreatePage from "./component/DeploymentCreatePage";
+import DeploymentsPage from "./component/DeploymentsPage";
+import PodsPage from "./component/PodsPage";
+import ServicesPage from "./component/ServicesPage";
+import { useIssueToken } from "./hooks/useIssueToken";
+import { pageAtom } from "./store/store";
 
 export function App() {
   const { token, issueToken, loading, error } = useIssueToken();
@@ -17,40 +16,40 @@ export function App() {
   // token があれば URL から表示するページを推測
   useEffect(() => {
     if (token !== null) {
-      setPage({ type: 'token-issue' });
+      setPage({ type: "token-issue" });
       return;
     }
 
     const path = window.location.pathname;
-    if (path.startsWith('/deployments')) {
-      if (path === '/deployments/new') {
-        setPage({ type: 'deployments-create' });
-      } else if (path.startsWith('/deployments/')) {
-        const id = path.split('/')[2];
-        setPage({ type: 'deployments-detail', id });
+    if (path.startsWith("/deployments")) {
+      if (path === "/deployments/new") {
+        setPage({ type: "deployments-create" });
+      } else if (path.startsWith("/deployments/")) {
+        const id = path.split("/")[2];
+        setPage({ type: "deployments-detail", id });
       } else {
-        setPage({ type: 'deployments-list' });
+        setPage({ type: "deployments-list" });
       }
-    } else if (path.startsWith('/services')) {
-      if (path === '/services/new') {
-        setPage({ type: 'services-create' });
-      } else if (path.startsWith('/services/')) {
-        const id = path.split('/')[2];
-        setPage({ type: 'services-detail', id });
+    } else if (path.startsWith("/services")) {
+      if (path === "/services/new") {
+        setPage({ type: "services-create" });
+      } else if (path.startsWith("/services/")) {
+        const id = path.split("/")[2];
+        setPage({ type: "services-detail", id });
       } else {
-        setPage({ type: 'services-list' });
+        setPage({ type: "services-list" });
       }
-    } else if (path.startsWith('/pods')) {
-      if (path === '/pods/new') {
-        setPage({ type: 'pods-create' });
-      } else if (path.startsWith('/pods/')) {     
-        const id = path.split('/')[2];
-        setPage({ type: 'pods-detail', id });
+    } else if (path.startsWith("/pods")) {
+      if (path === "/pods/new") {
+        setPage({ type: "pods-create" });
+      } else if (path.startsWith("/pods/")) {
+        const id = path.split("/")[2];
+        setPage({ type: "pods-detail", id });
       } else {
-        setPage({ type: 'pods-list' });
+        setPage({ type: "pods-list" });
       }
     } else {
-      setPage({ type: 'deployments-list' });
+      setPage({ type: "deployments-list" });
     }
   }, []);
 
@@ -63,16 +62,16 @@ export function App() {
 
   let content: React.ReactNode = null;
   switch (page.type) {
-    case 'deployments-list':
+    case "deployments-list":
       content = <DeploymentsPage />;
       break;
-    case 'deployments-create':
+    case "deployments-create":
       content = <DeploymentCreatePage />;
       break;
-    case 'services-list':
+    case "services-list":
       content = <ServicesPage />;
       break;
-    case 'pods-list':
+    case "pods-list":
       content = <PodsPage />;
       break;
     // TODO: 他の画面（作成・詳細）も同様に分岐を追加

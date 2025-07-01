@@ -1,5 +1,5 @@
-import React, { useEffect, useState } from 'react';
-import { useToken } from '../hooks/useToken';
+import React, { useEffect, useState } from "react";
+import { useToken } from "../hooks/useToken";
 
 interface Image {
   name: string;
@@ -7,21 +7,21 @@ interface Image {
 }
 
 const DeploymentCreatePage: React.FC = () => {
-  const [name, setName] = useState('');
-  const [image, setImage] = useState('');
+  const [name, setName] = useState("");
+  const [image, setImage] = useState("");
   const [images, setImages] = useState<Image[]>([]);
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState(false);
-  const {token} = useToken();
+  const { token } = useToken();
 
   useEffect(() => {
-    fetch('/api/images', {
+    fetch("/api/images", {
       headers: {
-        "Authorization": `Bearer ${token}`
-      }
+        Authorization: `Bearer ${token}`,
+      },
     })
       .then((res) => {
-        if (!res.ok) throw new Error('Failed to fetch images');
+        if (!res.ok) throw new Error("Failed to fetch images");
         return res.json();
       })
       .then((data: Image[]) => {
@@ -39,16 +39,14 @@ const DeploymentCreatePage: React.FC = () => {
     setSuccess(false);
     try {
       const res = await fetch(`/api/deployments`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json',
-          "Authorization": `Bearer ${token}`
-         },
+        method: "POST",
+        headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}` },
         body: JSON.stringify({ name, image }),
       });
-      if (!res.ok) throw new Error('Failed to create deployment');
+      if (!res.ok) throw new Error("Failed to create deployment");
       setSuccess(true);
-      setName('');
-      setImage(images.length > 0 ? `${images[0].name}:${images[0].tag}` : '');
+      setName("");
+      setImage(images.length > 0 ? `${images[0].name}:${images[0].tag}` : "");
     } catch (err: any) {
       setError(err.message);
     }
@@ -59,14 +57,18 @@ const DeploymentCreatePage: React.FC = () => {
       <h1>新規 Deployment 作成</h1>
       <form onSubmit={handleSubmit} style={{ maxWidth: 400 }}>
         <div style={{ marginBottom: 12 }}>
-          <label>名前<br />
-            <input value={name} onChange={e => setName(e.target.value)} required />
+          <label>
+            名前
+            <br />
+            <input value={name} onChange={(e) => setName(e.target.value)} required />
           </label>
         </div>
         <div style={{ marginBottom: 12 }}>
-          <label>イメージ<br />
-            <select value={image} onChange={e => setImage(e.target.value)} required>
-              {images.map(img => (
+          <label>
+            イメージ
+            <br />
+            <select value={image} onChange={(e) => setImage(e.target.value)} required>
+              {images.map((img) => (
                 <option key={`${img.name}:${img.tag}`} value={`${img.name}:${img.tag}`}>
                   {img.name}:{img.tag}
                 </option>
@@ -76,8 +78,8 @@ const DeploymentCreatePage: React.FC = () => {
         </div>
         <button type="submit">作成</button>
       </form>
-      {error && <div style={{ color: 'red' }}>Error: {error}</div>}
-      {success && <div style={{ color: 'green' }}>Deployment を作成しました</div>}
+      {error && <div style={{ color: "red" }}>Error: {error}</div>}
+      {success && <div style={{ color: "green" }}>Deployment を作成しました</div>}
     </div>
   );
 };

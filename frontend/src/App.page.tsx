@@ -1,13 +1,13 @@
-import React, { useState } from 'react';
+import React, { useState } from "react";
 
 export function AppPage({
   content,
-  handleClick
+  handleClick,
 }: {
-  content: React.ReactNode,
-  handleClick: (namespace: string) => void
+  content: React.ReactNode;
+  handleClick: (namespace: string) => void;
 }) {
-  const [namespace, setNamespace] = useState('');
+  const [namespace, setNamespace] = useState("");
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -16,7 +16,7 @@ export function AppPage({
           type="text"
           placeholder="namespace"
           value={namespace}
-          onChange={e => setNamespace(e.target.value)}
+          onChange={(e) => setNamespace(e.target.value)}
           className="px-2 py-1 border rounded"
           style={{ minWidth: 120 }}
         />
@@ -27,9 +27,7 @@ export function AppPage({
           トークン再発行
         </button>
       </div>
-      <div className="max-w-3xl mx-auto mt-8">
-        {content}
-      </div>
+      <div className="max-w-3xl mx-auto mt-8">{content}</div>
     </div>
   );
 }

@@ -1,5 +1,5 @@
-import React, { useEffect, useState } from 'react';
-import { useToken } from '../hooks/useToken';
+import React, { useEffect, useState } from "react";
+import { useToken } from "../hooks/useToken";
 
 interface Pod {
   id: string;
@@ -18,11 +18,11 @@ const PodsPage: React.FC = () => {
   useEffect(() => {
     fetch(`/api/pods`, {
       headers: {
-        "Authorization": `Bearer ${token}`
-      }
+        Authorization: `Bearer ${token}`,
+      },
     })
       .then((res) => {
-        if (!res.ok) throw new Error('Failed to fetch pods');
+        if (!res.ok) throw new Error("Failed to fetch pods");
         return res.json();
       })
       .then((data: Pod[]) => {
