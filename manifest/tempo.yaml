@@ -25,7 +25,7 @@ data:
         otlp:
           protocols:
             grpc:
-              endpoint: ${env:MY_POD_IP}:4317
+              endpoint: ${MY_POD_IP:-0.0.0.0}:4317
 
     ingester:
       max_block_duration: 5m
@@ -123,12 +123,12 @@ spec:
   selector:
     app: tempo
   ports:
-    - name: grpc
+    - name: otlpgrpc
       port: 4317
       targetPort: 4317
-    - name: http
+    - name: otlphttp
       port: 4318
       targetPort: 4318
-    - name: prometheus
+    - name: http
       port: 3200
       targetPort: 3200
