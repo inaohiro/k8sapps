@@ -9,9 +9,9 @@ data:
       otlp:
         protocols:
           grpc:
-            endpoint: 0.0.0.0:4317
+            endpoint: ${env:MY_POD_IP}:4317
           http:
-            endpoint: 0.0.0.0:4318
+            endpoint: ${env:MY_POD_IP}:4318
     processors:
     extensions:
       health_check: {}
@@ -66,6 +66,11 @@ spec:
               protocol: TCP
             - containerPort: 4318
               protocol: TCP
+          env:
+            - name: MY_POD_IP
+              valueFrom:
+                fieldRef:
+                  fieldPath: status.podIP
           volumeMounts:
             - name: otel-collector-config
               mountPath: /etc/otelcol-contrib/config.yaml

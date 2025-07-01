@@ -25,7 +25,7 @@ data:
         otlp:
           protocols:
             grpc:
-              endpoint: "tempo:4317"
+              endpoint: ${env:MY_POD_IP}:4317
 
     ingester:
       max_block_duration: 5m
@@ -93,6 +93,11 @@ spec:
               protocol: TCP
             - containerPort: 4318
               protocol: TCP
+          env:
+            - name: MY_POD_IP
+              valueFrom:
+                fieldRef:
+                  fieldPath: status.podIP
           volumeMounts:
             - name: tempo-config
               mountPath: /etc/tempo
