@@ -14,12 +14,16 @@ export function App() {
   const [page, setPage] = useAtom(pageAtom);
 
   // 初回レンダリング時に cookie から token を取得
-  // token があれば URL から表示するページを推測
   useEffect(() => {
     if (token !== null) {
       setPage({ type: "token-issue" });
       return;
     }
+  }, []);
+
+  // token があれば URL から表示するページを推測
+  useEffect(() => {
+    if (token === "" || token === null) return;
 
     const path = window.location.pathname;
     if (path.startsWith("/deployments")) {
@@ -52,7 +56,7 @@ export function App() {
     } else {
       setPage({ type: "deployments-list" });
     }
-  }, []);
+  }, [token]);
 
   if (loading) {
     return <div>Loading...</div>;
@@ -75,9 +79,9 @@ export function App() {
     case "pods-list":
       content = <PodsPage />;
       break;
-    // TODO: 他の画面（作成・詳細）も同様に分岐を追加
     case "token-issue":
       return <TokenIssuePage onTokenIssued={() => setPage({type: "deployments-list"})}/>
+    // TODO: 他の画面（作成・詳細）も同様に分岐を追加
     default:
       content = <div>{page.type} Not implemented</div>;
   }
