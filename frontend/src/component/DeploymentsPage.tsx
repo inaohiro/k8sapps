@@ -1,7 +1,7 @@
 import { useSetAtom } from 'jotai';
 import React, { useEffect, useState } from 'react';
-import { pageAtom } from 'src/store/store';
 import { useToken } from '../hooks/useToken';
+import { pageAtom } from '../store/store';
 
 interface Deployment {
   id: string;
