@@ -3,6 +3,7 @@ package main
 import (
 	"context"
 	"fmt"
+	mymiddleware "k8soperation/core/middleware"
 	myotel "k8soperation/core/otel"
 	"k8soperation/deployment"
 	"k8soperation/flavor"
@@ -113,6 +114,8 @@ func main() {
 	r.Use(middleware.Logger)
 	r.Use(middleware.Timeout(10 * time.Second))
 	r.Use(myotel.Middleware)
+	r.Use(mymiddleware.OtelMiddleware)
+	r.Use(mymiddleware.CreateNamespace)
 
 	r.Mount("/api/{namespace}/pods", pod.Routes)
 	r.Mount("/api/{namespace}/deployments", deployment.Routes)

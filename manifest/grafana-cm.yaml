@@ -537,8 +537,7 @@ data:
             },
             "showThresholdLabels": false,
             "showThresholdMarkers": true,
-            "sizing": "auto",
-            "text": {}
+            "sizing": "auto"
           },
           "pluginVersion": "12.0.2",
           "targets": [
@@ -548,7 +547,7 @@ data:
                 "uid": "prometheus"
               },
               "editorMode": "code",
-              "expr": "(sum(traces_spanmetrics_calls_total{service=\"webapp\", span_kind=\"SPAN_KIND_SERVER\"}) - sum(traces_spanmetrics_calls_total{service=\"webapp\", status_code=\"STATUS_CODE_ERROR\", span_kind=\"SPAN_KIND_SERVER\"})) / sum(traces_spanmetrics_calls_total{service=\"webapp\", span_kind=\"SPAN_KIND_SERVER\"}) * 100",
+              "expr": "(sum(traces_spanmetrics_calls_total{span_kind=\"SPAN_KIND_SERVER\"}) - (sum(traces_spanmetrics_calls_total{status_code=\"STATUS_CODE_ERROR\", span_kind=\"SPAN_KIND_SERVER\"}) or vector(0))) / sum(traces_spanmetrics_calls_total{span_kind=\"SPAN_KIND_SERVER\"}) * 100",
               "instant": false,
               "legendFormat": "__auto",
               "range": true,
