@@ -86,6 +86,7 @@ spec:
           args:
             - -config.file
             - /etc/tempo/config.yaml
+            - -config.expand-env=true
           ports:
             - containerPort: 3200
               protocol: TCP
