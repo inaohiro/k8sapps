@@ -170,7 +170,7 @@ data:
                 "uid": "prometheus"
               },
               "editorMode": "code",
-              "expr": "sum(traces_spanmetrics_calls_total{service=\"webapp\", span_kind=\"SPAN_KIND_SERVER\"})",
+              "expr": "sum(traces_spanmetrics_calls_total{span_kind=\"SPAN_KIND_SERVER\"})",
               "instant": false,
               "legendFormat": "__auto",
               "range": true,
@@ -274,7 +274,7 @@ data:
                   "scope": "resource",
                   "tag": "service.name",
                   "value": [
-                    "webapp"
+                    "gateway"
                   ],
                   "valueType": "string"
                 },
@@ -283,15 +283,13 @@ data:
                   "operator": "=~",
                   "scope": "span",
                   "tag": "name",
-                  "value": [
-                    "* /api/*"
-                  ],
+                  "value": [],
                   "valueType": "string"
                 }
               ],
               "limit": 20,
               "metricsQueryType": "range",
-              "query": "{resource.service.name=\"webapp\" && name=~\"\\\\* /api/\\\\*\"}",
+              "query": "{resource.service.name=\"gateway\"}",
               "queryType": "traceql",
               "refId": "A",
               "tableType": "traces"
@@ -354,7 +352,7 @@ data:
                 "uid": "prometheus"
               },
               "editorMode": "code",
-              "expr": "sum(traces_spanmetrics_calls_total{service=\"webapp\", status_code=\"STATUS_CODE_ERROR\", span_kind=\"SPAN_KIND_SERVER\"})",
+              "expr": "sum(traces_spanmetrics_calls_total{status_code=\"STATUS_CODE_ERROR\", span_kind=\"SPAN_KIND_SERVER\"}) or vector(0)",
               "instant": false,
               "legendFormat": "__auto",
               "range": true,
@@ -477,7 +475,7 @@ data:
               ],
               "limit": 20,
               "metricsQueryType": "range",
-              "query": "{resource.service.name=\"webapp\" && status=error && name=~\".*api.*\"}",
+              "query": "{resource.service.name=\"gateway\" && status=error && name=~\".*api.*\"}",
               "queryType": "traceql",
               "refId": "A",
               "tableType": "traces"
