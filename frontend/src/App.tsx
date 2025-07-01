@@ -7,6 +7,7 @@ import PodsPage from "./component/PodsPage";
 import ServicesPage from "./component/ServicesPage";
 import { useIssueToken } from "./hooks/useIssueToken";
 import { pageAtom } from "./store/store";
+import TokenIssuePage from "./component/TokenIssuePage";
 
 export function App() {
   const { token, issueToken, loading, error } = useIssueToken();
@@ -75,8 +76,10 @@ export function App() {
       content = <PodsPage />;
       break;
     // TODO: 他の画面（作成・詳細）も同様に分岐を追加
+    case "token-issue":
+      return <TokenIssuePage onTokenIssued={() => setPage({type: "deployments-list"})}/>
     default:
-      content = <div>Not implemented</div>;
+      content = <div>{page.type} Not implemented</div>;
   }
 
   return <AppPage content={content} handleClick={issueToken} />;
