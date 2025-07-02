@@ -12,7 +12,7 @@ import (
 func OtelMiddleware(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		traceProvider := otel.GetTracerProvider()
-		tracer := traceProvider.Tracer("isucon14", oteltrace.WithInstrumentationVersion("0.1.0"))
+		tracer := traceProvider.Tracer("webapp", oteltrace.WithInstrumentationVersion("0.1.0"))
 
 		opts := []oteltrace.SpanStartOption{
 			oteltrace.WithAttributes(semconv.NetAttributesFromHTTPRequest("tcp", r)...),
@@ -27,7 +27,7 @@ func OtelMiddleware(next http.Handler) http.Handler {
 
 		c := chi.RouteContext(ctx)
 		span.SetName(c.RoutePattern())
-		span.SetAttributes(semconv.HTTPServerAttributesFromHTTPRequest("isucon14", c.RoutePattern(), r)...)
+		span.SetAttributes(semconv.HTTPServerAttributesFromHTTPRequest("webapp", c.RoutePattern(), r)...)
 		span.SetAttributes(semconv.HTTPAttributesFromHTTPStatusCode(myw.status)...)
 
 		spanStatus, spanMessage := semconv.SpanStatusFromHTTPStatusCode(myw.status)
