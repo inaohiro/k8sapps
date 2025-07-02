@@ -188,10 +188,7 @@ func tokenVerify(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 
 		// トークン検証
-		auth_url.Path = path.Join(auth_url.Path, "tokens")
-		defer func() {
-			auth_url.Path = ""
-		}()
+		auth_url.Path = "tokens"
 		req, err := http.NewRequestWithContext(r.Context(), http.MethodGet, auth_url.String(), nil)
 		if err != nil {
 			slog.Error(err.Error())
