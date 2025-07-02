@@ -173,6 +173,10 @@ func main() {
 	http.ListenAndServe(fmt.Sprintf(":%s", port), mux)
 }
 
+var (
+	client = http.Client{Transport: otelhttp.NewTransport(http.DefaultTransport)}
+)
+
 type VerifyTokenResponse struct {
 	Namespace string `json:"namespace"`
 	Error     string `json:"error"`
@@ -182,7 +186,6 @@ type contextKeyNamespace struct{}
 
 func tokenVerify(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		client := http.Client{Transport: otelhttp.NewTransport(http.DefaultTransport)}
 
 		// トークン検証
 		auth_url.Path = path.Join(auth_url.Path, "tokens")
@@ -231,8 +234,6 @@ func proxy(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		next.ServeHTTP(w, r)
 
-		client := http.Client{Transport: otelhttp.NewTransport(http.DefaultTransport)}
-
 		// proxy するには token 検証が必要
 		namespace := r.Context().Value(contextKeyNamespace{}).(string)
 
@@ -263,7 +264,6 @@ func proxy(next http.Handler) http.Handler {
 func issueToken(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		next.ServeHTTP(w, r)
-		client := http.Client{Transport: otelhttp.NewTransport(http.DefaultTransport)}
 
 		// トークン発行
 		auth_url.Path = path.Join(auth_url.Path, "tokens")
