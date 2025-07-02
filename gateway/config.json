@@ -1,14 +1,18 @@
 [
   {
     "pattern": "POST /api/tokens",
-    "issue_token": true,
-    "verify_token": false,
-    "proxy": false
+    "issue_token": true
   },
-  {
-    "pattern": "/api/",
-    "issue_token": false,
-    "verify_token": true,
-    "proxy": true
-  }
+  { "pattern": "POST /api/deployments", "verify_token": true, "proxy": true },
+  { "pattern": "GET /api/deployments", "verify_token": true, "proxy": true },
+  { "pattern": "GET /api/deployments/{deployment_name}", "verify_token": true, "proxy": true },
+  { "pattern": "DELETE /api/deployments/{deployment_name}", "verify_token": true, "proxy": true },
+  { "pattern": "POST /api/services", "verify_token": true, "proxy": true },
+  { "pattern": "GET /api/services", "verify_token": true, "proxy": true },
+  { "pattern": "GET /api/services/{service_name}", "verify_token": true, "proxy": true },
+  { "pattern": "DELETE /api/services/{service_name}", "verify_token": true, "proxy": true },
+  { "pattern": "POST /api/pods", "verify_token": true, "proxy": true },
+  { "pattern": "GET /api/pods", "verify_token": true, "proxy": true },
+  { "pattern": "GET /api/pods/{pod_name}", "verify_token": true, "proxy": true },
+  { "pattern": "DELETE /api/pods/{pod_name}", "verify_token": true, "proxy": true }
 ]
