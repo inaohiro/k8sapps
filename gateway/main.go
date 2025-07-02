@@ -192,7 +192,7 @@ func tokenVerify(next http.Handler) http.Handler {
 		defer func() {
 			auth_url.Path = ""
 		}()
-		req, err := http.NewRequest(http.MethodGet, auth_url.String(), nil)
+		req, err := http.NewRequestWithContext(r.Context(), http.MethodGet, auth_url.String(), nil)
 		if err != nil {
 			slog.Error(err.Error())
 			writeJSON(w, http.StatusInternalServerError, map[string]string{"message": err.Error()})
@@ -243,7 +243,7 @@ func proxy(next http.Handler) http.Handler {
 		defer func() {
 			app_url.Path = ""
 		}()
-		req, err := http.NewRequest(r.Method, app_url.String(), r.Body)
+		req, err := http.NewRequestWithContext(r.Context(), r.Method, app_url.String(), r.Body)
 		if err != nil {
 			slog.Error(err.Error())
 			writeJSON(w, http.StatusInternalServerError, map[string]string{"message": err.Error()})
@@ -270,7 +270,7 @@ func issueToken(next http.Handler) http.Handler {
 		defer func() {
 			auth_url.Path = ""
 		}()
-		req, err := http.NewRequest(http.MethodPost, auth_url.String(), r.Body)
+		req, err := http.NewRequestWithContext(r.Context(), http.MethodPost, auth_url.String(), r.Body)
 		if err != nil {
 			slog.Error(err.Error())
 			writeJSON(w, http.StatusInternalServerError, map[string]string{"message": err.Error()})
