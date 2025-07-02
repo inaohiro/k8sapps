@@ -182,6 +182,7 @@ type contextKeyNamespace struct{}
 
 func tokenVerify(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		client := http.Client{Transport: otelhttp.NewTransport(http.DefaultTransport)}
 
 		// トークン検証
 		auth_url.Path = path.Join(auth_url.Path, "tokens")
@@ -197,7 +198,7 @@ func tokenVerify(next http.Handler) http.Handler {
 		// Authorization ヘッダが付いているはず
 		// トークン検証 API につけて送信
 		req.Header = r.Header
-		resp, err := http.DefaultClient.Do(req)
+		resp, err := client.Do(req)
 		if err != nil {
 			slog.Error(err.Error())
 			writeJSON(w, http.StatusInternalServerError, map[string]string{"message": err.Error()})
@@ -230,6 +231,8 @@ func proxy(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		next.ServeHTTP(w, r)
 
+		client := http.Client{Transport: otelhttp.NewTransport(http.DefaultTransport)}
+
 		// proxy するには token 検証が必要
 		namespace := r.Context().Value(contextKeyNamespace{}).(string)
 
@@ -245,7 +248,7 @@ func proxy(next http.Handler) http.Handler {
 			writeJSON(w, http.StatusInternalServerError, map[string]string{"message": err.Error()})
 			return
 		}
-		resp, err := http.DefaultClient.Do(req)
+		resp, err := client.Do(req)
 		if err != nil {
 			slog.Error(err.Error())
 			writeJSON(w, http.StatusInternalServerError, map[string]string{"message": err.Error()})
@@ -260,6 +263,7 @@ func proxy(next http.Handler) http.Handler {
 func issueToken(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		next.ServeHTTP(w, r)
+		client := http.Client{Transport: otelhttp.NewTransport(http.DefaultTransport)}
 
 		// トークン発行
 		auth_url.Path = path.Join(auth_url.Path, "tokens")
@@ -273,7 +277,7 @@ func issueToken(next http.Handler) http.Handler {
 			return
 		}
 		req.Header = r.Header
-		resp, err := http.DefaultClient.Do(req)
+		resp, err := client.Do(req)
 		if err != nil {
 			slog.Error(err.Error())
 			writeJSON(w, http.StatusInternalServerError, map[string]string{"message": err.Error()})
