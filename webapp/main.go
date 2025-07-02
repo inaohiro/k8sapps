@@ -20,6 +20,7 @@ import (
 	"github.com/go-chi/chi/v5"
 	"github.com/go-chi/chi/v5/middleware"
 
+	"go.opentelemetry.io/contrib/instrumentation/net/http/otelhttp"
 	"go.opentelemetry.io/otel"
 	"go.opentelemetry.io/otel/exporters/otlp/otlpmetric/otlpmetricgrpc"
 	"go.opentelemetry.io/otel/exporters/otlp/otlptrace/otlptracegrpc"
@@ -112,14 +113,18 @@ func main() {
 	r.Use(middleware.RequestID)
 	r.Use(middleware.Logger)
 	r.Use(middleware.Timeout(10 * time.Second))
-	r.Use(mymiddleware.OtelMiddleware)
 	r.Use(mymiddleware.CreateNamespace)
 
-	r.Mount("/api/{namespace}/pods", pod.Routes)
-	r.Mount("/api/{namespace}/deployments", deployment.Routes)
-	r.Mount("/api/{namespace}/services", service.Routes)
-	r.Mount("/api/{namespace}/images", image.Routes)
-	r.Mount("/api/{namespace}/flavors", flavor.Routes)
+	patternRouteMap := map[string]http.Handler{
+		"/api/{namespace}/pods":        pod.Routes,
+		"/api/{namespace}/deployments": deployment.Routes,
+		"/api/{namespace}/services":    service.Routes,
+		"/api/{namespace}/images":      image.Routes,
+		"/api/{namespace}/flavors":     flavor.Routes,
+	}
+	for pattern, handler := range patternRouteMap {
+		r.Mount(pattern, otelhttp.NewHandler(handler, pattern))
+	}
 
 	port := os.Getenv("HTTP_PORT")
 	if port == "" {
