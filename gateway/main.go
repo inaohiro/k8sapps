@@ -237,9 +237,6 @@ func proxy(next http.Handler) http.Handler {
 		// トークン検証が成功したらアプリケーションにリクエスト送信
 		// 元のリクエストパスに /api/{namespace} をつける
 		app_url.Path = path.Join("api", namespace, strings.Join(strings.Split(r.URL.Path, "/")[2:], "/"))
-		defer func() {
-			app_url.Path = ""
-		}()
 		req, err := http.NewRequestWithContext(r.Context(), r.Method, app_url.String(), r.Body)
 		if err != nil {
 			slog.Error(err.Error())
