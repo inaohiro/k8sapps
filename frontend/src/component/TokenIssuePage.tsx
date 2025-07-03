@@ -1,29 +1,32 @@
 import React, { useState } from "react";
-import { useIssueToken } from "../hooks/useIssueToken";
 
-interface TokenIssuePageProps {
+export function TokenIssuePage({
+  issueToken,
+  loading,
+  onTokenIssued,
+}: {
+  issueToken: (namespace: string) => Promise<string | null>;
+  loading: boolean;
   onTokenIssued: () => void;
-}
-
-const TokenIssuePage: React.FC<TokenIssuePageProps> = ({ onTokenIssued }) => {
+}) {
   const [namespace, setNamespace] = useState("");
-  const { issueToken, loading, error } = useIssueToken();
-  const [localError, setLocalError] = useState("");
+  const [err, setError] = useState<string | null>(null);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    setLocalError("");
     const token = await issueToken(namespace);
     if (token) {
       onTokenIssued();
     } else {
-      setLocalError(error || "");
+      setError("失敗しました");
     }
   };
 
+  if (err) return <div>{err}</div>;
+
   return (
-    <div>
-      <h2>トークン発行</h2>
+    <>
+      <h2>Namespace を指定してください</h2>
       <form onSubmit={handleSubmit}>
         <label>
           Namespace:
@@ -33,9 +36,6 @@ const TokenIssuePage: React.FC<TokenIssuePageProps> = ({ onTokenIssued }) => {
           発行
         </button>
       </form>
-      {(localError || error) && <div style={{ color: "red" }}>{localError || error}</div>}
-    </div>
+    </>
   );
-};
-
-export default TokenIssuePage;
+}

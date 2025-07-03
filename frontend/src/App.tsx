@@ -7,7 +7,9 @@ import PodsPage from "./component/PodsPage";
 import ServicesPage from "./component/ServicesPage";
 import { useIssueToken } from "./hooks/useIssueToken";
 import { pageAtom } from "./store/store";
-import TokenIssuePage from "./component/TokenIssuePage";
+import { TokenIssuePage } from "./component/TokenIssuePage";
+import { GlobalHeader } from "./GlobalHeader.page";
+import { Page } from "./Page.page";
 
 export function App() {
   const { token, issueToken, loading, error } = useIssueToken();
@@ -80,11 +82,24 @@ export function App() {
       content = <PodsPage />;
       break;
     case "token-issue":
-      return <TokenIssuePage onTokenIssued={() => setPage({type: "deployments-list"})}/>
+      return (
+        <TokenIssuePage
+          issueToken={issueToken}
+          loading={loading}
+          onTokenIssued={() => setPage({ type: "deployments-list" })}
+        />
+      );
     // TODO: 他の画面（作成・詳細）も同様に分岐を追加
     default:
       content = <div>{page.type} Not implemented</div>;
   }
 
-  return <AppPage content={content} handleClick={issueToken} />;
+  return (
+    <>
+      <AppPage>
+        <GlobalHeader issueToken={issueToken} setPage={setPage} />
+        <Page>{content}</Page>
+      </AppPage>
+    </>
+  );
 }
