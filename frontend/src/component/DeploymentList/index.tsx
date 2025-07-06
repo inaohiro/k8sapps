@@ -56,7 +56,7 @@ export function DeploymentList() {
           <li key={dep.id} style={{ display: "flex", alignItems: "center", gap: 8 }}>
             <a
               href="#"
-              onClick={e => {
+              onClick={(e) => {
                 e.preventDefault();
                 setPage({ type: "deployments-detail", id: dep.id });
               }}
@@ -64,9 +64,19 @@ export function DeploymentList() {
             >
               {dep.name}
             </a>
-            <span>(Image: {dep.image}, Status: {dep.status})</span>
+            <span>
+              (Image: {dep.image}, Status: {dep.status})
+            </span>
             <button
-              style={{ marginLeft: 8, color: "#fff", background: "#d32f2f", border: "none", borderRadius: 4, padding: "2px 8px", cursor: "pointer" }}
+              style={{
+                marginLeft: 8,
+                color: "#fff",
+                background: "#d32f2f",
+                border: "none",
+                borderRadius: 4,
+                padding: "2px 8px",
+                cursor: "pointer",
+              }}
               onClick={async (e) => {
                 e.stopPropagation();
                 setLoading(true);
@@ -91,4 +101,4 @@ export function DeploymentList() {
       </ul>
     </div>
   );
-};
+}

@@ -41,13 +41,15 @@ export function PodCreate() {
       <form onSubmit={handleSubmit} style={{ maxWidth: 400 }}>
         <div style={{ marginBottom: 12 }}>
           <label>
-            名前<br />
+            名前
+            <br />
             <input value={name} onChange={(e) => setName(e.target.value)} required />
           </label>
         </div>
         <div style={{ marginBottom: 12 }}>
           <label>
-            イメージ<br />
+            イメージ
+            <br />
             <input value={image} onChange={(e) => setImage(e.target.value)} required />
           </label>
         </div>
@@ -57,4 +59,4 @@ export function PodCreate() {
       {success && <div style={{ color: "green" }}>Pod を作成しました</div>}
     </div>
   );
-};
+}

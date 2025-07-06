@@ -30,8 +30,8 @@ export function ServiceCreate() {
   const handlePortChange = (idx: number, field: keyof ServicePort, value: string | number) => {
     setPorts((prev) =>
       prev.map((p, i) =>
-        i === idx ? { ...p, [field]: field === "port" || field === "targetPort" ? Number(value) : value } : p
-      )
+        i === idx ? { ...p, [field]: field === "port" || field === "targetPort" ? Number(value) : value } : p,
+      ),
     );
   };
 
@@ -64,13 +64,15 @@ export function ServiceCreate() {
       <form onSubmit={handleSubmit} style={{ maxWidth: 500 }}>
         <div style={{ marginBottom: 12 }}>
           <label>
-            名前<br />
+            名前
+            <br />
             <input value={name} onChange={(e) => setName(e.target.value)} required />
           </label>
         </div>
         <div style={{ marginBottom: 12 }}>
           <label>
-            タイプ<br />
+            タイプ
+            <br />
             <select value={type} onChange={(e) => setType(e.target.value)} required>
               <option value="ClusterIP">ClusterIP</option>
               <option value="NodePort">NodePort</option>
@@ -147,4 +149,4 @@ export function ServiceCreate() {
       {success && <div style={{ color: "green" }}>Service を作成しました</div>}
     </div>
   );
-};
+}

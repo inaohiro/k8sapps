@@ -57,7 +57,7 @@ export function ServiceList() {
           <li key={svc.id} style={{ display: "flex", alignItems: "center", gap: 8 }}>
             <a
               href="#"
-              onClick={e => {
+              onClick={(e) => {
                 e.preventDefault();
                 setPage({ type: "services-detail", id: svc.id });
               }}
@@ -65,9 +65,19 @@ export function ServiceList() {
             >
               {svc.name}
             </a>
-            <span>(Type: {svc.type}, ClusterIP: {svc.clusterIP}, Ports: {svc.ports})</span>
+            <span>
+              (Type: {svc.type}, ClusterIP: {svc.clusterIP}, Ports: {svc.ports})
+            </span>
             <button
-              style={{ marginLeft: 8, color: "#fff", background: "#d32f2f", border: "none", borderRadius: 4, padding: "2px 8px", cursor: "pointer" }}
+              style={{
+                marginLeft: 8,
+                color: "#fff",
+                background: "#d32f2f",
+                border: "none",
+                borderRadius: 4,
+                padding: "2px 8px",
+                cursor: "pointer",
+              }}
               onClick={async (e) => {
                 e.stopPropagation();
                 setLoading(true);
@@ -92,4 +102,4 @@ export function ServiceList() {
       </ul>
     </div>
   );
-};
+}

@@ -57,7 +57,7 @@ export function PodList() {
           <li key={pod.id} style={{ display: "flex", alignItems: "center", gap: 8 }}>
             <a
               href="#"
-              onClick={e => {
+              onClick={(e) => {
                 e.preventDefault();
                 setPage({ type: "pods-detail", id: pod.id });
               }}
@@ -65,9 +65,19 @@ export function PodList() {
             >
               {pod.name}
             </a>
-            <span>(Status: {pod.status}, Image: {pod.image})</span>
+            <span>
+              (Status: {pod.status}, Image: {pod.image})
+            </span>
             <button
-              style={{ marginLeft: 8, color: "#fff", background: "#d32f2f", border: "none", borderRadius: 4, padding: "2px 8px", cursor: "pointer" }}
+              style={{
+                marginLeft: 8,
+                color: "#fff",
+                background: "#d32f2f",
+                border: "none",
+                borderRadius: 4,
+                padding: "2px 8px",
+                cursor: "pointer",
+              }}
               onClick={async (e) => {
                 e.stopPropagation();
                 setLoading(true);
