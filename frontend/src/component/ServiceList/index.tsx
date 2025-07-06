@@ -1,27 +1,22 @@
+import { useSetAtom } from "jotai";
 import React, { useEffect, useState } from "react";
-import { useToken } from "../hooks/useToken";
-
-interface ServicePort {
-  name?: string;
-  port: number;
-  targetPort: number;
-  protocol: string;
-}
+import { useToken } from "../../hooks/useToken";
+import { pageAtom } from "../../store/store";
 
 interface Service {
   id: string;
   name: string;
   type: string;
   clusterIP: string;
-  ports: ServicePort[];
-  created_at: string;
+  ports: string;
 }
 
-const ServicesPage: React.FC = () => {
+export function ServiceList() {
   const [services, setServices] = useState<Service[]>([]);
-  const [loading, setLoading] = useState<boolean>(true);
+  const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const { token } = useToken();
+  const setPageState = useSetAtom(pageAtom);
 
   useEffect(() => {
     fetch(`/api/services`, {
@@ -33,7 +28,7 @@ const ServicesPage: React.FC = () => {
         if (!res.ok) throw new Error("Failed to fetch services");
         return res.json();
       })
-      .then((data: Service[]) => {
+      .then((data) => {
         setServices(data);
         setLoading(false);
       })
@@ -41,7 +36,7 @@ const ServicesPage: React.FC = () => {
         setError(err.message);
         setLoading(false);
       });
-  }, [token]);
+  }, []);
 
   if (loading) return <div>Loading...</div>;
   if (error) return <div>Error: {error}</div>;
@@ -49,15 +44,21 @@ const ServicesPage: React.FC = () => {
   return (
     <div>
       <h1>Services</h1>
+      <button
+        onClick={() => {
+          setPageState({ type: "services-create" });
+        }}
+        style={{ marginBottom: "1em" }}
+      >
+        + 新規 Service 作成
+      </button>
       <ul>
         {services.map((svc) => (
           <li key={svc.id}>
-            <strong>{svc.name}</strong> (Type: {svc.type}, ClusterIP: {svc.clusterIP})
+            <strong>{svc.name}</strong> (Type: {svc.type}, ClusterIP: {svc.clusterIP}, Ports: {svc.ports})
           </li>
         ))}
       </ul>
     </div>
   );
 };
-
-export default ServicesPage;

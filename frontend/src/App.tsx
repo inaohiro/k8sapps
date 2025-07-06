@@ -1,15 +1,17 @@
 import { useAtom } from "jotai";
 import React, { useEffect } from "react";
 import { AppPage } from "./App.page";
-import DeploymentCreatePage from "./component/DeploymentCreatePage";
-import DeploymentsPage from "./component/DeploymentsPage";
-import PodsPage from "./component/PodsPage";
-import ServicesPage from "./component/ServicesPage";
+import DeploymentCreate from "./component/DeploymentCreate";
+import {DeploymentList} from "./component/DeploymentList";
+import { PodList } from "./component/PodList";
+import {ServiceList} from "./component/ServiceList";
 import { useIssueToken } from "./hooks/useIssueToken";
 import { pageAtom } from "./store/store";
 import { TokenIssuePage } from "./component/TokenIssuePage";
 import { GlobalHeader } from "./GlobalHeader.page";
 import { Page } from "./Page.page";
+import { ServiceCreate } from "./component/ServiceCreate";
+import { PodCreate } from "./component/PodCreate";
 
 export function App() {
   const { token, issueToken, loading, error } = useIssueToken();
@@ -70,17 +72,21 @@ export function App() {
   let content: React.ReactNode = null;
   switch (page.type) {
     case "deployments-list":
-      content = <DeploymentsPage />;
+      content = <DeploymentList />;
       break;
     case "deployments-create":
-      content = <DeploymentCreatePage />;
+      content = <DeploymentCreate />;
       break;
     case "services-list":
-      content = <ServicesPage />;
+      content = <ServiceList />;
       break;
+    case "services-create":
+      content = <ServiceCreate />;
     case "pods-list":
-      content = <PodsPage />;
+      content = <PodList />;
       break;
+    case "pods-create":
+      content = <PodCreate />;
     case "token-issue":
       return (
         <TokenIssuePage

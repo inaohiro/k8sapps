@@ -1,5 +1,7 @@
+import { useSetAtom } from "jotai";
 import React, { useEffect, useState } from "react";
-import { useToken } from "../hooks/useToken";
+import { useToken } from "../../hooks/useToken";
+import { pageAtom } from "../../store/store";
 
 interface Pod {
   id: string;
@@ -9,11 +11,12 @@ interface Pod {
   created_at: string;
 }
 
-const PodsPage: React.FC = () => {
+export function PodList() {
   const [pods, setPods] = useState<Pod[]>([]);
-  const [loading, setLoading] = useState<boolean>(true);
+  const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const { token } = useToken();
+  const setPageState = useSetAtom(pageAtom);
 
   useEffect(() => {
     fetch(`/api/pods`, {
@@ -25,7 +28,7 @@ const PodsPage: React.FC = () => {
         if (!res.ok) throw new Error("Failed to fetch pods");
         return res.json();
       })
-      .then((data: Pod[]) => {
+      .then((data) => {
         setPods(data);
         setLoading(false);
       })
@@ -33,7 +36,7 @@ const PodsPage: React.FC = () => {
         setError(err.message);
         setLoading(false);
       });
-  }, [token]);
+  }, []);
 
   if (loading) return <div>Loading...</div>;
   if (error) return <div>Error: {error}</div>;
@@ -41,15 +44,21 @@ const PodsPage: React.FC = () => {
   return (
     <div>
       <h1>Pods</h1>
+      <button
+        onClick={() => {
+          setPageState({ type: "pods-create" });
+        }}
+        style={{ marginBottom: "1em" }}
+      >
+        + 新規 Pod 作成
+      </button>
       <ul>
         {pods.map((pod) => (
           <li key={pod.id}>
-            <strong>{pod.name}</strong> (Status: {pod.status}, Image: {pod.image}, Created At: {pod.created_at})
+            <strong>{pod.name}</strong> (Status: {pod.status}, Image: {pod.image})
           </li>
         ))}
       </ul>
     </div>
   );
-};
-
-export default PodsPage;
+}

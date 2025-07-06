@@ -1,7 +1,7 @@
 import { useSetAtom } from "jotai";
 import React, { useEffect, useState } from "react";
-import { useToken } from "../hooks/useToken";
-import { pageAtom } from "../store/store";
+import { useToken } from "../../hooks/useToken";
+import { pageAtom } from "../../store/store";
 
 interface Deployment {
   id: string;
@@ -10,7 +10,7 @@ interface Deployment {
   status: string;
 }
 
-const DeploymentsPage: React.FC = () => {
+export function DeploymentList() {
   const [deployments, setDeployments] = useState<Deployment[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -61,5 +61,3 @@ const DeploymentsPage: React.FC = () => {
     </div>
   );
 };
-
-export default DeploymentsPage;

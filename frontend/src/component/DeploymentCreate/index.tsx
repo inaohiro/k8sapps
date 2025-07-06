@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { useToken } from "../hooks/useToken";
+import { useToken } from "../../hooks/useToken";
 
 interface Image {
   name: string;
