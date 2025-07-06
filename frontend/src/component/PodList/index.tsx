@@ -1,7 +1,7 @@
 import { useSetAtom } from "jotai";
 import React, { useEffect, useState } from "react";
 import { useToken } from "../../hooks/useToken";
-import { pageAtom } from "../../store/store";
+import { pageAtom, setPageAtom } from "../../store/store";
 
 interface Pod {
   id: string;
@@ -16,7 +16,7 @@ export function PodList() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const { token } = useToken();
-  const setPageState = useSetAtom(pageAtom);
+  const setPage = useSetAtom(setPageAtom);
 
   useEffect(() => {
     fetch(`/api/pods`, {
@@ -46,7 +46,7 @@ export function PodList() {
       <h1>Pods</h1>
       <button
         onClick={() => {
-          setPageState({ type: "pods-create" });
+          setPage({ type: "pods-create" });
         }}
         style={{ marginBottom: "1em" }}
       >
@@ -59,7 +59,7 @@ export function PodList() {
               href="#"
               onClick={e => {
                 e.preventDefault();
-                setPageState({ type: "pods-detail", id: pod.id });
+                setPage({ type: "pods-detail", id: pod.id });
               }}
               style={{ fontWeight: "bold", cursor: "pointer", color: "#1976d2", textDecoration: "underline" }}
             >

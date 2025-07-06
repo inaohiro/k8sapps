@@ -1,7 +1,7 @@
 import { useSetAtom } from "jotai";
 import React, { useEffect, useState } from "react";
 import { useToken } from "../../hooks/useToken";
-import { pageAtom } from "../../store/store";
+import { pageAtom, setPageAtom } from "../../store/store";
 
 interface Deployment {
   id: string;
@@ -15,7 +15,7 @@ export function DeploymentList() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const { token } = useToken();
-  const setPageState = useSetAtom(pageAtom);
+  const setPage = useSetAtom(setPageAtom);
 
   useEffect(() => {
     fetch(`/api/deployments`, {
@@ -45,7 +45,7 @@ export function DeploymentList() {
       <h1>Deployments</h1>
       <button
         onClick={() => {
-          setPageState({ type: "deployments-create" });
+          setPage({ type: "deployments-create" });
         }}
         style={{ marginBottom: "1em" }}
       >
@@ -58,7 +58,7 @@ export function DeploymentList() {
               href="#"
               onClick={e => {
                 e.preventDefault();
-                setPageState({ type: "deployments-detail", id: dep.id });
+                setPage({ type: "deployments-detail", id: dep.id });
               }}
               style={{ fontWeight: "bold", cursor: "pointer", color: "#1976d2", textDecoration: "underline" }}
             >

@@ -1,7 +1,7 @@
 import { useSetAtom } from "jotai";
 import React, { useEffect, useState } from "react";
 import { useToken } from "../../hooks/useToken";
-import { pageAtom } from "../../store/store";
+import { pageAtom, setPageAtom } from "../../store/store";
 
 interface Service {
   id: string;
@@ -16,7 +16,7 @@ export function ServiceList() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const { token } = useToken();
-  const setPageState = useSetAtom(pageAtom);
+  const setPage = useSetAtom(setPageAtom);
 
   useEffect(() => {
     fetch(`/api/services`, {
@@ -46,7 +46,7 @@ export function ServiceList() {
       <h1>Services</h1>
       <button
         onClick={() => {
-          setPageState({ type: "services-create" });
+          setPage({ type: "services-create" });
         }}
         style={{ marginBottom: "1em" }}
       >
@@ -59,7 +59,7 @@ export function ServiceList() {
               href="#"
               onClick={e => {
                 e.preventDefault();
-                setPageState({ type: "services-detail", id: svc.id });
+                setPage({ type: "services-detail", id: svc.id });
               }}
               style={{ fontWeight: "bold", cursor: "pointer", color: "#1976d2", textDecoration: "underline" }}
             >

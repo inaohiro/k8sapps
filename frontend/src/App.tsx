@@ -1,4 +1,4 @@
-import { useAtom } from "jotai";
+import { useAtom, useAtomValue, useSetAtom } from "jotai";
 import React, { useEffect } from "react";
 import { AppPage } from "./App.page";
 import DeploymentCreate from "./component/DeploymentCreate";
@@ -6,18 +6,20 @@ import {DeploymentList} from "./component/DeploymentList";
 import { PodList } from "./component/PodList";
 import {ServiceList} from "./component/ServiceList";
 import { useIssueToken } from "./hooks/useIssueToken";
-import { pageAtom } from "./store/store";
+import { pageAtom, setPageAtom } from "./store/store";
 import { TokenIssuePage } from "./component/TokenIssuePage";
 import { GlobalHeader } from "./GlobalHeader.page";
 import { Page } from "./Page.page";
 import { ServiceCreate } from "./component/ServiceCreate";
 import { PodCreate } from "./component/PodCreate";
+import { DeploymentDetail } from "./component/DeploymentDetail";
+import { ServiceDetail } from "./component/ServiceDetail";
+import { PodDetail } from "./component/PodDetail";
 
 export function App() {
   const { token, issueToken, loading, error } = useIssueToken();
-  const [mypageState, setMypageState] = pageAtom({ type: "deployments-list" });
-  const [page] = useAtom(mypageState);
-  const [, setPage] = useAtom(setMypageState);
+  const page = useAtomValue(pageAtom);
+  const setPage = useSetAtom(setPageAtom);
 
   // 初回レンダリング時に cookie から token を取得
   useEffect(() => {
@@ -79,16 +81,27 @@ export function App() {
     case "deployments-create":
       content = <DeploymentCreate />;
       break;
+    case "deployments-detail":
+      content = <DeploymentDetail id={page.id} />;
+      break;
     case "services-list":
       content = <ServiceList />;
       break;
     case "services-create":
       content = <ServiceCreate />;
+      break;
+    case "services-detail":
+      content = <ServiceDetail id={page.id} />;
+      break;
     case "pods-list":
       content = <PodList />;
       break;
     case "pods-create":
       content = <PodCreate />;
+      break;
+    case "pods-detail":
+      content = <PodDetail id={page.id} />;
+      break;
     case "token-issue":
       return (
         <TokenIssuePage
@@ -97,9 +110,6 @@ export function App() {
           onTokenIssued={() => setPage({ type: "deployments-list" })}
         />
       );
-    // TODO: 他の画面（作成・詳細）も同様に分岐を追加
-    default:
-      content = <div>{page.type} Not implemented</div>;
   }
 
   return (
