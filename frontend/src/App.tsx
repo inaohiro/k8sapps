@@ -15,7 +15,9 @@ import { PodCreate } from "./component/PodCreate";
 
 export function App() {
   const { token, issueToken, loading, error } = useIssueToken();
-  const [page, setPage] = useAtom(pageAtom);
+  const [mypageState, setMypageState] = pageAtom({ type: "deployments-list" });
+  const [page] = useAtom(mypageState);
+  const [, setPage] = useAtom(setMypageState);
 
   // 初回レンダリング時に cookie から token を取得
   useEffect(() => {

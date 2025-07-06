@@ -54,8 +54,39 @@ export function PodList() {
       </button>
       <ul>
         {pods.map((pod) => (
-          <li key={pod.id}>
-            <strong>{pod.name}</strong> (Status: {pod.status}, Image: {pod.image})
+          <li key={pod.id} style={{ display: "flex", alignItems: "center", gap: 8 }}>
+            <a
+              href="#"
+              onClick={e => {
+                e.preventDefault();
+                setPageState({ type: "pods-detail", id: pod.id });
+              }}
+              style={{ fontWeight: "bold", cursor: "pointer", color: "#1976d2", textDecoration: "underline" }}
+            >
+              {pod.name}
+            </a>
+            <span>(Status: {pod.status}, Image: {pod.image})</span>
+            <button
+              style={{ marginLeft: 8, color: "#fff", background: "#d32f2f", border: "none", borderRadius: 4, padding: "2px 8px", cursor: "pointer" }}
+              onClick={async (e) => {
+                e.stopPropagation();
+                setLoading(true);
+                setError(null);
+                try {
+                  const res = await fetch(`/api/pods/${pod.id}`, {
+                    method: "DELETE",
+                    headers: { Authorization: `Bearer ${token}` },
+                  });
+                  if (!res.ok) throw new Error("Failed to delete pod");
+                } catch (err: any) {
+                  setError(err.message);
+                } finally {
+                  setLoading(false);
+                }
+              }}
+            >
+              削除
+            </button>
           </li>
         ))}
       </ul>

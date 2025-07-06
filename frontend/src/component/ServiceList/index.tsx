@@ -54,8 +54,39 @@ export function ServiceList() {
       </button>
       <ul>
         {services.map((svc) => (
-          <li key={svc.id}>
-            <strong>{svc.name}</strong> (Type: {svc.type}, ClusterIP: {svc.clusterIP}, Ports: {svc.ports})
+          <li key={svc.id} style={{ display: "flex", alignItems: "center", gap: 8 }}>
+            <a
+              href="#"
+              onClick={e => {
+                e.preventDefault();
+                setPageState({ type: "services-detail", id: svc.id });
+              }}
+              style={{ fontWeight: "bold", cursor: "pointer", color: "#1976d2", textDecoration: "underline" }}
+            >
+              {svc.name}
+            </a>
+            <span>(Type: {svc.type}, ClusterIP: {svc.clusterIP}, Ports: {svc.ports})</span>
+            <button
+              style={{ marginLeft: 8, color: "#fff", background: "#d32f2f", border: "none", borderRadius: 4, padding: "2px 8px", cursor: "pointer" }}
+              onClick={async (e) => {
+                e.stopPropagation();
+                setLoading(true);
+                setError(null);
+                try {
+                  const res = await fetch(`/api/services/${svc.id}`, {
+                    method: "DELETE",
+                    headers: { Authorization: `Bearer ${token}` },
+                  });
+                  if (!res.ok) throw new Error("Failed to delete service");
+                } catch (err: any) {
+                  setError(err.message);
+                } finally {
+                  setLoading(false);
+                }
+              }}
+            >
+              削除
+            </button>
           </li>
         ))}
       </ul>

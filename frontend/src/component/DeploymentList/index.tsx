@@ -53,8 +53,39 @@ export function DeploymentList() {
       </button>
       <ul>
         {deployments.map((dep) => (
-          <li key={dep.id}>
-            <strong>{dep.name}</strong> (Image: {dep.image}, Status: {dep.status})
+          <li key={dep.id} style={{ display: "flex", alignItems: "center", gap: 8 }}>
+            <a
+              href="#"
+              onClick={e => {
+                e.preventDefault();
+                setPageState({ type: "deployments-detail", id: dep.id });
+              }}
+              style={{ fontWeight: "bold", cursor: "pointer", color: "#1976d2", textDecoration: "underline" }}
+            >
+              {dep.name}
+            </a>
+            <span>(Image: {dep.image}, Status: {dep.status})</span>
+            <button
+              style={{ marginLeft: 8, color: "#fff", background: "#d32f2f", border: "none", borderRadius: 4, padding: "2px 8px", cursor: "pointer" }}
+              onClick={async (e) => {
+                e.stopPropagation();
+                setLoading(true);
+                setError(null);
+                try {
+                  const res = await fetch(`/api/deployments/${dep.id}`, {
+                    method: "DELETE",
+                    headers: { Authorization: `Bearer ${token}` },
+                  });
+                  if (!res.ok) throw new Error("Failed to delete deployment");
+                } catch (err: any) {
+                  setError(err.message);
+                } finally {
+                  setLoading(false);
+                }
+              }}
+            >
+              削除
+            </button>
           </li>
         ))}
       </ul>
