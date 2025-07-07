@@ -127,16 +127,16 @@ func main() {
 	}
 
 	var err error
-	_auth_url := os.Getenv("AUTH_URL")
-	if _auth_url == "" {
+	auth_url = os.Getenv("AUTH_URL")
+	if auth_url == "" {
 		log.Fatal("AUTH_URL required")
 	}
 	_, err = url.Parse(auth_url)
 	if err != nil {
 		log.Fatal(err)
 	}
-	_app_url := os.Getenv("APP_URL")
-	if _app_url == "" {
+	app_url = os.Getenv("APP_URL")
+	if app_url == "" {
 		log.Fatal("APP_URL required")
 	}
 	_, err = url.Parse(app_url)
