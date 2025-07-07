@@ -58,7 +58,7 @@ export function DeploymentList() {
               href="#"
               onClick={(e) => {
                 e.preventDefault();
-                setPage({ type: "deployments-detail", id: dep.id });
+                setPage({ type: "deployments-detail", id: dep.name });
               }}
               style={{ fontWeight: "bold", cursor: "pointer", color: "#1976d2", textDecoration: "underline" }}
             >
@@ -82,7 +82,7 @@ export function DeploymentList() {
                 setLoading(true);
                 setError(null);
                 try {
-                  const res = await fetch(`/api/deployments/${dep.id}`, {
+                  const res = await fetch(`/api/deployments/${dep.name}`, {
                     method: "DELETE",
                     headers: { Authorization: `Bearer ${token}` },
                   });

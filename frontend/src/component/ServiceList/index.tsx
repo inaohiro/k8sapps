@@ -59,7 +59,7 @@ export function ServiceList() {
               href="#"
               onClick={(e) => {
                 e.preventDefault();
-                setPage({ type: "services-detail", id: svc.id });
+                setPage({ type: "services-detail", id: svc.name });
               }}
               style={{ fontWeight: "bold", cursor: "pointer", color: "#1976d2", textDecoration: "underline" }}
             >
@@ -83,7 +83,7 @@ export function ServiceList() {
                 setLoading(true);
                 setError(null);
                 try {
-                  const res = await fetch(`/api/services/${svc.id}`, {
+                  const res = await fetch(`/api/services/${svc.name}`, {
                     method: "DELETE",
                     headers: { Authorization: `Bearer ${token}` },
                   });

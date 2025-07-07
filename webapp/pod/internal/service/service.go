@@ -24,12 +24,12 @@ func ListPods(ctx context.Context, namespace string) ([]models.Pod, error) {
 }
 
 // GetPod returns a pod by name in the given namespace
-func GetPod(ctx context.Context, namespace, podID string) (*models.Pod, error) {
+func GetPod(ctx context.Context, namespace, podName string) (*models.Pod, error) {
 	clientset, err := core.GetKubeClient()
 	if err != nil {
 		return nil, err
 	}
-	pod, err := clientset.CoreV1().Pods(namespace).Get(ctx, podID, metav1.GetOptions{})
+	pod, err := clientset.CoreV1().Pods(namespace).Get(ctx, podName, metav1.GetOptions{})
 	if err != nil {
 		return nil, err
 	}
@@ -54,10 +54,10 @@ func CreatePod(ctx context.Context, namespace string, pod models.PodCreate) (*mo
 }
 
 // DeletePod deletes a pod by name in the given namespace
-func DeletePod(ctx context.Context, namespace, podID string) error {
+func DeletePod(ctx context.Context, namespace, podName string) error {
 	clientset, err := core.GetKubeClient()
 	if err != nil {
 		return err
 	}
-	return clientset.CoreV1().Pods(namespace).Delete(ctx, podID, metav1.DeleteOptions{})
+	return clientset.CoreV1().Pods(namespace).Delete(ctx, podName, metav1.DeleteOptions{})
 }

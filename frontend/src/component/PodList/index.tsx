@@ -59,7 +59,7 @@ export function PodList() {
               href="#"
               onClick={(e) => {
                 e.preventDefault();
-                setPage({ type: "pods-detail", id: pod.id });
+                setPage({ type: "pods-detail", id: pod.name });
               }}
               style={{ fontWeight: "bold", cursor: "pointer", color: "#1976d2", textDecoration: "underline" }}
             >
@@ -83,7 +83,7 @@ export function PodList() {
                 setLoading(true);
                 setError(null);
                 try {
-                  const res = await fetch(`/api/pods/${pod.id}`, {
+                  const res = await fetch(`/api/pods/${pod.name}`, {
                     method: "DELETE",
                     headers: { Authorization: `Bearer ${token}` },
                   });
