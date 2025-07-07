@@ -55,7 +55,12 @@ data:
 
     export default function () {}
   step1.js: |
+    import tempo from 'https://jslib.k6.io/http-instrumentation-tempo/1.0.1/index.js';
     import http from "k6/http";
+
+    tempo.instrumentHTTP({
+      propagator: 'w3c',
+    });
 
     const url = "http://nginx:8080/api";
 
@@ -72,11 +77,11 @@ data:
           headers: { Authorization: `Bearer ${token}` },
         };
 
-        http.get(`${url}/deployments`, headers);
-        http.get(`${url}/pods`, headers);
-        http.get(`${url}/services`, headers);
-        http.get(`${url}/images`, headers);
-        http.get(`${url}/flavors`, headers);
+        http.get(`${url}/${namespace}/\deployments`, headers);
+        http.get(`${url}/${namespace}/\pods`, headers);
+        http.get(`${url}/${namespace}/\services`, headers);
+        http.get(`${url}/${namespace}/\images`, headers);
+        http.get(`${url}/${namespace}/\flavors`, headers);
       }
     }
 
