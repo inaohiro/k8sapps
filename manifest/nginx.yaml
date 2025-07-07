@@ -5,6 +5,9 @@ metadata:
   namespace: default
 data:
   nginx.conf: |
+    include /etc/nginx/mime.types;
+    default_type /application/octet-stream;
+
     server {
       listen 80 default_server;
 
