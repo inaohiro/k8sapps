@@ -87,7 +87,7 @@ function getPage(token: string|null, path: string): PageState {
     return {type: "token-issue"}
   }
 
-  const elements = path.split("/")
+  const elements = path.split("/").filter(i=>i)
   if (elements.length === 0) {
     return {type: "deployments-list"};
   }
@@ -101,7 +101,9 @@ function getPage(token: string|null, path: string): PageState {
   if (elements.length === 2) {
     if (path === "/deployments/create") return {type: "deployments-create"}
     if (path === "/services/create") return {type: "services-create"}
+    if (path === "/services/list") return {type: "services-list"}
     if (path === "/pods/create") return {type: "pods-create"}
+    if (path === "/pods/list") return {type: "pods-list"}
     return {type: "deployments-list"}
   }
 
