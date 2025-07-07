@@ -1,4 +1,4 @@
-import { atom } from "jotai";
+import { atom, useAtom } from "jotai";
 
 export type PageState =
   | { type: "token-issue" }
@@ -27,3 +27,15 @@ export const setPageAtom = atom(null, (get, set, state: PageState) => {
     window.history.pushState({}, "", path);
   }
 });
+
+export const fromPath = () => {
+  const [_, setPage] = useAtom(baseAtom)
+
+  const path = window.location.pathname;
+  const elements = path.split("/")
+
+  if (elements.length=== 0 ) {
+    setPage({type: "token-issue"})
+    return;
+  }
+}

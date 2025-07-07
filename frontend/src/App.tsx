@@ -6,7 +6,7 @@ import { DeploymentList } from "./component/DeploymentList";
 import { PodList } from "./component/PodList";
 import { ServiceList } from "./component/ServiceList";
 import { useIssueToken } from "./hooks/useIssueToken";
-import { pageAtom, setPageAtom } from "./store/store";
+import { pageAtom, PageState, setPageAtom } from "./store/store";
 import { TokenIssuePage } from "./component/TokenIssuePage";
 import { GlobalHeader } from "./GlobalHeader.page";
 import { Page } from "./Page.page";
@@ -21,50 +21,10 @@ export function App() {
   const page = useAtomValue(pageAtom);
   const setPage = useSetAtom(setPageAtom);
 
-  // token はなければ作成画面に移動
+  // token, path から表示するページを決定
   useEffect(() => {
-    if (token === "" || token === null) {
-      setPage({ type: "token-issue" });
-      return;
-    }
-  }, []);
-
-  // token があれば URL から表示するページを推測
-  useEffect(() => {
-    if (token === "" || token === null) return;
-
-    const path = window.location.pathname;
-    if (path.startsWith("/deployments")) {
-      if (path === "/deployments/new") {
-        setPage({ type: "deployments-create" });
-      } else if (path.startsWith("/deployments/")) {
-        const id = path.split("/")[2];
-        setPage({ type: "deployments-detail", id });
-      } else {
-        setPage({ type: "deployments-list" });
-      }
-    } else if (path.startsWith("/services")) {
-      if (path === "/services/new") {
-        setPage({ type: "services-create" });
-      } else if (path.startsWith("/services/")) {
-        const id = path.split("/")[2];
-        setPage({ type: "services-detail", id });
-      } else {
-        setPage({ type: "services-list" });
-      }
-    } else if (path.startsWith("/pods")) {
-      if (path === "/pods/new") {
-        setPage({ type: "pods-create" });
-      } else if (path.startsWith("/pods/")) {
-        const id = path.split("/")[2];
-        setPage({ type: "pods-detail", id });
-      } else {
-        setPage({ type: "pods-list" });
-      }
-    } else {
-      setPage({ type: "token-issue" });
-    }
-  }, [token]);
+    setPage(getPage(token, window.location.pathname))
+  }, [])
 
   if (loading) {
     return <div>Loading...</div>;
@@ -120,4 +80,37 @@ export function App() {
       </AppPage>
     </>
   );
+}
+
+function getPage(token: string|null, path: string): PageState {
+  if (token === "" || token === null || token === undefined || token === "undefined") {
+    return {type: "token-issue"}
+  }
+
+  const elements = path.split("/")
+  if (elements.length === 0) {
+    return {type: "deployments-list"};
+  }
+
+  if (elements.length === 1) {
+    if (elements[0] === "services") return {type: "services-list"}
+    if (elements[0] === "pods") return {type: "pods-list"}
+    return {type: "deployments-list"}
+  }
+
+  if (elements.length === 2) {
+    if (path === "/deployments/create") return {type: "deployments-create"}
+    if (path === "/services/create") return {type: "services-create"}
+    if (path === "/pods/create") return {type: "pods-create"}
+    return {type: "deployments-list"}
+  }
+
+  if (elements.length === 3) {
+    if (path.startsWith("/deployments/detail")) return {type: "deployments-detail", id: elements[2]}
+    if (path.startsWith("/services/detail")) return {type: "services-detail", id: elements[2]}
+    if (path.startsWith("/pods/detail")) return {type: "pods-detail", id: elements[2]}
+    return {type: "deployments-list"}
+  }
+
+  return {type: "deployments-list"}
 }
