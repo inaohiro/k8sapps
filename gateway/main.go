@@ -189,13 +189,13 @@ func tokenVerify(next http.Handler) http.Handler {
 		// トークン検証
 		endpoint, err := url.JoinPath(auth_url, "tokens")
 		if err != nil {
-			slog.Error(err.Error())
+			slog.Error("failed to url.JoinPath", slog.String("err", err.Error()))
 			writeJSON(w, http.StatusInternalServerError, map[string]string{"message": err.Error()})
 			return
 		}
-		req, err := http.NewRequestWithContext(r.Context(), http.MethodGet, endpoint, nil)
+		req, err := http.NewRequestWithContext(r.Context(), http.MethodGet, strings.TrimSpace(endpoint), nil)
 		if err != nil {
-			slog.Error(err.Error())
+			slog.Error("failed to http.NewRequestWithContext", slog.String("err", err.Error()))
 			writeJSON(w, http.StatusInternalServerError, map[string]string{"message": err.Error()})
 			return
 		}
@@ -204,25 +204,25 @@ func tokenVerify(next http.Handler) http.Handler {
 		req.Header = r.Header
 		resp, err := client.Do(req)
 		if err != nil {
-			slog.Error(err.Error())
+			slog.Error("failed to send request", slog.String("err", err.Error()))
 			writeJSON(w, http.StatusInternalServerError, map[string]string{"message": err.Error()})
 			return
 		}
 		defer resp.Body.Close()
 		_body, err := io.ReadAll(resp.Body)
 		if err != nil {
-			slog.Error(err.Error())
+			slog.Error("failed to read response body", slog.String("err", err.Error()))
 			writeJSON(w, http.StatusInternalServerError, map[string]string{"message": err.Error()})
 			return
 		}
 		var verifyTokenResponse VerifyTokenResponse
 		if err := json.Unmarshal(_body, &verifyTokenResponse); err != nil {
-			slog.Error(err.Error())
+			slog.Error("failed to unmarshal response body", slog.String("err", err.Error()))
 			writeJSON(w, http.StatusInternalServerError, map[string]string{"message": err.Error()})
 			return
 		}
 		if resp.StatusCode >= 400 {
-			slog.Error("トークン検証に失敗しました", slog.String("error", verifyTokenResponse.Error))
+			slog.Error("トークン検証に失敗しました", slog.String("err", verifyTokenResponse.Error))
 			writeJSON(w, resp.StatusCode, map[string]string{"message": verifyTokenResponse.Error})
 			return
 		}
@@ -242,20 +242,20 @@ func proxy(next http.Handler) http.Handler {
 		// 元のリクエストパスに /api/{namespace} をつける
 		endpoint, err := url.JoinPath(app_url, "api", namespace, strings.Join(strings.Split(r.URL.Path, "/")[2:], "/"))
 		if err != nil {
-			slog.Error(err.Error())
+			slog.Error("failed to url.JoinPath", slog.String("err", err.Error()))
 			writeJSON(w, http.StatusInternalServerError, map[string]string{"message": err.Error()})
 			return
 		}
 
 		req, err := http.NewRequestWithContext(r.Context(), r.Method, endpoint, r.Body)
 		if err != nil {
-			slog.Error(err.Error())
+			slog.Error("failed to http.NewRequestWithContext", slog.String("err", err.Error()))
 			writeJSON(w, http.StatusInternalServerError, map[string]string{"message": err.Error()})
 			return
 		}
 		resp, err := client.Do(req)
 		if err != nil {
-			slog.Error(err.Error())
+			slog.Error("failed to send request", slog.String("err", err.Error()))
 			writeJSON(w, http.StatusInternalServerError, map[string]string{"message": err.Error()})
 			return
 		}
@@ -272,20 +272,20 @@ func issueToken(next http.Handler) http.Handler {
 		// トークン発行
 		endpoint, err := url.JoinPath(auth_url, "tokens")
 		if err != nil {
-			slog.Error(err.Error())
+			slog.Error("failed to url.JoinPath", slog.String("err", err.Error()))
 			writeJSON(w, http.StatusInternalServerError, map[string]string{"message": err.Error()})
 			return
 		}
 		req, err := http.NewRequestWithContext(r.Context(), http.MethodPost, endpoint, r.Body)
 		if err != nil {
-			slog.Error(err.Error())
+			slog.Error("failed to http.NewRequestWithContext", slog.String("err", err.Error()))
 			writeJSON(w, http.StatusInternalServerError, map[string]string{"message": err.Error()})
 			return
 		}
 		req.Header = r.Header
 		resp, err := client.Do(req)
 		if err != nil {
-			slog.Error(err.Error())
+			slog.Error("failed to send request", slog.String("err", err.Error()))
 			writeJSON(w, http.StatusInternalServerError, map[string]string{"message": err.Error()})
 			return
 		}
