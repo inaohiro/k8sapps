@@ -17,7 +17,6 @@ export const pageAtom = atom((get) => get(baseAtom));
 
 // URL の更新、Atom の更新
 export const setPageAtom = atom(null, (get, set, state: PageState) => {
-  const page = get(baseAtom);
   set(baseAtom, state);
 
   // URL の更新

@@ -61,6 +61,8 @@ export function App() {
       } else {
         setPage({ type: "pods-list" });
       }
+    } else {
+      setPage({ type: "token-issue" });
     }
   }, [token]);
 

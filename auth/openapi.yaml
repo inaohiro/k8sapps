@@ -4,9 +4,6 @@ info:
   version: 1.0.0
   description: トークン発行、検証 API を提供する
 
-servers:
-  - url: /api/v1
-
 paths:
   /tokens:
     get:
@@ -20,13 +17,13 @@ paths:
             type: string
           required: true
       responses:
-        '200':
+        "200":
           description: token is valid.
           content:
             application/json:
               schema:
                 $ref: "#/components/schemas/Namespace"
-        '401':
+        "401":
           description: Unauthorized
           content:
             application/json:
@@ -41,14 +38,14 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/IssueTokenRequest'
+              $ref: "#/components/schemas/IssueTokenRequest"
       responses:
-        '200':
+        "200":
           description: issued token.
           content:
             application/token:
               schema:
-                $ref: '#/components/schemas/Token'
+                $ref: "#/components/schemas/Token"
 
 components:
   schemas:
