@@ -21,9 +21,9 @@ export function App() {
   const page = useAtomValue(pageAtom);
   const setPage = useSetAtom(setPageAtom);
 
-  // 初回レンダリング時に cookie から token を取得
+  // token はなければ作成画面に移動
   useEffect(() => {
-    if (token !== null) {
+    if (token === "" || token === null) {
       setPage({ type: "token-issue" });
       return;
     }
@@ -61,8 +61,6 @@ export function App() {
       } else {
         setPage({ type: "pods-list" });
       }
-    } else {
-      setPage({ type: "deployments-list" });
     }
   }, [token]);
 

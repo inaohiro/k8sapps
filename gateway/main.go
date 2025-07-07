@@ -11,7 +11,6 @@ import (
 	"net/url"
 	"os"
 	"os/signal"
-	"path"
 	"strconv"
 	"strings"
 	"sync"
@@ -33,8 +32,8 @@ import (
 var configjson string
 
 var (
-	auth_url *url.URL
-	app_url  *url.URL
+	auth_url string
+	app_url  string
 )
 
 type Route struct {
@@ -132,7 +131,7 @@ func main() {
 	if _auth_url == "" {
 		log.Fatal("AUTH_URL required")
 	}
-	auth_url, err = url.Parse(_auth_url)
+	_, err = url.Parse(auth_url)
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -140,7 +139,7 @@ func main() {
 	if _app_url == "" {
 		log.Fatal("APP_URL required")
 	}
-	app_url, err = url.Parse(_app_url)
+	_, err = url.Parse(app_url)
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -188,8 +187,13 @@ func tokenVerify(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 
 		// トークン検証
-		auth_url.Path = "tokens"
-		req, err := http.NewRequestWithContext(r.Context(), http.MethodGet, auth_url.String(), nil)
+		endpoint, err := url.JoinPath(auth_url, "tokens")
+		if err != nil {
+			slog.Error(err.Error())
+			writeJSON(w, http.StatusInternalServerError, map[string]string{"message": err.Error()})
+			return
+		}
+		req, err := http.NewRequestWithContext(r.Context(), http.MethodGet, endpoint, nil)
 		if err != nil {
 			slog.Error(err.Error())
 			writeJSON(w, http.StatusInternalServerError, map[string]string{"message": err.Error()})
@@ -236,8 +240,14 @@ func proxy(next http.Handler) http.Handler {
 
 		// トークン検証が成功したらアプリケーションにリクエスト送信
 		// 元のリクエストパスに /api/{namespace} をつける
-		app_url.Path = path.Join("api", namespace, strings.Join(strings.Split(r.URL.Path, "/")[2:], "/"))
-		req, err := http.NewRequestWithContext(r.Context(), r.Method, app_url.String(), r.Body)
+		endpoint, err := url.JoinPath(app_url, "api", namespace, strings.Join(strings.Split(r.URL.Path, "/")[2:], "/"))
+		if err != nil {
+			slog.Error(err.Error())
+			writeJSON(w, http.StatusInternalServerError, map[string]string{"message": err.Error()})
+			return
+		}
+
+		req, err := http.NewRequestWithContext(r.Context(), r.Method, endpoint, r.Body)
 		if err != nil {
 			slog.Error(err.Error())
 			writeJSON(w, http.StatusInternalServerError, map[string]string{"message": err.Error()})
@@ -260,11 +270,13 @@ func issueToken(next http.Handler) http.Handler {
 		next.ServeHTTP(w, r)
 
 		// トークン発行
-		auth_url.Path = path.Join(auth_url.Path, "tokens")
-		defer func() {
-			auth_url.Path = ""
-		}()
-		req, err := http.NewRequestWithContext(r.Context(), http.MethodPost, auth_url.String(), r.Body)
+		endpoint, err := url.JoinPath(auth_url, "tokens")
+		if err != nil {
+			slog.Error(err.Error())
+			writeJSON(w, http.StatusInternalServerError, map[string]string{"message": err.Error()})
+			return
+		}
+		req, err := http.NewRequestWithContext(r.Context(), http.MethodPost, endpoint, r.Body)
 		if err != nil {
 			slog.Error(err.Error())
 			writeJSON(w, http.StatusInternalServerError, map[string]string{"message": err.Error()})
