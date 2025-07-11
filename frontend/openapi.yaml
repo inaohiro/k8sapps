@@ -462,19 +462,3 @@ components:
           type: string
           description: namespace
           example: default
-    Token:
-      type: object
-      required:
-        - token
-      properties:
-        token:
-          type: string
-          description: JWT string
-    IssueTokenRequest:
-      type: object
-      required:
-        - namespace
-      properties:
-        namespace:
-          type: string
-          description: namespace

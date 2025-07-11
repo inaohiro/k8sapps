@@ -23,8 +23,8 @@ export function App() {
 
   // token, path から表示するページを決定
   useEffect(() => {
-    setPage(getPage(token, window.location.pathname))
-  }, [])
+    setPage(getPage(token, window.location.pathname));
+  }, []);
 
   if (loading) {
     return <div>Loading...</div>;
@@ -82,37 +82,37 @@ export function App() {
   );
 }
 
-function getPage(token: string|null, path: string): PageState {
+function getPage(token: string | null, path: string): PageState {
   if (token === "" || token === null || token === undefined || token === "undefined") {
-    return {type: "token-issue"}
+    return { type: "token-issue" };
   }
 
-  const elements = path.split("/").filter(i=>i)
+  const elements = path.split("/").filter((i) => i);
   if (elements.length === 0) {
-    return {type: "deployments-list"};
+    return { type: "deployments-list" };
   }
 
   if (elements.length === 1) {
-    if (elements[0] === "services") return {type: "services-list"}
-    if (elements[0] === "pods") return {type: "pods-list"}
-    return {type: "deployments-list"}
+    if (elements[0] === "services") return { type: "services-list" };
+    if (elements[0] === "pods") return { type: "pods-list" };
+    return { type: "deployments-list" };
   }
 
   if (elements.length === 2) {
-    if (path === "/deployments/create") return {type: "deployments-create"}
-    if (path === "/services/create") return {type: "services-create"}
-    if (path === "/services/list") return {type: "services-list"}
-    if (path === "/pods/create") return {type: "pods-create"}
-    if (path === "/pods/list") return {type: "pods-list"}
-    return {type: "deployments-list"}
+    if (path === "/deployments/create") return { type: "deployments-create" };
+    if (path === "/services/create") return { type: "services-create" };
+    if (path === "/services/list") return { type: "services-list" };
+    if (path === "/pods/create") return { type: "pods-create" };
+    if (path === "/pods/list") return { type: "pods-list" };
+    return { type: "deployments-list" };
   }
 
   if (elements.length === 3) {
-    if (path.startsWith("/deployments/detail")) return {type: "deployments-detail", id: elements[2]}
-    if (path.startsWith("/services/detail")) return {type: "services-detail", id: elements[2]}
-    if (path.startsWith("/pods/detail")) return {type: "pods-detail", id: elements[2]}
-    return {type: "deployments-list"}
+    if (path.startsWith("/deployments/detail")) return { type: "deployments-detail", id: elements[2] };
+    if (path.startsWith("/services/detail")) return { type: "services-detail", id: elements[2] };
+    if (path.startsWith("/pods/detail")) return { type: "pods-detail", id: elements[2] };
+    return { type: "deployments-list" };
   }
 
-  return {type: "deployments-list"}
+  return { type: "deployments-list" };
 }

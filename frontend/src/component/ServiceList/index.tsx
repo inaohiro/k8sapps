@@ -8,8 +8,13 @@ interface Service {
   name: string;
   type: string;
   clusterIP: string;
-  ports: string;
+  ports: ServicePort[];
 }
+type ServicePort = {
+  port: string;
+  targetPort: string;
+  protocol: null | string;
+};
 
 export function ServiceList() {
   const [services, setServices] = useState<Service[]>([]);
@@ -52,54 +57,91 @@ export function ServiceList() {
       >
         + 新規 Service 作成
       </button>
-      <ul>
-        {services.map((svc) => (
-          <li key={svc.id} style={{ display: "flex", alignItems: "center", gap: 8 }}>
-            <a
-              href="#"
-              onClick={(e) => {
-                e.preventDefault();
-                setPage({ type: "services-detail", id: svc.name });
-              }}
-              style={{ fontWeight: "bold", cursor: "pointer", color: "#1976d2", textDecoration: "underline" }}
-            >
-              {svc.name}
-            </a>
-            <span>
-              (Type: {svc.type}, ClusterIP: {svc.clusterIP}, Ports: {svc.ports})
-            </span>
-            <button
-              style={{
-                marginLeft: 8,
-                color: "#fff",
-                background: "#d32f2f",
-                border: "none",
-                borderRadius: 4,
-                padding: "2px 8px",
-                cursor: "pointer",
-              }}
-              onClick={async (e) => {
-                e.stopPropagation();
-                setLoading(true);
-                setError(null);
-                try {
-                  const res = await fetch(`/api/services/${svc.name}`, {
-                    method: "DELETE",
-                    headers: { Authorization: `Bearer ${token}` },
-                  });
-                  if (!res.ok) throw new Error("Failed to delete service");
-                } catch (err: any) {
-                  setError(err.message);
-                } finally {
-                  setLoading(false);
-                }
-              }}
-            >
-              削除
-            </button>
-          </li>
-        ))}
-      </ul>
+
+      <div className="relative overflow-x-auto">
+        <table className="w-full text-sm text-left rtl:text-right text-gray-500 dark:text-gray-400">
+          <thead className="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
+            <tr>
+              <th scope="col" className="px-6 py-3">
+                Name
+              </th>
+              <th scope="col" className="px-6 py-3">
+                Type
+              </th>
+              <th scope="col" className="px-6 py-3">
+                IP
+              </th>
+              <th scope="col" className="px-6 py-3">
+                Ports
+              </th>
+              <th scope="col" className="px-6 py-3">
+                Action
+              </th>
+            </tr>
+          </thead>
+          <tbody>
+            {services.map((svc) => (
+              <tr key={svc.id} className="bg-white border-b dark:bg-gray-800 dark:border-gray-700 border-gray-200">
+                <th scope="row" className="px-6 py-4 font-medium text-gray-900 whitespace-nowrap dark:text-white">
+                  <a
+                    href="#"
+                    onClick={(e) => {
+                      e.preventDefault();
+                      setPage({ type: "services-detail", id: svc.name });
+                    }}
+                    style={{ fontWeight: "bold", cursor: "pointer", color: "#1976d2", textDecoration: "underline" }}
+                  >
+                    {svc.name}
+                  </a>
+                </th>
+                <td className="px-6 py-4">{svc.type}</td>
+                <td className="px-6 py-4">{svc.clusterIP}</td>
+                <td className="px-6 py-4">
+                  {svc.ports.map((port) => (
+                    <>
+                      <span>
+                        Port: {port.port}, TargetPort: {port.targetPort}, Protocol: {port.protocol ?? "tcp"}
+                      </span>
+                      <br />
+                    </>
+                  ))}
+                </td>
+                <td className="px-6 py-4">
+                  <button
+                    style={{
+                      marginLeft: 8,
+                      color: "#fff",
+                      background: "#d32f2f",
+                      border: "none",
+                      borderRadius: 4,
+                      padding: "2px 8px",
+                      cursor: "pointer",
+                    }}
+                    onClick={async (e) => {
+                      e.stopPropagation();
+                      setLoading(true);
+                      setError(null);
+                      try {
+                        const res = await fetch(`/api/services/${svc.name}`, {
+                          method: "DELETE",
+                          headers: { Authorization: `Bearer ${token}` },
+                        });
+                        if (!res.ok) throw new Error("Failed to delete service");
+                      } catch (err: any) {
+                        setError(err.message);
+                      } finally {
+                        setLoading(false);
+                      }
+                    }}
+                  >
+                    削除
+                  </button>
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
     </div>
   );
 }

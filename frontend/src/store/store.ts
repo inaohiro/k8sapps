@@ -29,13 +29,13 @@ export const setPageAtom = atom(null, (get, set, state: PageState) => {
 });
 
 export const fromPath = () => {
-  const [_, setPage] = useAtom(baseAtom)
+  const [_, setPage] = useAtom(baseAtom);
 
   const path = window.location.pathname;
-  const elements = path.split("/")
+  const elements = path.split("/");
 
-  if (elements.length=== 0 ) {
-    setPage({type: "token-issue"})
+  if (elements.length === 0) {
+    setPage({ type: "token-issue" });
     return;
   }
-}
+};
