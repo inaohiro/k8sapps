@@ -62,7 +62,7 @@ data:
       propagator: 'w3c',
     });
 
-    const url = "http://nginx:8080/api";
+    const url = "http://nginx/api";
 
     export default function () {
       const namespaces = [fakeName(), fakeName(), fakeName()];
