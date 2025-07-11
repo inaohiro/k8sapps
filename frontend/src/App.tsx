@@ -15,6 +15,7 @@ import { PodCreate } from "./component/PodCreate";
 import { DeploymentDetail } from "./component/DeploymentDetail";
 import { ServiceDetail } from "./component/ServiceDetail";
 import { PodDetail } from "./component/PodDetail";
+import { Sidebar } from "./Sidebar.page";
 
 export function App() {
   const { token, issueToken, loading, error } = useIssueToken();
@@ -75,7 +76,8 @@ export function App() {
   return (
     <>
       <AppPage>
-        <GlobalHeader issueToken={issueToken} setPage={setPage} />
+        <GlobalHeader issueToken={issueToken} />
+        <Sidebar setPage={setPage}/>
         <Page>{content}</Page>
       </AppPage>
     </>

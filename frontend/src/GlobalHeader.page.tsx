@@ -1,23 +1,14 @@
 import { useState } from "react";
-import { PageState } from "./store/store";
 
 export function GlobalHeader({
   issueToken,
-  setPage,
 }: {
   issueToken: (namespace: string) => void;
-  setPage: (t: PageState) => void;
 }) {
   const [namespace, setNamespace] = useState("");
 
   return (
     <div>
-      <div className="flex justify-start p-4 bg-white shadow gap-2">
-        <button onClick={() => setPage({ type: "deployments-list" })}>Deployments</button>
-        <button onClick={() => setPage({ type: "services-list" })}>Services</button>
-        <button onClick={() => setPage({ type: "pods-list" })}>Pods</button>
-      </div>
-
       <div className="flex justify-end p-4 bg-white shadow gap-2">
         <input
           type="text"
@@ -37,3 +28,4 @@ export function GlobalHeader({
     </div>
   );
 }
+
