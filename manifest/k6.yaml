@@ -62,7 +62,7 @@ data:
       propagator: 'w3c',
     });
 
-    const url = "http://nginx/api";
+    const url = "http://gateway:8080/api";
 
     export default function () {
       const namespaces = [fakeName(), fakeName(), fakeName()];
@@ -77,11 +77,11 @@ data:
           headers: { Authorization: `Bearer ${token}` },
         };
 
-        http.get(`${url}/${namespace}/\deployments`, headers);
-        http.get(`${url}/${namespace}/\pods`, headers);
-        http.get(`${url}/${namespace}/\services`, headers);
-        http.get(`${url}/${namespace}/\images`, headers);
-        http.get(`${url}/${namespace}/\flavors`, headers);
+        http.get(`${url}/deployments`, headers);
+        http.get(`${url}/pods`, headers);
+        http.get(`${url}/services`, headers);
+        http.get(`${url}/images`, headers);
+        http.get(`${url}/flavors`, headers);
       }
     }
 
