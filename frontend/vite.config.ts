@@ -4,7 +4,7 @@ import { resolve } from "node:path";
 import tailwindcss from "@tailwindcss/vite";
 
 export default defineConfig({
-  base: "./",
+  base: "/",
   root: "src",
   publicDir: resolve(__dirname, "public"),
   plugins: [react(), tailwindcss()],
