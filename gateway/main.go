@@ -240,11 +240,17 @@ func proxy(next http.Handler) http.Handler {
 
 		// トークン検証が成功したらアプリケーションにリクエスト送信
 		// 元のリクエストパスに /api/{namespace} をつける
-		endpoint, err := url.JoinPath(app_url, "api", namespace, strings.Join(strings.Split(r.URL.Path, "/")[2:], "/"))
-		if err != nil {
-			slog.Error("failed to url.JoinPath", slog.String("err", err.Error()))
-			writeJSON(w, http.StatusInternalServerError, map[string]string{"message": err.Error()})
-			return
+		var endpoint string
+		if namespace != "" {
+			var err error
+			endpoint, err = url.JoinPath(app_url, "api", namespace, strings.Join(strings.Split(r.URL.Path, "/")[2:], "/"))
+			if err != nil {
+				slog.Error("failed to url.JoinPath", slog.String("err", err.Error()))
+				writeJSON(w, http.StatusInternalServerError, map[string]string{"message": err.Error()})
+				return
+			}
+		} else {
+			endpoint = r.URL.Path
 		}
 
 		req, err := http.NewRequestWithContext(r.Context(), r.Method, endpoint, r.Body)

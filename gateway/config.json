@@ -14,5 +14,7 @@
   { "pattern": "POST /api/pods", "verify_token": true, "proxy": true },
   { "pattern": "GET /api/pods", "verify_token": true, "proxy": true },
   { "pattern": "GET /api/pods/{pod_name}", "verify_token": true, "proxy": true },
-  { "pattern": "DELETE /api/pods/{pod_name}", "verify_token": true, "proxy": true }
+  { "pattern": "DELETE /api/pods/{pod_name}", "verify_token": true, "proxy": true },
+  { "pattern": "GET /api/images", "proxy": true },
+  { "pattern": "GET /api/flavors", "proxy": true }
 ]

@@ -77,23 +77,6 @@ paths:
         '404':
           description: Deployment not found.
 
-  /api/{namespace}/images:
-    parameters:
-      - $ref: '#/components/parameters/Namespace'
-    get:
-      tags:
-        - image
-      summary: List images
-      description: Get a list of available images.
-      responses:
-        '200':
-          description: A list of images.
-          content:
-            application/json:
-              schema:
-                type: array
-                items:
-                  $ref: '#/components/schemas/Image'
   /api/{namespace}/pods:
     parameters:
       - $ref: '#/components/parameters/Namespace'
@@ -232,6 +215,37 @@ paths:
         '404':
           description: Service not found.
 
+  /api/images:
+    get:
+      tags:
+        - image
+      summary: List images
+      description: Get a list of available images.
+      responses:
+        '200':
+          description: A list of images.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Image'
+  /api/flavors:
+    get:
+      tags:
+        - flavor
+      summary: List flavors
+      description: Get a list of available flavors.
+      responses:
+        '200':
+          description: A list of flavors.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Flavor'
+
 components:
   parameters:
     Namespace:
@@ -241,6 +255,22 @@ components:
       schema:
         type: string
   schemas:
+    Token:
+      type: object
+      required:
+        - token
+      properties:
+        token:
+          type: string
+          description: JWT string
+    IssueTokenRequest:
+      type: object
+      required:
+        - namespace
+      properties:
+        namespace:
+          type: string
+          description: namespace
     Deployment:
       type: object
       required:
@@ -286,34 +316,6 @@ components:
           description: List of ports
           items:
             type: integer
-    Image:
-      type: object
-      required:
-        - name
-        - tag
-      properties:
-        name:
-          type: string
-          description: Image name
-        tag:
-          type: string
-          description: Image tag
-    Token:
-      type: object
-      required:
-        - token
-      properties:
-        token:
-          type: string
-          description: JWT string
-    IssueTokenRequest:
-      type: object
-      required:
-        - namespace
-      properties:
-        namespace:
-          type: string
-          description: namespace
     Pod:
       type: object
       required:
@@ -419,3 +421,26 @@ components:
           description: List of service ports
           items:
             $ref: '#/components/schemas/ServicePort'
+    Image:
+      type: object
+      required:
+        - name
+        - tag
+      properties:
+        name:
+          type: string
+          description: Image name
+        tag:
+          type: string
+          description: Image tag
+    Flavor:
+      type: object
+      required:
+        - name
+      properties:
+        name:
+          type: string
+          description: Image name
+        tag:
+          type: string
+          description: Image tag

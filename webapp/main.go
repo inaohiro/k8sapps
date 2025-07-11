@@ -119,8 +119,8 @@ func main() {
 		"/api/{namespace}/pods":        pod.Routes,
 		"/api/{namespace}/deployments": deployment.Routes,
 		"/api/{namespace}/services":    service.Routes,
-		"/api/{namespace}/images":      image.Routes,
-		"/api/{namespace}/flavors":     flavor.Routes,
+		"/api/images":                  image.Routes,
+		"/api/flavors":                 flavor.Routes,
 	}
 	for pattern, handler := range patternRouteMap {
 		r.Mount(pattern, otelhttp.NewHandler(handler, pattern))
