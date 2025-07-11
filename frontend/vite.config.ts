@@ -11,13 +11,5 @@ export default defineConfig({
   build: {
     outDir: resolve(__dirname, "dist"),
     emptyOutDir: true,
-    rollupOptions: {
-      input: {
-        "": resolve(__dirname, "src/index.html"),
-      },
-      output: {
-        assetFileNames: "assets/bundle.js",
-      },
-    },
   },
 });
