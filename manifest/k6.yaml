@@ -69,7 +69,7 @@ data:
 
       for (const namespace of namespaces) {
         const issueTokenReq = { namespace: namespace };
-        let res = http.post(url, JSON.stringify(issueTokenReq), {
+        let res = http.post(`${url}/tokens`, JSON.stringify(issueTokenReq), {
           headers: { "Content-Type": "application/json" },
         });
         const token = res.json().token;
