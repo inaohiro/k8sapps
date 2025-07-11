@@ -5,7 +5,7 @@ import (
 	"k8soperation/image/internal/models"
 )
 
-func ListImages(ctx context.Context) (any, error) {
+func ListImages(ctx context.Context) ([]models.Image, error) {
 	images, err := models.ListImages(ctx)
 	if err != nil {
 		return nil, err

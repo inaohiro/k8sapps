@@ -6,7 +6,6 @@ import (
 )
 
 func ListFlavors(ctx context.Context) ([]Flavor, error) {
-
 	var flavors []Flavor
 	err := core.Db.SelectContext(ctx, &flavors, "SELET * FROM flavors")
 	if err != nil {
@@ -15,4 +14,3 @@ func ListFlavors(ctx context.Context) ([]Flavor, error) {
 
 	return flavors, nil
 }
-
