@@ -77,7 +77,7 @@ export function App() {
     <>
       <AppPage>
         <GlobalHeader issueToken={issueToken} />
-        <Sidebar setPage={setPage}/>
+        <Sidebar setPage={setPage} />
         <Page>{content}</Page>
       </AppPage>
     </>

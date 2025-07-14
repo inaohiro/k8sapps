@@ -1,10 +1,6 @@
 import { useState } from "react";
 
-export function GlobalHeader({
-  issueToken,
-}: {
-  issueToken: (namespace: string) => void;
-}) {
+export function GlobalHeader({ issueToken }: { issueToken: (namespace: string) => void }) {
   const [namespace, setNamespace] = useState("");
 
   return (
@@ -28,4 +24,3 @@ export function GlobalHeader({
     </div>
   );
 }
-

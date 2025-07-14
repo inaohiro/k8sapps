@@ -14,14 +14,14 @@ export function PodCreate() {
   useEffect(() => {
     if (success) {
       const id = setTimeout(() => {
-        setPage({type: "pods-list"});
-      }, 1000)
+        setPage({ type: "pods-list" });
+      }, 1000);
 
       return () => {
         clearTimeout(id);
-      }
+      };
     }
-  }, [success])
+  }, [success]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();

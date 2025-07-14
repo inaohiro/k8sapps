@@ -1,14 +1,14 @@
 import React, { useEffect, useState } from "react";
 import { useToken } from "../../hooks/useToken";
 import { useSetAtom } from "jotai";
-import { setPageAtom } from "src/store/store";
+import { setPageAtom } from "../../store/store";
 
-type Image  = {
+type Image = {
   name: string;
-}
-type Flavor  = {
+};
+type Flavor = {
   name: string;
-}
+};
 
 export function DeploymentCreate() {
   const [name, setName] = useState("");
@@ -68,7 +68,7 @@ export function DeploymentCreate() {
         body: JSON.stringify({ name, image }),
       });
       if (!res.ok) throw new Error("Failed to create deployment");
-      setPage({type: "deployments-list"})
+      setPage({ type: "deployments-list" });
     } catch (err: any) {
       setError(err.message);
     }
@@ -116,4 +116,4 @@ export function DeploymentCreate() {
       {error && <div style={{ color: "red" }}>Error: {error}</div>}
     </div>
   );
-};
+}
