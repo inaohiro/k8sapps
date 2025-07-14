@@ -18,5 +18,11 @@ func ListImages(ctx context.Context) ([]Image, error) {
 		return nil, err
 	}
 
-	return images, nil
+	result := make([]Image, 0, len(images))
+	for _, v := range images {
+		result = append(result, Image{
+			Name: v.Name,
+		})
+	}
+	return result, nil
 }

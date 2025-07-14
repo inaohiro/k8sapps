@@ -40,6 +40,25 @@ data:
       PRIMARY KEY (name)
     )
       COMMENT = 'フレーバー';
+
+  2-data.sql: |
+    SET CHARACTER_SET_CLIENT = utf8mb4;
+    SET CHARACTER_SET_CONNECTION = utf8mb4;
+
+    USE db;
+
+    INSERT INTO images (name) VALUES
+    ('nginx:1.29.0'), ('nginx:otel'), ('nginx:1.28.0'),
+    ('httpd:2.4.64'),
+    ('busybox:1.37.0'), ('busybox:1.36'),
+    ('hello-world:latest');
+
+    INSERT INTO flavors (name) VALUES
+    ('c1m1'), ('c1m2'), ('c1m4'), ('c1m8'),
+    ('c2m1'), ('c2m2'), ('c2m4'), ('c2m8'),
+    ('c3m1'), ('c3m2'), ('c3m4'), ('c3m8'),
+    ('c4m1'), ('c4m2'), ('c4m4'), ('c4m8'),
+    ('c6m1'), ('c6m2'), ('c6m4'), ('c6m8');
 ---
 apiVersion: apps/v1
 kind: Deployment
