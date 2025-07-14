@@ -252,7 +252,13 @@ func proxy(next http.Handler) http.Handler {
 		} else {
 			// トークン検証なしで proxy が実行されることもある
 			// リクエストパスをそのまま使う
-			endpoint = r.URL.Path
+			var err error
+			endpoint, err = url.JoinPath(app_url, r.URL.Path)
+			if err != nil {
+				slog.Error("failed to url.JoinPath", slog.String("err", err.Error()))
+				writeJSON(w, http.StatusInternalServerError, map[string]string{"message": err.Error()})
+				return
+			}
 		}
 
 		req, err := http.NewRequestWithContext(r.Context(), r.Method, endpoint, r.Body)
