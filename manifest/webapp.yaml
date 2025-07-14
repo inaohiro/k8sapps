@@ -25,6 +25,11 @@ metadata:
   namespace: default
 data:
   OTEL_EXPORTER_OTLP_ENDPOINT: "http://otel-collector:4317"
+  DB_HOST: db
+  DB_PORT: "3306"
+  DB_USER: root
+  DB_PASSWORD: password
+  DB_NAME: db
 ---
 apiVersion: apps/v1
 kind: Deployment

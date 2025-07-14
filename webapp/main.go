@@ -3,6 +3,7 @@ package main
 import (
 	"context"
 	"fmt"
+	"k8soperation/core"
 	mymiddleware "k8soperation/core/middleware"
 	"k8soperation/deployment"
 	"k8soperation/flavor"
@@ -92,6 +93,8 @@ func initMeterProvider() *sdkmetric.MeterProvider {
 func main() {
 	ctx, cancel := signal.NotifyContext(context.Background(), os.Interrupt)
 	defer cancel()
+
+	core.InitDB()
 
 	tp := initTracerProvider()
 	defer func() {

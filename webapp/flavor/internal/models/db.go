@@ -7,7 +7,7 @@ import (
 
 func ListFlavors(ctx context.Context) ([]Flavor, error) {
 	var flavors []Flavor
-	err := core.Db.SelectContext(ctx, &flavors, "SELET * FROM flavors")
+	err := core.Db.SelectContext(ctx, &flavors, "SELECT * FROM flavors")
 	if err != nil {
 		return nil, err
 	}

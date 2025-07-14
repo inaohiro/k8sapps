@@ -1,5 +1,5 @@
 package models
 
 type Image struct {
-	name string `db:"name" json:"name"`
+	Name string `db:"name" json:"name"`
 }
