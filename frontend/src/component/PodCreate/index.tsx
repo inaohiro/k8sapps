@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { useToken } from "../../hooks/useToken";
 import { useSetAtom } from "jotai";
-import { setPageAtom } from "src/store/store";
+import { setPageAtom } from "../../store/store";
 
 export function PodCreate() {
   const [name, setName] = useState("");

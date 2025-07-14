@@ -1,5 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { useToken } from "../../hooks/useToken";
+import { useSetAtom } from "jotai";
+import { setPageAtom } from "../../store/store";
 
 interface ServicePort {
   name?: string;
@@ -26,6 +28,7 @@ export function ServiceCreate() {
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState(false);
   const { token } = useToken();
+  const setPage = useSetAtom(setPageAtom);
 
   const handlePortChange = (idx: number, field: keyof ServicePort, value: string | number) => {
     setPorts((prev) =>
@@ -37,6 +40,18 @@ export function ServiceCreate() {
 
   const addPort = () => setPorts((prev) => [...prev, { ...defaultPort }]);
   const removePort = (idx: number) => setPorts((prev) => prev.filter((_, i) => i !== idx));
+
+  useEffect(() => {
+    if (success) {
+      const id = setTimeout(() => {
+        setPage({ type: "services-list" });
+      }, 1000);
+
+      return () => {
+        clearTimeout(id);
+      };
+    }
+  }, [success]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
