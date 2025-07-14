@@ -236,12 +236,12 @@ func proxy(next http.Handler) http.Handler {
 		next.ServeHTTP(w, r)
 
 		// proxy するには token 検証が必要
-		namespace := r.Context().Value(contextKeyNamespace{}).(string)
+		namespace, ok := r.Context().Value(contextKeyNamespace{}).(string)
 
 		// トークン検証が成功したらアプリケーションにリクエスト送信
 		// 元のリクエストパスに /api/{namespace} をつける
 		var endpoint string
-		if namespace != "" {
+		if ok {
 			var err error
 			endpoint, err = url.JoinPath(app_url, "api", namespace, strings.Join(strings.Split(r.URL.Path, "/")[2:], "/"))
 			if err != nil {
@@ -250,6 +250,8 @@ func proxy(next http.Handler) http.Handler {
 				return
 			}
 		} else {
+			// トークン検証なしで proxy が実行されることもある
+			// リクエストパスをそのまま使う
 			endpoint = r.URL.Path
 		}
 
