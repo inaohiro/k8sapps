@@ -23,9 +23,15 @@ func FromRequest(r ServiceCreateRequest) ServiceCreate {
 func (s ServiceCreate) ToKubeService() *corev1.Service {
 	ports := make([]corev1.ServicePort, 0, len(s.Ports))
 	for _, p := range s.Ports {
+
+		// Port が１つの場合 Name は省略可能
+		name := ""
+		if p.Name != nil {
+			name = *p.Name
+		}
+
 		ports = append(ports, corev1.ServicePort{
-			// TODO: Port が１つの場合 Name は省略可能
-			Name:       *p.Name,
+			Name:       name,
 			Port:       int32(p.Port),
 			TargetPort: intstr.FromInt(p.TargetPort),
 			Protocol:   corev1.Protocol(p.Protocol),

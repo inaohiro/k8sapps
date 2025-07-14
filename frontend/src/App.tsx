@@ -1,7 +1,7 @@
 import { useAtom, useAtomValue, useSetAtom } from "jotai";
 import React, { useEffect } from "react";
 import { AppPage } from "./App.page";
-import DeploymentCreate from "./component/DeploymentCreate";
+import { DeploymentCreate } from "./component/DeploymentCreate";
 import { DeploymentList } from "./component/DeploymentList";
 import { PodList } from "./component/PodList";
 import { ServiceList } from "./component/ServiceList";

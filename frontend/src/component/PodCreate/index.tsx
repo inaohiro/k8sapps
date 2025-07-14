@@ -1,13 +1,7 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useToken } from "../../hooks/useToken";
-
-interface Pod {
-  id: string;
-  name: string;
-  status: string;
-  image: string;
-  created_at: string;
-}
+import { useSetAtom } from "jotai";
+import { setPageAtom } from "src/store/store";
 
 export function PodCreate() {
   const [name, setName] = useState("");
@@ -15,6 +9,19 @@ export function PodCreate() {
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState(false);
   const { token } = useToken();
+  const setPage = useSetAtom(setPageAtom);
+
+  useEffect(() => {
+    if (success) {
+      const id = setTimeout(() => {
+        setPage({type: "pods-list"});
+      }, 1000)
+
+      return () => {
+        clearTimeout(id);
+      }
+    }
+  }, [success])
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -28,8 +35,6 @@ export function PodCreate() {
       });
       if (!res.ok) throw new Error("Failed to create pod");
       setSuccess(true);
-      setName("");
-      setImage("");
     } catch (err: any) {
       setError(err.message);
     }
