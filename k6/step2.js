@@ -1,3 +1,4 @@
+import { sleep } from 'k6';
 import { check } from "k6";
 import tempo from "./jslib.js";
 
@@ -8,8 +9,7 @@ const http = new tempo.Client({
 const url = "http://gateway:8080/api";
 
 /**
- * 複数の namespace のリソース一覧を取得する
- * もしリソースがあれば、詳細取得も実行する
+ * Deployment, Service を作成する
  */
 export default function () {
   const namespaces = [fakeName(), fakeName(), fakeName()];
@@ -31,35 +31,52 @@ export default function () {
 
     // これ以降で必要な Authorization header
     const headers = {
-      headers: { Authorization: `Bearer ${token}` },
+      headers: {
+        Authorization: `Bearer ${token}`,
+        "Content-Type": "application/json",
+      },
     };
 
-    res = retry("get", `${url}/deployments`, headers);
-    check(res, { "response code was 200": (res) => res.status == 200 });
-    if (res.body.length > 100) {
-      let name = res.body[0]["name"];
-      retry("get", `${url}/deployments/${name}`, headers);
-    }
-
-    res = retry("get", `${url}/pods`, headers);
-    check(res, { "response code was 200": (res) => res.status == 200 });
-    if (res.body.length > 100) {
-      let name = res.body[0]["name"];
-      retry("get", `${url}/pods/${name}`, headers);
-    }
-
-    res = retry("get", `${url}/services`, headers);
-    check(res, { "response code was 200": (res) => res.status == 200 });
-    if (res.body.length > 100) {
-      let name = res.body[0]["name"];
-      retry("get", `${url}/services/${name}`, headers);
-    }
-
+    // image 一覧
     res = retry("get", `${url}/images`, headers);
+    let images = res.json();
+    let index = Math.floor(Math.random() * images.length);
+    let image_name = images[index].name;
+
+    // 作成時のリクエストボディ
+    const name = fakeName();
+    const createDeployment = { name: name, image: image_name };
+    const createService = {
+      name: name,
+      type: "ClusterIP",
+      ports: [{ port: 80, targetPort: 80, protocol: "TCP" }],
+    };
+
+    res = retry(
+      "post",
+      `${url}/deployments`,
+      headers,
+      JSON.stringify(createDeployment)
+    );
+    check(res, { "response code was 200": (res) => res.status == 200 });
+    res = retry("get", `${url}/deployments/${name}`, headers);
+    check(res, { "response code was 200": (res) => res.status == 200 });
+    res = retry(
+      "post",
+      `${url}/services`,
+      headers,
+      JSON.stringify(createService)
+    );
+    check(res, { "response code was 200": (res) => res.status == 200 });
+    res = retry("get", `${url}/services/${name}`, headers);
     check(res, { "response code was 200": (res) => res.status == 200 });
 
-    res = retry("get", `${url}/flavors`, headers);
-    check(res, { "response code was 200": (res) => res.status == 200 });
+    sleep(5);
+
+    retry("delete", `${url}/deployments/${name}`, headers)
+    retry("delete", `${url}/services/${name}`, headers)
+
+    sleep(5);
   }
 }
 

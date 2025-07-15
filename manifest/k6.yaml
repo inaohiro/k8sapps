@@ -16,11 +16,9 @@ metadata:
 data:
   scripts.js: |
     import step1 from "./step1.js";
-    // import step2 from "./step2";
-    // import step3 from "./step3";
+    import step2 from "./step2.js";
 
-    // export { step1, step2, step3 };
-    export { step1 };
+    export { step1, step2 };
 
     export const options = {
       scenarios: {
@@ -31,57 +29,205 @@ data:
           iterations: 1,
           startTime: "0s",
         },
-        // step2: {
-        //   executor: "per-vu-iterations",
-        //   exec: "step2",
-        //   vus: 1,
-        //   iterations: 1,
-        //   startTime: "0s",
-        // },
-        // step3: {
-        //   executor: "per-vu-iterations",
-        //   exec: "step3",
-        //   vus: 1,
-        //   iterations: 1,
-        //   startTime: "0s",
-        // },
+        step2: {
+          executor: "per-vu-iterations",
+          exec: "step2",
+          vus: 1,
+          iterations: 1,
+          startTime: "0s",
+        },
       },
     };
 
     export default function () {}
   step1.js: |
-    import { check } from 'k6';
-    import tempo from './jslib.js';
+    import { check } from "k6";
+    import tempo from "./jslib.js";
 
     const http = new tempo.Client({
-      propagator: 'w3c',
+      propagator: "w3c",
     });
 
     const url = "http://gateway:8080/api";
 
+    /**
+     * 複数の namespace のリソース一覧を取得する
+     * もしリソースがあれば、詳細取得も実行する
+     */
     export default function () {
       const namespaces = [fakeName(), fakeName(), fakeName()];
 
       for (const namespace of namespaces) {
+        // token 発行
         const issueTokenReq = { namespace: namespace };
-        let res = http.post(`${url}/tokens`, JSON.stringify(issueTokenReq), {
-          headers: { "Content-Type": "application/json" },
-        });
+        let res = retry(
+          "post",
+          `${url}/tokens`,
+          {
+            headers: { "Content-Type": "application/json" },
+          },
+          JSON.stringify(issueTokenReq)
+        );
+
+        // レスポンスから token 取得
         const token = res.json().token;
+
+        // これ以降で必要な Authorization header
         const headers = {
           headers: { Authorization: `Bearer ${token}` },
         };
 
-        http.get(`${url}/deployments`, headers);
-        http.get(`${url}/pods`, headers);
-        http.get(`${url}/services`, headers);
-        http.get(`${url}/images`, headers);
-        http.get(`${url}/flavors`, headers);
+        res = retry("get", `${url}/deployments`, headers);
+        check(res, { "response code was 200": (res) => res.status == 200 });
+        if (res.body.length > 100) {
+          let name = res.body[0]["name"];
+          retry("get", `${url}/deployments/${name}`, headers);
+        }
+
+        res = retry("get", `${url}/pods`, headers);
+        check(res, { "response code was 200": (res) => res.status == 200 });
+        if (res.body.length > 100) {
+          let name = res.body[0]["name"];
+          retry("get", `${url}/pods/${name}`, headers);
+        }
+
+        res = retry("get", `${url}/services`, headers);
+        check(res, { "response code was 200": (res) => res.status == 200 });
+        if (res.body.length > 100) {
+          let name = res.body[0]["name"];
+          retry("get", `${url}/services/${name}`, headers);
+        }
+
+        res = retry("get", `${url}/images`, headers);
+        check(res, { "response code was 200": (res) => res.status == 200 });
+
+        res = retry("get", `${url}/flavors`, headers);
+        check(res, { "response code was 200": (res) => res.status == 200 });
       }
     }
 
     function fakeName() {
       return Math.random().toString(32).substring(2);
+    }
+
+    function retry(method, url, params, body) {
+      var res;
+      for (let retries = 3; retries > 0; retries--) {
+        if (["get", "delete"].includes(method)) {
+          res = http[method](url, params);
+        } else {
+          res = http[method](url, body, params);
+        }
+        if (res.status < 300) {
+          return res;
+        }
+      }
+
+      return res;
+    }
+
+
+  step2.js: |
+    import { sleep } from 'k6';
+    import { check } from "k6";
+    import tempo from "./jslib.js";
+
+    const http = new tempo.Client({
+      propagator: "w3c",
+    });
+
+    const url = "http://gateway:8080/api";
+
+    /**
+     * Deployment, Service を作成する
+     */
+    export default function () {
+      const namespaces = [fakeName(), fakeName(), fakeName()];
+
+      for (const namespace of namespaces) {
+        // token 発行
+        const issueTokenReq = { namespace: namespace };
+        let res = retry(
+          "post",
+          `${url}/tokens`,
+          {
+            headers: { "Content-Type": "application/json" },
+          },
+          JSON.stringify(issueTokenReq)
+        );
+
+        // レスポンスから token 取得
+        const token = res.json().token;
+
+        // これ以降で必要な Authorization header
+        const headers = {
+          headers: {
+            Authorization: `Bearer ${token}`,
+            "Content-Type": "application/json",
+          },
+        };
+
+        // image 一覧
+        res = retry("get", `${url}/images`, headers);
+        let images = res.json();
+        let index = Math.floor(Math.random() * images.length);
+        let image_name = images[index].name;
+
+        // 作成時のリクエストボディ
+        const name = fakeName();
+        const createDeployment = { name: name, image: image_name };
+        const createService = {
+          name: name,
+          type: "ClusterIP",
+          ports: [{ port: 80, targetPort: 80, protocol: "TCP" }],
+        };
+
+        res = retry(
+          "post",
+          `${url}/deployments`,
+          headers,
+          JSON.stringify(createDeployment)
+        );
+        check(res, { "response code was 200": (res) => res.status == 200 });
+        res = retry("get", `${url}/deployments/${name}`, headers);
+        check(res, { "response code was 200": (res) => res.status == 200 });
+        res = retry(
+          "post",
+          `${url}/services`,
+          headers,
+          JSON.stringify(createService)
+        );
+        check(res, { "response code was 200": (res) => res.status == 200 });
+        res = retry("get", `${url}/services/${name}`, headers);
+        check(res, { "response code was 200": (res) => res.status == 200 });
+
+        sleep(5);
+
+        retry("delete", `${url}/deployments/${name}`, headers)
+        retry("delete", `${url}/services/${name}`, headers)
+
+        sleep(5);
+      }
+    }
+
+    function fakeName() {
+      return Math.random().toString(32).substring(2);
+    }
+
+    function retry(method, url, params, body) {
+      var res;
+      for (let retries = 3; retries > 0; retries--) {
+        if (["get", "delete"].includes(method)) {
+          res = http[method](url, params);
+        } else {
+          res = http[method](url, body, params);
+        }
+        if (res.status < 300) {
+          return res;
+        }
+      }
+
+      return res;
     }
 
   jslib.js: |
