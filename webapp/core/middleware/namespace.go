@@ -17,6 +17,12 @@ func CreateNamespace(next http.Handler) http.Handler {
 			next.ServeHTTP(w, r)
 			return
 		}
+		if strings.HasPrefix(r.URL.Path, "/api/images") ||
+			strings.HasPrefix(r.URL.Path, "/api/flavors") ||
+			strings.HasPrefix(r.URL.Path, "/api/namespace") {
+			next.ServeHTTP(w, r)
+			return
+		}
 		namespace := strings.Split(r.URL.Path, "/")[2]
 
 		// client-go 取得
