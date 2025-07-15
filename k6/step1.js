@@ -59,7 +59,10 @@ export default function () {
     check(res, { "response code was 200": (res) => res.status == 200 });
 
     res = retry("get", `${url}/flavors`, headers);
-    check(res, { "response code was 200": (res) => res.status == 200 });
+    check(res, { "response code was 200": (res) =>ores.status == 200 });
+
+    // 終わったら namespace を消す
+    retry("delete", `${url}/namespace/${namespace}`)
   }
 }
 

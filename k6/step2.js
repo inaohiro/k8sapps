@@ -76,7 +76,10 @@ export default function () {
     retry("delete", `${url}/deployments/${name}`, headers)
     retry("delete", `${url}/services/${name}`, headers)
 
-    sleep(5);
+    sleep(10);
+
+    // 終わったら namespace を消す
+    retry("delete", `${url}/namespace/${namespace}`)
   }
 }
 

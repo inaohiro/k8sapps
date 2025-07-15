@@ -8,6 +8,7 @@ import (
 	"k8soperation/deployment"
 	"k8soperation/flavor"
 	"k8soperation/image"
+	"k8soperation/namespace"
 	"k8soperation/pod"
 	"k8soperation/service"
 	"log"
@@ -124,6 +125,7 @@ func main() {
 		"/api/{namespace}/services":    service.Routes,
 		"/api/images":                  image.Routes,
 		"/api/flavors":                 flavor.Routes,
+		"/api/namespace":               namespace.Routes,
 	}
 	for pattern, handler := range patternRouteMap {
 		r.Mount(pattern, otelhttp.NewHandler(handler, pattern))
