@@ -2,6 +2,7 @@ package middleware
 
 import (
 	"k8soperation/core"
+	"log/slog"
 	"net/http"
 	"strings"
 
@@ -16,7 +17,7 @@ func CreateNamespace(next http.Handler) http.Handler {
 			next.ServeHTTP(w, r)
 			return
 		}
-		namespace := strings.Split(r.URL.Path, "/")[1]
+		namespace := strings.Split(r.URL.Path, "/")[2]
 
 		// client-go 取得
 		clientset, err := core.GetKubeClient()
@@ -31,7 +32,10 @@ func CreateNamespace(next http.Handler) http.Handler {
 				Name: namespace,
 			},
 		}
-		clientset.CoreV1().Namespaces().Create(r.Context(), nsName, metav1.CreateOptions{})
+		_, err = clientset.CoreV1().Namespaces().Create(r.Context(), nsName, metav1.CreateOptions{})
+		if err != nil {
+			slog.Error("failed to create namespace", slog.String("err", err.Error()))
+		}
 
 		next.ServeHTTP(w, r)
 	})
