@@ -103,6 +103,9 @@ data:
 
         res = retry("get", `${url}/flavors`, headers);
         check(res, { "response code was 200": (res) => res.status == 200 });
+
+        // 終わったら namespace を消す
+        retry("delete", `${url}/namespace/${namespace}`)
       }
     }
 
@@ -206,7 +209,10 @@ data:
         retry("delete", `${url}/deployments/${name}`, headers)
         retry("delete", `${url}/services/${name}`, headers)
 
-        sleep(5);
+        sleep(10);
+
+        // 終わったら namespace を消す
+        retry("delete", `${url}/namespace/${namespace}`)
       }
     }
 
