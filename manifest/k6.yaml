@@ -98,14 +98,14 @@ data:
           retry("get", `${url}/services/${name}`, headers);
         }
 
-        res = retry("get", `${url}/images`, headers);
+        res = retry("get", `${url}/images`);
         check(res, { "response code was 200": (res) => res.status == 200 });
 
-        res = retry("get", `${url}/flavors`, headers);
-        check(res, { "response code was 200": (res) => res.status == 200 });
+        res = retry("get", `${url}/flavors`);
+        check(res, { "response code was 200": (res) =>ores.status == 200 });
 
         // 終わったら namespace を消す
-        retry("delete", `${url}/namespace/${namespace}`)
+        retry("del", `${url}/namespace/${namespace}`)
       }
     }
 
@@ -116,7 +116,7 @@ data:
     function retry(method, url, params, body) {
       var res;
       for (let retries = 3; retries > 0; retries--) {
-        if (["get", "delete"].includes(method)) {
+        if (method === "get" || method === "del") {
           res = http[method](url, params);
         } else {
           res = http[method](url, body, params);
@@ -128,7 +128,6 @@ data:
 
       return res;
     }
-
 
   step2.js: |
     import { sleep } from 'k6';
@@ -171,7 +170,7 @@ data:
         };
 
         // image 一覧
-        res = retry("get", `${url}/images`, headers);
+        res = retry("get", `${url}/images`);
         let images = res.json();
         let index = Math.floor(Math.random() * images.length);
         let image_name = images[index].name;
@@ -212,7 +211,7 @@ data:
         sleep(10);
 
         // 終わったら namespace を消す
-        retry("delete", `${url}/namespace/${namespace}`)
+        retry("del", `${url}/namespace/${namespace}`)
       }
     }
 
@@ -223,7 +222,7 @@ data:
     function retry(method, url, params, body) {
       var res;
       for (let retries = 3; retries > 0; retries--) {
-        if (["get", "delete"].includes(method)) {
+        if (method === "get" || method === "del") {
           res = http[method](url, params);
         } else {
           res = http[method](url, body, params);

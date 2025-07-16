@@ -32,15 +32,20 @@ func CreateNamespace(next http.Handler) http.Handler {
 			return
 		}
 
-		// namespace 作成
-		nsName := &corev1.Namespace{
-			ObjectMeta: metav1.ObjectMeta{
-				Name: namespace,
-			},
-		}
-		_, err = clientset.CoreV1().Namespaces().Create(r.Context(), nsName, metav1.CreateOptions{})
+		_, err = clientset.CoreV1().Namespaces().Get(r.Context(), namespace, metav1.GetOptions{})
 		if err != nil {
-			slog.Error("failed to create namespace", slog.String("err", err.Error()))
+			// if not found, create
+
+			// namespace 作成
+			nsName := &corev1.Namespace{
+				ObjectMeta: metav1.ObjectMeta{
+					Name: namespace,
+				},
+			}
+			_, err = clientset.CoreV1().Namespaces().Create(r.Context(), nsName, metav1.CreateOptions{})
+			if err != nil {
+				slog.Error("failed to create namespace", slog.String("err", err.Error()))
+			}
 		}
 
 		next.ServeHTTP(w, r)

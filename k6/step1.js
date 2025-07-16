@@ -62,7 +62,7 @@ export default function () {
     check(res, { "response code was 200": (res) =>ores.status == 200 });
 
     // 終わったら namespace を消す
-    retry("delete", `${url}/namespace/${namespace}`)
+    retry("del", `${url}/namespace/${namespace}`, headers)
   }
 }
 
@@ -73,7 +73,7 @@ function fakeName() {
 function retry(method, url, params, body) {
   var res;
   for (let retries = 3; retries > 0; retries--) {
-    if (["get", "delete"].includes(method)) {
+    if (method === "get" || method === "del") {
       res = http[method](url, params);
     } else {
       res = http[method](url, body, params);

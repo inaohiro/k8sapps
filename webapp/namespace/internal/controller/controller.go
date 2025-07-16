@@ -1,7 +1,6 @@
 package controller
 
 import (
-	"k8soperation/core"
 	"k8soperation/namespace/internal/service"
 	"net/http"
 
@@ -23,5 +22,5 @@ func namespaceDelete(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	core.WriteJSON(w, http.StatusNoContent, nil)
+	w.WriteHeader(http.StatusNoContent)
 }
