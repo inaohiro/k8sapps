@@ -73,8 +73,8 @@ export default function () {
 
     sleep(5);
 
-    retry("delete", `${url}/deployments/${name}`, headers)
-    retry("delete", `${url}/services/${name}`, headers)
+    retry("del", `${url}/deployments/${name}`, headers)
+    retry("del", `${url}/services/${name}`, headers)
 
     sleep(10);
 
