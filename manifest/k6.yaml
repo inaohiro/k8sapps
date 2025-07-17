@@ -113,20 +113,29 @@ data:
       return Math.random().toString(32).substring(2);
     }
 
-    function retry(method, url, params, body) {
-      var res;
-      for (let retries = 3; retries > 0; retries--) {
-        if (method === "get" || method === "del") {
-          res = http[method](url, params);
-        } else {
-          res = http[method](url, body, params);
-        }
-        if (res.status < 300) {
-          return res;
-        }
+    function retry(method, url, params, body, count) {
+      if (count === undefined) {
+        count = 0;
       }
 
-      return res;
+      var res;
+      if (method === "get" || method === "del") {
+        res = http[method](url, params);
+      } else {
+        res = http[method](url, body, params);
+      }
+      if (res.status < 300) {
+        return res;
+      }
+
+      // 最大 5 回まで
+      if (count > 5) {
+        return res;
+      }
+
+      sleep(1 + (2**count) * Math.round(1 + Math.random()));
+
+      return retry(method, url, params, body, count+1)
     }
 
   step2.js: |
@@ -219,20 +228,29 @@ data:
       return Math.random().toString(32).substring(2);
     }
 
-    function retry(method, url, params, body) {
-      var res;
-      for (let retries = 3; retries > 0; retries--) {
-        if (method === "get" || method === "del") {
-          res = http[method](url, params);
-        } else {
-          res = http[method](url, body, params);
-        }
-        if (res.status < 300) {
-          return res;
-        }
+    function retry(method, url, params, body, count) {
+      if (count === undefined) {
+        count = 0;
       }
 
-      return res;
+      var res;
+      if (method === "get" || method === "del") {
+        res = http[method](url, params);
+      } else {
+        res = http[method](url, body, params);
+      }
+      if (res.status < 300) {
+        return res;
+      }
+
+      // 最大 5 回まで
+      if (count > 5) {
+        return res;
+      }
+
+      sleep(1 + (2**count) * Math.round(1 + Math.random()));
+
+      return retry(method, url, params, body, count+1)
     }
 
   jslib.js: |
