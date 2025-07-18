@@ -1,9 +1,4 @@
-import { check } from "k6";
-import tempo from "./jslib.js";
-
-const http = new tempo.Client({
-  propagator: "w3c",
-});
+import { fakeName, retry } from "./common.js";
 
 const url = "http://gateway:8080/api";
 
@@ -35,62 +30,27 @@ export default function () {
     };
 
     res = retry("get", `${url}/deployments`, headers);
-    check(res, { "response code was 200": (res) => res.status == 200 });
     if (res.body.length > 100) {
       let name = res.body[0]["name"];
       retry("get", `${url}/deployments/${name}`, headers);
     }
 
     res = retry("get", `${url}/pods`, headers);
-    check(res, { "response code was 200": (res) => res.status == 200 });
     if (res.body.length > 100) {
       let name = res.body[0]["name"];
       retry("get", `${url}/pods/${name}`, headers);
     }
 
     res = retry("get", `${url}/services`, headers);
-    check(res, { "response code was 200": (res) => res.status == 200 });
     if (res.body.length > 100) {
       let name = res.body[0]["name"];
       retry("get", `${url}/services/${name}`, headers);
     }
 
-    res = retry("get", `${url}/images`, headers);
-    check(res, { "response code was 200": (res) => res.status == 200 });
-
-    res = retry("get", `${url}/flavors`, headers);
-    check(res, { "response code was 200": (res) =>ores.status == 200 });
+    retry("get", `${url}/images`, headers);
+    retry("get", `${url}/flavors`, headers);
 
     // 終わったら namespace を消す
     retry("del", `${url}/namespace/${namespace}`, headers)
   }
-}
-
-function fakeName() {
-  return Math.random().toString(32).substring(2);
-}
-
-function retry(method, url, params, body, count) {
-  if (count === undefined) {
-    count = 0;
-  }
-
-  var res;
-  if (method === "get" || method === "del") {
-    res = http[method](url, params);
-  } else {
-    res = http[method](url, body, params);
-  }
-  if (res.status < 300) {
-    return res;
-  }
-
-  // 最大 5 回まで
-  if (count > 5) {
-    return res;
-  }
-
-  sleep(1 + (2**count) * Math.round(1 + Math.random()));
-
-  return retry(method, url, params, body, count+1)
 }

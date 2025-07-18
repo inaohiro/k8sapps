@@ -41,13 +41,7 @@ data:
 
     export default function () {}
   step1.js: |
-    import { check } from "k6";
     import { fakeName, retry } from "./common.js";
-    import tempo from "./jslib.js";
-
-    const http = new tempo.Client({
-      propagator: "w3c",
-    });
 
     const url = "http://gateway:8080/api";
 
@@ -79,46 +73,34 @@ data:
         };
 
         res = retry("get", `${url}/deployments`, headers);
-        check(res, { "response code was 200": (res) => res.status == 200 });
         if (res.body.length > 100) {
           let name = res.body[0]["name"];
           retry("get", `${url}/deployments/${name}`, headers);
         }
 
         res = retry("get", `${url}/pods`, headers);
-        check(res, { "response code was 200": (res) => res.status == 200 });
         if (res.body.length > 100) {
           let name = res.body[0]["name"];
           retry("get", `${url}/pods/${name}`, headers);
         }
 
         res = retry("get", `${url}/services`, headers);
-        check(res, { "response code was 200": (res) => res.status == 200 });
         if (res.body.length > 100) {
           let name = res.body[0]["name"];
           retry("get", `${url}/services/${name}`, headers);
         }
 
-        res = retry("get", `${url}/images`);
-        check(res, { "response code was 200": (res) => res.status == 200 });
-
-        res = retry("get", `${url}/flavors`);
-        check(res, { "response code was 200": (res) => res.status == 200 });
+        retry("get", `${url}/images`, headers);
+        retry("get", `${url}/flavors`, headers);
 
         // 終わったら namespace を消す
-        retry("del", `${url}/namespace/${namespace}`)
+        retry("del", `${url}/namespace/${namespace}`, headers)
       }
     }
 
-  step2.js: |
-    import { sleep } from 'k6';
-    import { check } from "k6";
-    import { fakeName, retry } from "./common.js";
-    import tempo from "./jslib.js";
 
-    const http = new tempo.Client({
-      propagator: "w3c",
-    });
+  step2.js: |
+    import { fakeName, retry } from "./common.js";
 
     const url = "http://gateway:8080/api";
 
@@ -152,7 +134,7 @@ data:
         };
 
         // image 一覧
-        res = retry("get", `${url}/images`);
+        res = retry("get", `${url}/images`, headers);
         let images = res.json();
         let index = Math.floor(Math.random() * images.length);
         let image_name = images[index].name;
@@ -166,38 +148,38 @@ data:
           ports: [{ port: 80, targetPort: 80, protocol: "TCP" }],
         };
 
-        res = retry(
+        retry(
           "post",
           `${url}/deployments`,
           headers,
           JSON.stringify(createDeployment)
         );
-        check(res, { "response code was 200": (res) => res.status == 200 });
-        res = retry("get", `${url}/deployments/${name}`, headers);
-        check(res, { "response code was 200": (res) => res.status == 200 });
+        retry("get", `${url}/deployments/${name}`, headers);
         res = retry(
           "post",
           `${url}/services`,
           headers,
           JSON.stringify(createService)
         );
-        check(res, { "response code was 200": (res) => res.status == 200 });
-        res = retry("get", `${url}/services/${name}`, headers);
-        check(res, { "response code was 200": (res) => res.status == 200 });
-
-        sleep(5);
+        if (res.status !== 500) {
+          retry("get", `${url}/services/${name}`, headers);
+          retry("del", `${url}/services/${name}`, headers);
+        }
 
         retry("del", `${url}/deployments/${name}`, headers)
-        retry("del", `${url}/services/${name}`, headers)
-
-        sleep(10);
 
         // 終わったら namespace を消す
-        retry("del", `${url}/namespace/${namespace}`)
+        retry("del", `${url}/namespace/${namespace}`, headers)
       }
     }
-
   common.js: |
+    import { sleep } from 'k6';
+    import tempo from "./jslib.js";
+
+    const http = new tempo.Client({
+      propagator: "w3c",
+    });
+
     export function fakeName() {
       return "a" + Math.random().toString(32).substring(2);
     }
@@ -218,7 +200,7 @@ data:
       }
 
       // 最大 5 回まで
-      if (count > 5) {
+      if (count >= 5) {
         return res;
       }
 

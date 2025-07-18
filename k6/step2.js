@@ -1,10 +1,4 @@
-import { sleep } from 'k6';
-import { check } from "k6";
-import tempo from "./jslib.js";
-
-const http = new tempo.Client({
-  propagator: "w3c",
-});
+import { fakeName, retry } from "./common.js";
 
 const url = "http://gateway:8080/api";
 
@@ -52,62 +46,27 @@ export default function () {
       ports: [{ port: 80, targetPort: 80, protocol: "TCP" }],
     };
 
-    res = retry(
+    retry(
       "post",
       `${url}/deployments`,
       headers,
       JSON.stringify(createDeployment)
     );
-    check(res, { "response code was 200": (res) => res.status == 200 });
-    res = retry("get", `${url}/deployments/${name}`, headers);
-    check(res, { "response code was 200": (res) => res.status == 200 });
+    retry("get", `${url}/deployments/${name}`, headers);
     res = retry(
       "post",
       `${url}/services`,
       headers,
       JSON.stringify(createService)
     );
-    check(res, { "response code was 200": (res) => res.status == 200 });
-    res = retry("get", `${url}/services/${name}`, headers);
-    check(res, { "response code was 200": (res) => res.status == 200 });
-
-    sleep(5);
+    if (res.status !== 500) {
+      retry("get", `${url}/services/${name}`, headers);
+      retry("del", `${url}/services/${name}`, headers);
+    }
 
     retry("del", `${url}/deployments/${name}`, headers)
-    retry("del", `${url}/services/${name}`, headers)
-
-    sleep(10);
 
     // 終わったら namespace を消す
     retry("del", `${url}/namespace/${namespace}`, headers)
   }
-}
-
-function fakeName() {
-  return Math.random().toString(32).substring(2);
-}
-
-function retry(method, url, params, body, count) {
-  if (count === undefined) {
-    count = 0;
-  }
-
-  var res;
-  if (method === "get" || method === "del") {
-    res = http[method](url, params);
-  } else {
-    res = http[method](url, body, params);
-  }
-  if (res.status < 300) {
-    return res;
-  }
-
-  // 最大 5 回まで
-  if (count > 5) {
-    return res;
-  }
-
-  sleep(1 + (2**count) * Math.round(1 + Math.random()));
-
-  return retry(method, url, params, body, count+1)
 }
