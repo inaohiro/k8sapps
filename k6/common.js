@@ -15,8 +15,10 @@ export function retry(method, url, params, body, count) {
   }
 
   var res;
-  if (method === "get" || method === "del") {
+  if (method === "get") {
     res = http[method](url, params);
+  } else if (method === "del") {
+    res = http[method](url, null, params);
   } else {
     res = http[method](url, body, params);
   }
