@@ -2,6 +2,7 @@ package controller
 
 import (
 	"k8soperation/namespace/internal/service"
+	"log/slog"
 	"net/http"
 
 	"github.com/go-chi/chi/v5"
@@ -18,6 +19,7 @@ func namespaceDelete(w http.ResponseWriter, r *http.Request) {
 	name := chi.URLParam(r, "namespaceName")
 	err := service.DeleteNamespace(r.Context(), name)
 	if err != nil {
+		slog.Error(err.Error())
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}

@@ -2,6 +2,7 @@ package controller
 
 import (
 	"encoding/json"
+	"log/slog"
 	"net/http"
 
 	"k8soperation/core"
@@ -24,6 +25,7 @@ func serviceIndex(w http.ResponseWriter, r *http.Request) {
 	namespace := chi.URLParam(r, "namespace")
 	services, err := service.ListServices(r.Context(), namespace)
 	if err != nil {
+		slog.Error(err.Error())
 		http.Error(w, "Failed to list services: "+err.Error(), http.StatusInternalServerError)
 		return
 	}
@@ -35,6 +37,7 @@ func serviceDetail(w http.ResponseWriter, r *http.Request) {
 	serviceID := chi.URLParam(r, "serviceID")
 	svc, err := service.GetService(r.Context(), namespace, serviceID)
 	if err != nil {
+		slog.Error(err.Error())
 		http.Error(w, "Failed to get service: "+err.Error(), http.StatusInternalServerError)
 		return
 	}
@@ -52,6 +55,7 @@ func serviceCreate(w http.ResponseWriter, r *http.Request) {
 	dto := models.FromRequest(svcObj)
 	created, err := service.CreateService(r.Context(), namespace, dto)
 	if err != nil {
+		slog.Error(err.Error())
 		http.Error(w, "Failed to create service: "+err.Error(), http.StatusInternalServerError)
 		return
 	}
@@ -63,6 +67,7 @@ func serviceDelete(w http.ResponseWriter, r *http.Request) {
 	serviceID := chi.URLParam(r, "serviceID")
 	err := service.DeleteService(r.Context(), namespace, serviceID)
 	if err != nil {
+		slog.Error(err.Error())
 		http.Error(w, "Failed to delete service: "+err.Error(), http.StatusInternalServerError)
 		return
 	}

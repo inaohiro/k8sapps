@@ -3,6 +3,7 @@ package controller
 import (
 	"encoding/json"
 	"k8soperation/image/internal/service"
+	"log/slog"
 	"net/http"
 
 	"github.com/go-chi/chi/v5"
@@ -17,6 +18,7 @@ func Controller() http.Handler {
 func imageIndex(w http.ResponseWriter, r *http.Request) {
 	images, err := service.ListImages(r.Context())
 	if err != nil {
+		slog.Error(err.Error())
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}

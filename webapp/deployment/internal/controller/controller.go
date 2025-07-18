@@ -2,6 +2,7 @@ package controller
 
 import (
 	"encoding/json"
+	"log/slog"
 	"net/http"
 
 	"k8soperation/core"
@@ -24,6 +25,7 @@ func deploymentIndex(w http.ResponseWriter, r *http.Request) {
 	namespace := chi.URLParam(r, "namespace")
 	deployments, err := service.ListDeployments(r.Context(), namespace)
 	if err != nil {
+		slog.Error(err.Error())
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
@@ -35,6 +37,7 @@ func deploymentDetail(w http.ResponseWriter, r *http.Request) {
 	deploymentName := chi.URLParam(r, "deploymentName")
 	deployment, err := service.GetDeployment(r.Context(), namespace, deploymentName)
 	if err != nil {
+		slog.Error(err.Error())
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
@@ -51,6 +54,7 @@ func deploymentCreate(w http.ResponseWriter, r *http.Request) {
 	dto := models.FromRequest(req)
 	created, err := service.CreateDeployment(r.Context(), namespace, dto)
 	if err != nil {
+		slog.Error(err.Error())
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
@@ -61,6 +65,7 @@ func deploymentDelete(w http.ResponseWriter, r *http.Request) {
 	namespace := chi.URLParam(r, "namespace")
 	deploymentName := chi.URLParam(r, "deploymentName")
 	if err := service.DeleteDeployment(r.Context(), namespace, deploymentName); err != nil {
+		slog.Error(err.Error())
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
