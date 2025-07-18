@@ -1,3 +1,4 @@
+import { sleep } from 'k6';
 import { fakeName, retry } from "./common.js";
 
 const url = "http://gateway:8080/api";
@@ -52,5 +53,6 @@ export default function () {
 
     // 終わったら namespace を消す
     retry("del", `${url}/namespace/${namespace}`, headers)
+    sleep(1)
   }
 }
