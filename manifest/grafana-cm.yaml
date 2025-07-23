@@ -139,7 +139,7 @@ data:
             "overrides": []
           },
           "gridPos": {
-            "h": 6,
+            "h": 7,
             "w": 6,
             "x": 0,
             "y": 1
@@ -182,8 +182,8 @@ data:
         },
         {
           "datasource": {
-            "type": "tempo",
-            "uid": "tempo"
+            "type": "prometheus",
+            "uid": "prometheus"
           },
           "fieldConfig": {
             "defaults": {
@@ -206,7 +206,7 @@ data:
                   "tooltip": false,
                   "viz": false
                 },
-                "insertNulls": 60000,
+                "insertNulls": false,
                 "lineInterpolation": "linear",
                 "lineWidth": 1,
                 "pointSize": 5,
@@ -214,7 +214,7 @@ data:
                   "type": "linear"
                 },
                 "showPoints": "auto",
-                "spanNulls": true,
+                "spanNulls": false,
                 "stacking": {
                   "group": "A",
                   "mode": "none"
@@ -240,12 +240,12 @@ data:
             "overrides": []
           },
           "gridPos": {
-            "h": 6,
-            "w": 6,
+            "h": 7,
+            "w": 12,
             "x": 6,
             "y": 1
           },
-          "id": 8,
+          "id": 2,
           "options": {
             "legend": {
               "calcs": [],
@@ -262,40 +262,19 @@ data:
           "pluginVersion": "12.0.2",
           "targets": [
             {
-              "filters": [
-                {
-                  "id": "ed4ece99",
-                  "operator": "=",
-                  "scope": "span"
-                },
-                {
-                  "id": "service-name",
-                  "operator": "=",
-                  "scope": "resource",
-                  "tag": "service.name",
-                  "value": [
-                    "gateway"
-                  ],
-                  "valueType": "string"
-                },
-                {
-                  "id": "span-name",
-                  "operator": "=~",
-                  "scope": "span",
-                  "tag": "name",
-                  "value": [],
-                  "valueType": "string"
-                }
-              ],
-              "limit": 20,
-              "metricsQueryType": "range",
-              "query": "{resource.service.name=\"gateway\"} | count_over_time()",
-              "queryType": "traceql",
-              "refId": "A",
-              "tableType": "traces"
+              "datasource": {
+                "type": "prometheus",
+                "uid": "prometheus"
+              },
+              "editorMode": "code",
+              "expr": "sum by (le, span_name) (rate(traces_spanmetrics_calls_total{span_kind=\"SPAN_KIND_SERVER\"}[$__range])) ",
+              "instant": false,
+              "legendFormat": "__auto",
+              "range": true,
+              "refId": "A"
             }
           ],
-          "title": "リクエスト数の遷移",
+          "title": "平均リクエスト数の推移",
           "type": "timeseries"
         },
         {
@@ -323,8 +302,8 @@ data:
           "gridPos": {
             "h": 6,
             "w": 6,
-            "x": 12,
-            "y": 1
+            "x": 0,
+            "y": 8
           },
           "id": 9,
           "options": {
@@ -364,8 +343,8 @@ data:
         },
         {
           "datasource": {
-            "type": "tempo",
-            "uid": "tempo"
+            "type": "prometheus",
+            "uid": "prometheus"
           },
           "fieldConfig": {
             "defaults": {
@@ -424,8 +403,8 @@ data:
           "gridPos": {
             "h": 6,
             "w": 6,
-            "x": 18,
-            "y": 1
+            "x": 6,
+            "y": 8
           },
           "id": 10,
           "options": {
@@ -433,7 +412,7 @@ data:
               "calcs": [],
               "displayMode": "list",
               "placement": "bottom",
-              "showLegend": true
+              "showLegend": false
             },
             "tooltip": {
               "hideZeros": false,
@@ -444,42 +423,16 @@ data:
           "pluginVersion": "12.0.2",
           "targets": [
             {
-              "filters": [
-                {
-                  "id": "19dff78d",
-                  "operator": "=",
-                  "scope": "span"
-                },
-                {
-                  "id": "service-name",
-                  "operator": "=",
-                  "scope": "resource",
-                  "tag": "service.name",
-                  "value": []
-                },
-                {
-                  "id": "status",
-                  "operator": "=",
-                  "scope": "intrinsic",
-                  "tag": "status",
-                  "value": "error",
-                  "valueType": "keyword"
-                },
-                {
-                  "id": "span-name",
-                  "operator": "=~",
-                  "scope": "span",
-                  "tag": "name",
-                  "value": [],
-                  "valueType": "string"
-                }
-              ],
-              "limit": 20,
-              "metricsQueryType": "range",
-              "query": "{status=error} | count_over_time()",
-              "queryType": "traceql",
-              "refId": "A",
-              "tableType": "traces"
+              "datasource": {
+                "type": "prometheus",
+                "uid": "prometheus"
+              },
+              "editorMode": "code",
+              "expr": "sum(increase(traces_spanmetrics_calls_total{span_kind=\"SPAN_KIND_SERVER\", status_code=\"STATUS_CODE_ERROR\"}[$__range]))",
+              "instant": false,
+              "legendFormat": "__auto",
+              "range": true,
+              "refId": "A"
             }
           ],
           "title": "エラー件数の遷移",
@@ -521,8 +474,8 @@ data:
           "gridPos": {
             "h": 6,
             "w": 6,
-            "x": 0,
-            "y": 7
+            "x": 12,
+            "y": 8
           },
           "id": 12,
           "options": {
@@ -564,7 +517,7 @@ data:
             "h": 1,
             "w": 24,
             "x": 0,
-            "y": 13
+            "y": 14
           },
           "id": 13,
           "panels": [],
@@ -635,7 +588,7 @@ data:
             "h": 8,
             "w": 8,
             "x": 0,
-            "y": 14
+            "y": 15
           },
           "id": 17,
           "options": {
@@ -733,7 +686,7 @@ data:
             "h": 8,
             "w": 8,
             "x": 8,
-            "y": 14
+            "y": 15
           },
           "id": 15,
           "options": {
@@ -831,7 +784,7 @@ data:
             "h": 8,
             "w": 8,
             "x": 16,
-            "y": 14
+            "y": 15
           },
           "id": 16,
           "options": {
@@ -871,109 +824,12 @@ data:
             "h": 1,
             "w": 24,
             "x": 0,
-            "y": 22
+            "y": 23
           },
           "id": 4,
           "panels": [],
-          "title": "Prometheus",
+          "title": "他",
           "type": "row"
-        },
-        {
-          "datasource": {
-            "type": "prometheus",
-            "uid": "prometheus"
-          },
-          "fieldConfig": {
-            "defaults": {
-              "color": {
-                "mode": "palette-classic"
-              },
-              "custom": {
-                "axisBorderShow": false,
-                "axisCenteredZero": false,
-                "axisColorMode": "text",
-                "axisLabel": "",
-                "axisPlacement": "auto",
-                "barAlignment": 0,
-                "barWidthFactor": 0.6,
-                "drawStyle": "line",
-                "fillOpacity": 0,
-                "gradientMode": "none",
-                "hideFrom": {
-                  "legend": false,
-                  "tooltip": false,
-                  "viz": false
-                },
-                "insertNulls": false,
-                "lineInterpolation": "linear",
-                "lineWidth": 1,
-                "pointSize": 5,
-                "scaleDistribution": {
-                  "type": "linear"
-                },
-                "showPoints": "auto",
-                "spanNulls": false,
-                "stacking": {
-                  "group": "A",
-                  "mode": "none"
-                },
-                "thresholdsStyle": {
-                  "mode": "off"
-                }
-              },
-              "mappings": [],
-              "thresholds": {
-                "mode": "absolute",
-                "steps": [
-                  {
-                    "color": "green"
-                  },
-                  {
-                    "color": "red",
-                    "value": 80
-                  }
-                ]
-              }
-            },
-            "overrides": []
-          },
-          "gridPos": {
-            "h": 8,
-            "w": 12,
-            "x": 0,
-            "y": 23
-          },
-          "id": 2,
-          "options": {
-            "legend": {
-              "calcs": [],
-              "displayMode": "list",
-              "placement": "bottom",
-              "showLegend": true
-            },
-            "tooltip": {
-              "hideZeros": false,
-              "mode": "single",
-              "sort": "none"
-            }
-          },
-          "pluginVersion": "12.0.2",
-          "targets": [
-            {
-              "datasource": {
-                "type": "prometheus",
-                "uid": "prometheus"
-              },
-              "editorMode": "code",
-              "expr": "sum by (le, span_name) (rate(traces_spanmetrics_calls_total{span_kind=\"SPAN_KIND_SERVER\"}[$__range])) ",
-              "instant": false,
-              "legendFormat": "__auto",
-              "range": true,
-              "refId": "A"
-            }
-          ],
-          "title": "平均リクエスト数の推移",
-          "type": "timeseries"
         }
       ],
       "preload": false,
