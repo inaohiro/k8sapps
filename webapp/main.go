@@ -118,6 +118,8 @@ func main() {
 	r.Use(middleware.Logger)
 	r.Use(middleware.Timeout(10 * time.Second))
 	r.Use(mymiddleware.CreateNamespace)
+	r.Use(mymiddleware.Delay)
+	r.Use(mymiddleware.IntentionalError)
 
 	patternRouteMap := map[string]http.Handler{
 		"/api/{namespace}/pods":        pod.Routes,
