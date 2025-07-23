@@ -817,19 +817,6 @@ data:
           ],
           "title": "レイテンシ p95",
           "type": "timeseries"
-        },
-        {
-          "collapsed": false,
-          "gridPos": {
-            "h": 1,
-            "w": 24,
-            "x": 0,
-            "y": 23
-          },
-          "id": 4,
-          "panels": [],
-          "title": "他",
-          "type": "row"
         }
       ],
       "preload": false,
