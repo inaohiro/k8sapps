@@ -170,7 +170,7 @@ data:
                 "uid": "prometheus"
               },
               "editorMode": "code",
-              "expr": "sum(traces_spanmetrics_calls_total{span_kind=\"SPAN_KIND_SERVER\"})",
+              "expr": "sum(increase(traces_spanmetrics_calls_total{span_kind=\"SPAN_KIND_SERVER\"}[$__range]))",
               "instant": false,
               "legendFormat": "__auto",
               "range": true,
@@ -289,7 +289,7 @@ data:
               ],
               "limit": 20,
               "metricsQueryType": "range",
-              "query": "{resource.service.name=\"gateway\"}",
+              "query": "{resource.service.name=\"gateway\"} | count_over_time()",
               "queryType": "traceql",
               "refId": "A",
               "tableType": "traces"
@@ -352,7 +352,7 @@ data:
                 "uid": "prometheus"
               },
               "editorMode": "code",
-              "expr": "sum(traces_spanmetrics_calls_total{status_code=\"STATUS_CODE_ERROR\", span_kind=\"SPAN_KIND_SERVER\"}) or vector(0)",
+              "expr": "sum(increase(traces_spanmetrics_calls_total{span_kind=\"SPAN_KIND_SERVER\", status_code=\"STATUS_CODE_ERROR\"}[$__range]))",
               "instant": false,
               "legendFormat": "__auto",
               "range": true,
@@ -462,6 +462,7 @@ data:
                   "operator": "=",
                   "scope": "intrinsic",
                   "tag": "status",
+                  "value": "error",
                   "valueType": "keyword"
                 },
                 {
@@ -475,7 +476,7 @@ data:
               ],
               "limit": 20,
               "metricsQueryType": "range",
-              "query": "{resource.service.name=\"gateway\" && status=error && name=~\".*api.*\"}",
+              "query": "{status=error} | count_over_time()",
               "queryType": "traceql",
               "refId": "A",
               "tableType": "traces"
@@ -494,8 +495,8 @@ data:
               "color": {
                 "mode": "thresholds"
               },
+              "decimals": 5,
               "mappings": [],
-              "max": 100,
               "min": 0,
               "thresholds": {
                 "mode": "absolute",
@@ -547,7 +548,7 @@ data:
                 "uid": "prometheus"
               },
               "editorMode": "code",
-              "expr": "(sum(traces_spanmetrics_calls_total{span_kind=\"SPAN_KIND_SERVER\"}) - (sum(traces_spanmetrics_calls_total{status_code=\"STATUS_CODE_ERROR\", span_kind=\"SPAN_KIND_SERVER\"}) or vector(0))) / sum(traces_spanmetrics_calls_total{span_kind=\"SPAN_KIND_SERVER\"}) * 100",
+              "expr": "(\r\n  sum(increase(traces_spanmetrics_calls_total{span_kind=\"SPAN_KIND_SERVER\"}[$__range])) \r\n  - sum(increase(traces_spanmetrics_calls_total{span_kind=\"SPAN_KIND_SERVER\", status_code=\"STATUS_CODE_ERROR\"}[$__range]))\r\n) \r\n/ sum(increase(traces_spanmetrics_calls_total{span_kind=\"SPAN_KIND_SERVER\"}[$__range])) \r\n* 100",
               "instant": false,
               "legendFormat": "__auto",
               "range": true,
@@ -658,7 +659,7 @@ data:
                 "uid": "prometheus"
               },
               "editorMode": "code",
-              "expr": "histogram_quantile(.5, sum(rate(traces_spanmetrics_latency_bucket{service=\"webapp\", span_kind=\"SPAN_KIND_SERVER\"}[1m])) by (le, span_name))",
+              "expr": "histogram_quantile(.5, sum by (le, span_name) (rate(traces_spanmetrics_latency_bucket{span_kind=\"SPAN_KIND_SERVER\"}[$__range])))",
               "instant": false,
               "legendFormat": "__auto",
               "range": true,
@@ -756,7 +757,7 @@ data:
                 "uid": "prometheus"
               },
               "editorMode": "code",
-              "expr": "histogram_quantile(.9, sum(rate(traces_spanmetrics_latency_bucket{service=\"webapp\", span_kind=\"SPAN_KIND_SERVER\"}[1m])) by (le, span_name))",
+              "expr": "histogram_quantile(.9, sum by (le, span_name) (rate(traces_spanmetrics_latency_bucket{span_kind=\"SPAN_KIND_SERVER\"}[$__range])))",
               "instant": false,
               "legendFormat": "__auto",
               "range": true,
@@ -854,7 +855,7 @@ data:
                 "uid": "prometheus"
               },
               "editorMode": "code",
-              "expr": "histogram_quantile(.95, sum(rate(traces_spanmetrics_latency_bucket{service=\"webapp\", span_kind=\"SPAN_KIND_SERVER\"}[1m])) by (le, span_name))",
+              "expr": "histogram_quantile(.95, sum  by (le, span_name) (rate(traces_spanmetrics_latency_bucket{span_kind=\"SPAN_KIND_SERVER\"}[1m])))",
               "instant": false,
               "legendFormat": "__auto",
               "range": true,
@@ -964,110 +965,14 @@ data:
                 "uid": "prometheus"
               },
               "editorMode": "code",
-              "expr": "sum(rate(traces_spanmetrics_calls_total{service=\"webapp\", span_kind=\"SPAN_KIND_SERVER\"}[1m])) by (le, span_name)",
+              "expr": "sum by (le, span_name) (rate(traces_spanmetrics_calls_total{span_kind=\"SPAN_KIND_SERVER\"}[$__range])) ",
               "instant": false,
               "legendFormat": "__auto",
               "range": true,
               "refId": "A"
             }
           ],
-          "title": "count by spans",
-          "type": "timeseries"
-        },
-        {
-          "datasource": {
-            "type": "datasource",
-            "uid": "-- Mixed --"
-          },
-          "fieldConfig": {
-            "defaults": {
-              "color": {
-                "mode": "palette-classic"
-              },
-              "custom": {
-                "axisBorderShow": false,
-                "axisCenteredZero": false,
-                "axisColorMode": "text",
-                "axisLabel": "",
-                "axisPlacement": "auto",
-                "barAlignment": 0,
-                "barWidthFactor": 0.6,
-                "drawStyle": "line",
-                "fillOpacity": 0,
-                "gradientMode": "none",
-                "hideFrom": {
-                  "legend": false,
-                  "tooltip": false,
-                  "viz": false
-                },
-                "insertNulls": false,
-                "lineInterpolation": "linear",
-                "lineWidth": 1,
-                "pointSize": 5,
-                "scaleDistribution": {
-                  "type": "linear"
-                },
-                "showPoints": "auto",
-                "spanNulls": false,
-                "stacking": {
-                  "group": "A",
-                  "mode": "none"
-                },
-                "thresholdsStyle": {
-                  "mode": "off"
-                }
-              },
-              "mappings": [],
-              "thresholds": {
-                "mode": "absolute",
-                "steps": [
-                  {
-                    "color": "green"
-                  },
-                  {
-                    "color": "red",
-                    "value": 80
-                  }
-                ]
-              }
-            },
-            "overrides": []
-          },
-          "gridPos": {
-            "h": 8,
-            "w": 12,
-            "x": 12,
-            "y": 23
-          },
-          "id": 1,
-          "options": {
-            "legend": {
-              "calcs": [],
-              "displayMode": "list",
-              "placement": "bottom",
-              "showLegend": true
-            },
-            "tooltip": {
-              "hideZeros": false,
-              "mode": "single",
-              "sort": "none"
-            }
-          },
-          "pluginVersion": "12.0.2",
-          "targets": [
-            {
-              "datasource": {
-                "type": "prometheus",
-                "uid": "prometheus"
-              },
-              "editorMode": "code",
-              "expr": "histogram_quantile(.5, sum(rate(traces_spanmetrics_latency_bucket{service=\"webapp\", span_kind=\"SPAN_KIND_SERVER\"}[1m])) by (le, span_name))",
-              "legendFormat": "__auto",
-              "range": true,
-              "refId": "A"
-            }
-          ],
-          "title": "latency by spans",
+          "title": "平均リクエスト数の推移",
           "type": "timeseries"
         },
         {
@@ -1165,6 +1070,13 @@ data:
           "pluginVersion": "12.0.2",
           "targets": [
             {
+              "filters": [
+                {
+                  "id": "6ab7d55d",
+                  "operator": "=",
+                  "scope": "span"
+                }
+              ],
               "limit": 20,
               "metricsQueryType": "range",
               "query": "{ status = error } | rate() by (resource.service.name, name)",
