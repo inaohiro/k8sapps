@@ -170,7 +170,7 @@ data:
                 "uid": "victoriametrics"
               },
               "editorMode": "code",
-              "expr": "sum(increase(traces_spanmetrics_calls_total{span_kind=\"SPAN_KIND_SERVER\"}[$__range]))",
+              "expr": "sum(increase(traces_spanmetrics_calls_total{span_kind=\"SPAN_KIND_SERVER\"}[$__rate_interval]))",
               "range": true,
               "refId": "A"
             }
@@ -265,7 +265,7 @@ data:
                 "uid": "victoriametrics"
               },
               "editorMode": "code",
-              "expr": "sum by (le, span_name) (rate(traces_spanmetrics_calls_total{span_kind=\"SPAN_KIND_SERVER\"}[$__range]))",
+              "expr": "sum by (le, span_name) (rate(traces_spanmetrics_calls_total{span_kind=\"SPAN_KIND_SERVER\"}[$__rate_interval]))",
               "legendFormat": "__auto",
               "range": true,
               "refId": "A"
@@ -328,7 +328,7 @@ data:
                 "uid": "victoriametrics"
               },
               "editorMode": "code",
-              "expr": "sum(increase(traces_spanmetrics_calls_total{span_kind=\"SPAN_KIND_SERVER\", status_code=\"STATUS_CODE_ERROR\"}[$__range]))",
+              "expr": "sum(increase(traces_spanmetrics_calls_total{span_kind=\"SPAN_KIND_SERVER\", status_code=\"STATUS_CODE_ERROR\"}[$__rate_interval]))",
               "range": true,
               "refId": "A"
             }
@@ -423,7 +423,7 @@ data:
                 "uid": "victoriametrics"
               },
               "editorMode": "code",
-              "expr": "sum(increase(traces_spanmetrics_calls_total{span_kind=\"SPAN_KIND_SERVER\", status_code=\"STATUS_CODE_ERROR\"}[$__range]))",
+              "expr": "sum(increase(traces_spanmetrics_calls_total{span_kind=\"SPAN_KIND_SERVER\", status_code=\"STATUS_CODE_ERROR\"}[$__rate_interval]))",
               "range": true,
               "refId": "A"
             }
@@ -494,7 +494,7 @@ data:
                 "uid": "victoriametrics"
               },
               "editorMode": "code",
-              "expr": "sum(increase(traces_spanmetrics_calls_total{span_kind=\"SPAN_KIND_SERVER\"}[$__range]))",
+              "expr": "sum(increase(traces_spanmetrics_calls_total{span_kind=\"SPAN_KIND_SERVER\"}[$__rate_interval]))",
               "hide": true,
               "legendFormat": "__auto",
               "range": true,
@@ -506,7 +506,7 @@ data:
                 "uid": "victoriametrics"
               },
               "editorMode": "code",
-              "expr": "sum(increase(traces_spanmetrics_calls_total{span_kind=\"SPAN_KIND_SERVER\", status_code=\"STATUS_CODE_ERROR\"}[$__range]))",
+              "expr": "sum(increase(traces_spanmetrics_calls_total{span_kind=\"SPAN_KIND_SERVER\", status_code=\"STATUS_CODE_ERROR\"}[$__rate_interval]))",
               "hide": true,
               "legendFormat": "__auto",
               "range": true,
@@ -614,7 +614,7 @@ data:
                 "uid": "victoriametrics"
               },
               "editorMode": "code",
-              "expr": "running_sum(sum(rate(traces_spanmetrics_calls_total{span_kind=\"SPAN_KIND_SERVER\"}[$__range])))",
+              "expr": "running_sum(sum(rate(traces_spanmetrics_calls_total{span_kind=\"SPAN_KIND_SERVER\"}[$__rate_interval])))",
               "hide": true,
               "range": true,
               "refId": "total"
@@ -625,7 +625,7 @@ data:
                 "uid": "victoriametrics"
               },
               "editorMode": "code",
-              "expr": "running_sum(sum(rate(traces_spanmetrics_calls_total{span_kind=\"SPAN_KIND_SERVER\", status_code=\"STATUS_CODE_ERROR\"}[$__range])))",
+              "expr": "running_sum(sum(rate(traces_spanmetrics_calls_total{span_kind=\"SPAN_KIND_SERVER\", status_code=\"STATUS_CODE_ERROR\"}[$__rate_interval])))",
               "hide": true,
               "range": true,
               "refId": "error"
@@ -774,7 +774,7 @@ data:
                 "uid": "victoriametrics"
               },
               "editorMode": "code",
-              "expr": "histogram_quantile(.5, sum by (le, span_name) (rate(traces_spanmetrics_latency_bucket{span_kind=\"SPAN_KIND_SERVER\"}[$__range])))",
+              "expr": "histogram_quantile(.5, sum by (le, span_name) (rate(traces_spanmetrics_latency_bucket{span_kind=\"SPAN_KIND_SERVER\"}[$__rate_interval])))",
               "legendFormat": "__auto",
               "range": true,
               "refId": "A"
@@ -871,7 +871,7 @@ data:
                 "uid": "victoriametrics"
               },
               "editorMode": "code",
-              "expr": "histogram_quantile(.9, sum by (le, span_name) (rate(traces_spanmetrics_latency_bucket{span_kind=\"SPAN_KIND_SERVER\"}[$__range])))",
+              "expr": "histogram_quantile(.9, sum by (le, span_name) (rate(traces_spanmetrics_latency_bucket{span_kind=\"SPAN_KIND_SERVER\"}[$__rate_interval])))",
               "legendFormat": "__auto",
               "range": true,
               "refId": "A"
@@ -1066,7 +1066,7 @@ data:
                 "uid": "victoriametrics"
               },
               "editorMode": "code",
-              "expr": "running_sum(\r\n  sum(rate(traces_spanmetrics_latency_bucket{span_kind=\"SPAN_KIND_SERVER\", le=\"+Inf\"}[$__range]))\r\n  -\r\n  sum(rate(traces_spanmetrics_latency_bucket{span_kind=\"SPAN_KIND_SERVER\", le=\"0.5\"}[$__range]))\r\n)",
+              "expr": "running_sum(\r\n  sum(rate(traces_spanmetrics_latency_bucket{span_kind=\"SPAN_KIND_SERVER\", le=\"+Inf\"}[$__rate_interval]))\r\n  -\r\n  sum(rate(traces_spanmetrics_latency_bucket{span_kind=\"SPAN_KIND_SERVER\", le=\"0.5\"}[$__rate_interval]))\r\n)",
               "hide": true,
               "range": true,
               "refId": "violations"
@@ -1077,7 +1077,7 @@ data:
                 "uid": "victoriametrics"
               },
               "editorMode": "code",
-              "expr": "running_sum(sum(rate(traces_spanmetrics_latency_bucket{span_kind=\"SPAN_KIND_SERVER\", le=\"+Inf\"}[$__range])))",
+              "expr": "running_sum(sum(rate(traces_spanmetrics_latency_bucket{span_kind=\"SPAN_KIND_SERVER\", le=\"+Inf\"}[$__rate_interval])))",
               "hide": true,
               "range": true,
               "refId": "total"
