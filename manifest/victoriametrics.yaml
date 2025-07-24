@@ -20,12 +20,6 @@ spec:
           image: victoriametrics/victoria-metrics:v1.122.0
           imagePullPolicy: IfNotPresent
           args:
-            # - --config.file=/etc/victoriametrics/victoriametrics.yaml
-            # - --web.route-prefix=/
-            # - --web.enable-otlp-receiver
-            # - --enable-feature=exemplar-storage
-            # - --web.enable-remote-write-receiver
-            # - --enable-feature=native-histograms
             - -opentelemetry.usePrometheusNaming
           ports:
             - containerPort: 8428
@@ -35,14 +29,6 @@ spec:
               valueFrom:
                 fieldRef:
                   fieldPath: status.podIP
-      #     volumeMounts:
-      #       - name: victoriametrics-config
-      #         mountPath: /etc/victoriametrics
-      #         readOnly: true
-      # volumes:
-      #   - name: victoriametrics-config
-      #     configMap:
-      #       name: victoriametrics-config
 ---
 apiVersion: v1
 kind: Service
