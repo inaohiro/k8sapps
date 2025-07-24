@@ -46,6 +46,9 @@ data:
             send_exemplars: true
       traces_storage:
         path: /var/tempo/generator/traces
+      processor:
+        span_metrics:
+          histogram_buckets: [0.010, 0.030, 0.050, 0.100, 0.200, 0.500, 0.600, 0.700, 0.800, 0.900, 1.000, 1.500, 2.000, 4.000, 8.000, 16.000]
 
     storage:
       trace:
