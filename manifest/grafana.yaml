@@ -16,6 +16,14 @@ spec:
         app: grafana
     spec:
       containers:
+        - name: init
+          image: grafana/grafana:12.0.2
+          command:
+            - mkdir -p /var/lib/grafana/plugins
+            - grafana cli plugins install victoriametrics-metrics-datasource
+          volumeMounts:
+            - name: plugins
+              mountPath: /var/lib/grafana
         - name: grafana
           image: grafana/grafana:12.0.2
           imagePullPolicy: IfNotPresent
@@ -29,10 +37,14 @@ spec:
             - name: grafana-provisioning
               mountPath: /etc/grafana/provisioning
               readOnly: true
+            - name: plugins
+              mountPath: /var/lib/grafana
           envFrom:
             - configMapRef:
                 name: grafana-env
       volumes:
+        - name: plugins
+          emptyDir: {}
         - name: grafana-ini
           configMap:
             name: grafana-ini
