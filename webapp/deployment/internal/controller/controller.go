@@ -37,8 +37,8 @@ func deploymentDetail(w http.ResponseWriter, r *http.Request) {
 	deploymentName := chi.URLParam(r, "deploymentName")
 	deployment, err := service.GetDeployment(r.Context(), namespace, deploymentName)
 	if err != nil {
-		slog.Error(err.Error())
-		http.Error(w, err.Error(), http.StatusInternalServerError)
+		status := core.GetErrorStatus(err)
+		http.Error(w, err.Error(), status)
 		return
 	}
 	core.WriteJSON(w, http.StatusOK, deployment)

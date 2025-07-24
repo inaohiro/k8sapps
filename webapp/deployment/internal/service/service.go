@@ -2,11 +2,13 @@ package service
 
 import (
 	"context"
+	"errors"
 	"fmt"
 
 	"k8soperation/core"
 	"k8soperation/deployment/internal/models"
 
+	kerrors "k8s.io/apimachinery/pkg/api/errors"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 )
 
@@ -31,6 +33,9 @@ func GetDeployment(ctx context.Context, namespace, name string) (*models.Deploym
 	}
 	deployment, err := clientset.AppsV1().Deployments(namespace).Get(ctx, name, metav1.GetOptions{})
 	if err != nil {
+		if kerrors.IsNotFound(err) {
+			return nil, fmt.Errorf("%s not found, %w", name, errors.Join(err, core.ENotFound))
+		}
 		return nil, fmt.Errorf("Failed to get deployment: %w", err)
 	}
 	dto := models.FromKubeDeployment(deployment)
