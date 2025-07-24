@@ -74,5 +74,5 @@ export default function () {
   }
 
   // 終わったら namespace を消す
-  retry("del", `${url}/namespace/${namespace}`, headers)
+  retry("del", `${url}/namespace/${namespace}`, headers, null, -10)
 }
