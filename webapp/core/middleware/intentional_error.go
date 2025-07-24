@@ -2,8 +2,8 @@ package middleware
 
 import (
 	"fmt"
+	"math/rand/v2"
 	"net/http"
-	"slices"
 	"time"
 )
 
@@ -13,19 +13,20 @@ func IntentionalError(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		t := fmt.Sprintf("%d", time.Now().Unix())
 
-		if slices.Contains([]string{
-			"00",
-			"10",
-			"20",
-			"30",
-			"40",
-			"50",
-		}, t[len(t)-2:]) {
+		if "0" == t[len(t)-1:] {
 			w.WriteHeader(http.StatusServiceUnavailable)
-			w.Write([]byte(`{"error": "service temporary unavailable. please wait a second}`))
+			w.Write([]byte(`{"error": "seconds end with 0. please wait a second}`))
 
 			return
 		}
+
+		n := rand.IntN(100)
+		if n > 50 {
+			w.WriteHeader(http.StatusServiceUnavailable)
+			w.Write([]byte(`{"error": "50/50 error. please try again}`))
+			return
+		}
+
 		next.ServeHTTP(w, r)
 	})
 }
