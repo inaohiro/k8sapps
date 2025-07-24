@@ -7,8 +7,9 @@ import (
 	"time"
 )
 
-// この middleware は、middeware が実行される時間の秒数が 00,10,20,30,40,50 のとき
+// この middleware は、middeware が実行される時間の秒数が 0 で終わるとき
 // 503 エラーを返します
+// また、50% の確率で 503 エラーとなります
 func IntentionalError(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		t := fmt.Sprintf("%d", time.Now().Unix())
@@ -20,8 +21,7 @@ func IntentionalError(next http.Handler) http.Handler {
 			return
 		}
 
-		n := rand.IntN(100)
-		if n > 50 {
+		if rand.IntN(100) > (100 - 50) {
 			w.WriteHeader(http.StatusServiceUnavailable)
 			w.Write([]byte(`{"error": "50/50 error. please try again}`))
 			return
