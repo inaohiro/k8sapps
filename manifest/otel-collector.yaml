@@ -24,6 +24,12 @@ data:
         endpoint: http://prometheus:9090/api/v1/otlp
         tls:
           insecure: true
+      otlphttp/victoriametrics:
+        compression: gzip
+        encoding: proto
+        metrics_endpoint: http://victoriametrics:8428/opentelemetry/v1/metrics
+        tls:
+          insecure: true
       debug:
 
     service:
@@ -37,7 +43,8 @@ data:
         metrics:
           receivers: [otlp]
           processors: []
-          exporters: [otlphttp/prometheus, debug]
+          #exporters: [otlphttp/prometheus, debug]
+          exporters: [otlphttp/victoriametrics, debug]
 
 ---
 apiVersion: apps/v1

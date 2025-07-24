@@ -54,7 +54,7 @@ spec:
             - --web.enable-otlp-receiver
             - --enable-feature=exemplar-storage
             - --web.enable-remote-write-receiver
-            - --enable-feature=native-histograms
+            #- --enable-feature=native-histograms
           ports:
             - containerPort: 9090
               protocol: TCP
