@@ -39,23 +39,12 @@ data:
     datasources:
     - name: VictoriaMetrics
       type: victoriametrics-metrics-datasource
+      uid: victoriametrics
       access: proxy
       orgId: 1
       url: http://victoriametrics:8428
       basicAuth: false
       isDefault: true
-      version: 1
-      editable: false
-      jsonData:
-        httpMethod: GET
-    - name: Prometheus
-      type: prometheus
-      uid: prometheus
-      access: proxy
-      orgId: 1
-      url: http://prometheus:9090
-      basicAuth: false
-      isDefault: false
       version: 1
       editable: false
       jsonData:
@@ -74,7 +63,7 @@ data:
       jsonData:
         httpMethod: GET
         serviceMap:
-          datasourceUid: prometheus
+          datasourceUid: victoriametrics
         streamingEnabled:
           search: true
   demo.yaml: |
@@ -128,8 +117,8 @@ data:
         },
         {
           "datasource": {
-            "type": "prometheus",
-            "uid": "prometheus"
+            "type": "victoriametrics-metrics-datasource",
+            "uid": "P4169E866C3094E38"
           },
           "fieldConfig": {
             "defaults": {
@@ -177,13 +166,11 @@ data:
           "targets": [
             {
               "datasource": {
-                "type": "prometheus",
-                "uid": "prometheus"
+                "type": "victoriametrics-metrics-datasource",
+                "uid": "P4169E866C3094E38"
               },
               "editorMode": "code",
               "expr": "sum(increase(traces_spanmetrics_calls_total{span_kind=\"SPAN_KIND_SERVER\"}[$__range]))",
-              "instant": false,
-              "legendFormat": "__auto",
               "range": true,
               "refId": "A"
             }
@@ -193,8 +180,8 @@ data:
         },
         {
           "datasource": {
-            "type": "prometheus",
-            "uid": "prometheus"
+            "type": "victoriametrics-metrics-datasource",
+            "uid": "P4169E866C3094E38"
           },
           "fieldConfig": {
             "defaults": {
@@ -274,24 +261,23 @@ data:
           "targets": [
             {
               "datasource": {
-                "type": "prometheus",
-                "uid": "prometheus"
+                "type": "victoriametrics-metrics-datasource",
+                "uid": "P4169E866C3094E38"
               },
               "editorMode": "code",
-              "expr": "sum by (le, span_name) (rate(traces_spanmetrics_calls_total{span_kind=\"SPAN_KIND_SERVER\"}[$__range])) ",
-              "instant": false,
+              "expr": "sum by (le, span_name) (rate(traces_spanmetrics_calls_total{span_kind=\"SPAN_KIND_SERVER\"}[$__range]))",
               "legendFormat": "__auto",
               "range": true,
               "refId": "A"
             }
           ],
-          "title": "平均リクエスト数の推移",
+          "title": "単位時間当たりのリクエスト数の推移",
           "type": "timeseries"
         },
         {
           "datasource": {
-            "type": "prometheus",
-            "uid": "prometheus"
+            "type": "victoriametrics-metrics-datasource",
+            "uid": "P4169E866C3094E38"
           },
           "fieldConfig": {
             "defaults": {
@@ -338,13 +324,11 @@ data:
           "targets": [
             {
               "datasource": {
-                "type": "prometheus",
-                "uid": "prometheus"
+                "type": "victoriametrics-metrics-datasource",
+                "uid": "P4169E866C3094E38"
               },
               "editorMode": "code",
               "expr": "sum(increase(traces_spanmetrics_calls_total{span_kind=\"SPAN_KIND_SERVER\", status_code=\"STATUS_CODE_ERROR\"}[$__range]))",
-              "instant": false,
-              "legendFormat": "__auto",
               "range": true,
               "refId": "A"
             }
@@ -354,8 +338,8 @@ data:
         },
         {
           "datasource": {
-            "type": "prometheus",
-            "uid": "prometheus"
+            "type": "victoriametrics-metrics-datasource",
+            "uid": "P4169E866C3094E38"
           },
           "fieldConfig": {
             "defaults": {
@@ -435,13 +419,11 @@ data:
           "targets": [
             {
               "datasource": {
-                "type": "prometheus",
-                "uid": "prometheus"
+                "type": "victoriametrics-metrics-datasource",
+                "uid": "P4169E866C3094E38"
               },
               "editorMode": "code",
               "expr": "sum(increase(traces_spanmetrics_calls_total{span_kind=\"SPAN_KIND_SERVER\", status_code=\"STATUS_CODE_ERROR\"}[$__range]))",
-              "instant": false,
-              "legendFormat": "__auto",
               "range": true,
               "refId": "A"
             }
@@ -451,8 +433,8 @@ data:
         },
         {
           "datasource": {
-            "type": "prometheus",
-            "uid": "prometheus"
+            "type": "victoriametrics-metrics-datasource",
+            "uid": "P4169E866C3094E38"
           },
           "fieldConfig": {
             "defaults": {
@@ -508,15 +490,38 @@ data:
           "targets": [
             {
               "datasource": {
-                "type": "prometheus",
-                "uid": "prometheus"
+                "type": "victoriametrics-metrics-datasource",
+                "uid": "P4169E866C3094E38"
               },
               "editorMode": "code",
-              "expr": "(\r\n  sum(increase(traces_spanmetrics_calls_total{span_kind=\"SPAN_KIND_SERVER\"}[$__range])) \r\n  - sum(increase(traces_spanmetrics_calls_total{span_kind=\"SPAN_KIND_SERVER\", status_code=\"STATUS_CODE_ERROR\"}[$__range]))\r\n) \r\n/ sum(increase(traces_spanmetrics_calls_total{span_kind=\"SPAN_KIND_SERVER\"}[$__range])) \r\n* 100",
-              "instant": false,
+              "expr": "sum(increase(traces_spanmetrics_calls_total{span_kind=\"SPAN_KIND_SERVER\"}[$__range]))",
+              "hide": true,
               "legendFormat": "__auto",
               "range": true,
-              "refId": "A"
+              "refId": "total"
+            },
+            {
+              "datasource": {
+                "type": "victoriametrics-metrics-datasource",
+                "uid": "P4169E866C3094E38"
+              },
+              "editorMode": "code",
+              "expr": "sum(increase(traces_spanmetrics_calls_total{span_kind=\"SPAN_KIND_SERVER\", status_code=\"STATUS_CODE_ERROR\"}[$__range]))",
+              "hide": true,
+              "legendFormat": "__auto",
+              "range": true,
+              "refId": "error"
+            },
+            {
+              "datasource": {
+                "name": "Expression",
+                "type": "__expr__",
+                "uid": "__expr__"
+              },
+              "expression": "($total - $error ) / $total * 100",
+              "hide": false,
+              "refId": "B",
+              "type": "math"
             }
           ],
           "title": "成功率",
@@ -524,8 +529,8 @@ data:
         },
         {
           "datasource": {
-            "type": "prometheus",
-            "uid": "prometheus"
+            "type": "victoriametrics-metrics-datasource",
+            "uid": "P4169E866C3094E38"
           },
           "fieldConfig": {
             "defaults": {
@@ -579,32 +584,7 @@ data:
                 ]
               }
             },
-            "overrides": [
-              {
-                "__systemRef": "hideSeriesFrom",
-                "matcher": {
-                  "id": "byNames",
-                  "options": {
-                    "mode": "exclude",
-                    "names": [
-                      "C"
-                    ],
-                    "prefix": "All except:",
-                    "readOnly": true
-                  }
-                },
-                "properties": [
-                  {
-                    "id": "custom.hideFrom",
-                    "value": {
-                      "legend": false,
-                      "tooltip": false,
-                      "viz": true
-                    }
-                  }
-                ]
-              }
-            ]
+            "overrides": []
           },
           "gridPos": {
             "h": 8,
@@ -618,7 +598,7 @@ data:
               "calcs": [],
               "displayMode": "list",
               "placement": "bottom",
-              "showLegend": true
+              "showLegend": false
             },
             "tooltip": {
               "hideZeros": false,
@@ -630,28 +610,25 @@ data:
           "targets": [
             {
               "datasource": {
-                "type": "prometheus",
-                "uid": "prometheus"
+                "type": "victoriametrics-metrics-datasource",
+                "uid": "P4169E866C3094E38"
               },
               "editorMode": "code",
-              "expr": "sum(rate(traces_spanmetrics_calls_total{span_kind=\"SPAN_KIND_SERVER\"}[$__range]))",
-              "instant": false,
-              "legendFormat": "__auto",
+              "expr": "running_sum(sum(rate(traces_spanmetrics_calls_total{span_kind=\"SPAN_KIND_SERVER\"}[$__range])))",
+              "hide": true,
               "range": true,
-              "refId": "A"
+              "refId": "total"
             },
             {
               "datasource": {
-                "type": "prometheus",
-                "uid": "prometheus"
+                "type": "victoriametrics-metrics-datasource",
+                "uid": "P4169E866C3094E38"
               },
               "editorMode": "code",
-              "expr": "sum(rate(traces_spanmetrics_calls_total{span_kind=\"SPAN_KIND_SERVER\", status_code=\"STATUS_CODE_ERROR\"}[$__range]))",
-              "hide": false,
-              "instant": false,
-              "legendFormat": "__auto",
+              "expr": "running_sum(sum(rate(traces_spanmetrics_calls_total{span_kind=\"SPAN_KIND_SERVER\", status_code=\"STATUS_CODE_ERROR\"}[$__range])))",
+              "hide": true,
               "range": true,
-              "refId": "B"
+              "refId": "error"
             },
             {
               "datasource": {
@@ -659,9 +636,9 @@ data:
                 "type": "__expr__",
                 "uid": "__expr__"
               },
-              "expression": "($A - $B) / $A * 100",
+              "expression": "($total - $error) / $total * 100",
               "hide": false,
-              "refId": "C",
+              "refId": "A",
               "type": "math"
             }
           ],
@@ -711,8 +688,8 @@ data:
         },
         {
           "datasource": {
-            "type": "prometheus",
-            "uid": "prometheus"
+            "type": "victoriametrics-metrics-datasource",
+            "uid": "P4169E866C3094E38"
           },
           "fieldConfig": {
             "defaults": {
@@ -793,12 +770,11 @@ data:
           "targets": [
             {
               "datasource": {
-                "type": "prometheus",
-                "uid": "prometheus"
+                "type": "victoriametrics-metrics-datasource",
+                "uid": "P4169E866C3094E38"
               },
               "editorMode": "code",
               "expr": "histogram_quantile(.5, sum by (le, span_name) (rate(traces_spanmetrics_latency_bucket{span_kind=\"SPAN_KIND_SERVER\"}[$__range])))",
-              "instant": false,
               "legendFormat": "__auto",
               "range": true,
               "refId": "A"
@@ -809,8 +785,8 @@ data:
         },
         {
           "datasource": {
-            "type": "prometheus",
-            "uid": "prometheus"
+            "type": "victoriametrics-metrics-datasource",
+            "uid": "P4169E866C3094E38"
           },
           "fieldConfig": {
             "defaults": {
@@ -891,12 +867,11 @@ data:
           "targets": [
             {
               "datasource": {
-                "type": "prometheus",
-                "uid": "prometheus"
+                "type": "victoriametrics-metrics-datasource",
+                "uid": "P4169E866C3094E38"
               },
               "editorMode": "code",
               "expr": "histogram_quantile(.9, sum by (le, span_name) (rate(traces_spanmetrics_latency_bucket{span_kind=\"SPAN_KIND_SERVER\"}[$__range])))",
-              "instant": false,
               "legendFormat": "__auto",
               "range": true,
               "refId": "A"
@@ -907,8 +882,8 @@ data:
         },
         {
           "datasource": {
-            "type": "prometheus",
-            "uid": "prometheus"
+            "type": "victoriametrics-metrics-datasource",
+            "uid": "P4169E866C3094E38"
           },
           "fieldConfig": {
             "defaults": {
@@ -989,12 +964,11 @@ data:
           "targets": [
             {
               "datasource": {
-                "type": "prometheus",
-                "uid": "prometheus"
+                "type": "victoriametrics-metrics-datasource",
+                "uid": "P4169E866C3094E38"
               },
               "editorMode": "code",
               "expr": "histogram_quantile(.95, sum  by (le, span_name) (rate(traces_spanmetrics_latency_bucket{span_kind=\"SPAN_KIND_SERVER\"}[1m])))",
-              "instant": false,
               "legendFormat": "__auto",
               "range": true,
               "refId": "A"
@@ -1005,8 +979,8 @@ data:
         },
         {
           "datasource": {
-            "type": "prometheus",
-            "uid": "prometheus"
+            "type": "victoriametrics-metrics-datasource",
+            "uid": "P4169E866C3094E38"
           },
           "fieldConfig": {
             "defaults": {
@@ -1076,7 +1050,7 @@ data:
               "calcs": [],
               "displayMode": "list",
               "placement": "bottom",
-              "showLegend": true
+              "showLegend": false
             },
             "tooltip": {
               "hideZeros": false,
@@ -1088,26 +1062,23 @@ data:
           "targets": [
             {
               "datasource": {
-                "type": "prometheus",
-                "uid": "prometheus"
+                "type": "victoriametrics-metrics-datasource",
+                "uid": "P4169E866C3094E38"
               },
               "editorMode": "code",
-              "expr": "sum(rate(traces_spanmetrics_latency_bucket{span_kind=\"SPAN_KIND_SERVER\",le=\"+Inf\"}[$__range])) - sum(rate(traces_spanmetrics_latency_bucket{span_kind=\"SPAN_KIND_SERVER\", le=\"0.5\"}[$__range]))",
-              "instant": false,
-              "legendFormat": "__auto",
+              "expr": "running_sum(\r\n  sum(rate(traces_spanmetrics_latency_bucket{span_kind=\"SPAN_KIND_SERVER\", le=\"+Inf\"}[$__range]))\r\n  -\r\n  sum(rate(traces_spanmetrics_latency_bucket{span_kind=\"SPAN_KIND_SERVER\", le=\"0.5\"}[$__range]))\r\n)",
+              "hide": true,
               "range": true,
               "refId": "violations"
             },
             {
               "datasource": {
-                "type": "prometheus",
-                "uid": "prometheus"
+                "type": "victoriametrics-metrics-datasource",
+                "uid": "P4169E866C3094E38"
               },
               "editorMode": "code",
-              "expr": "sum(rate(traces_spanmetrics_latency_bucket{span_kind=\"SPAN_KIND_SERVER\", le=\"+Inf\"}[$__range]))",
-              "hide": false,
-              "instant": false,
-              "legendFormat": "__auto",
+              "expr": "running_sum(sum(rate(traces_spanmetrics_latency_bucket{span_kind=\"SPAN_KIND_SERVER\", le=\"+Inf\"}[$__range])))",
+              "hide": true,
               "range": true,
               "refId": "total"
             },
@@ -1117,44 +1088,13 @@ data:
                 "type": "__expr__",
                 "uid": "__expr__"
               },
+              "expression": "($total - $violations) / $total * 100",
               "hide": false,
-              "refId": "A",
+              "refId": "ErrorBudget",
               "type": "math"
             }
           ],
-          "title": "New panel",
-          "transformations": [
-            {
-              "id": "calculateField",
-              "options": {
-                "alias": "violations_cum",
-                "cumulative": {
-                  "field": "sum(rate(traces_spanmetrics_latency_bucket{span_kind=\"SPAN_KIND_SERVER\",le=\"+Inf\"}[300s])) - sum(rate(traces_spanmetrics_latency_bucket{span_kind=\"SPAN_KIND_SERVER\", le=\"0.5\"}[300s]))",
-                  "reducer": "sum"
-                },
-                "mode": "cumulativeFunctions",
-                "reduce": {
-                  "reducer": "sum"
-                },
-                "replaceFields": false
-              }
-            },
-            {
-              "id": "calculateField",
-              "options": {
-                "alias": "total_cum",
-                "cumulative": {
-                  "field": "sum(rate(traces_spanmetrics_latency_bucket{span_kind=\"SPAN_KIND_SERVER\", le=\"+Inf\"}[300s]))",
-                  "reducer": "sum"
-                },
-                "mode": "cumulativeFunctions",
-                "reduce": {
-                  "reducer": "sum"
-                },
-                "replaceFields": false
-              }
-            }
-          ],
+          "title": "エラーバジェット",
           "type": "timeseries"
         }
       ],

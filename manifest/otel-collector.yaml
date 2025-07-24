@@ -20,10 +20,6 @@ data:
         endpoint: tempo:4317
         tls:
           insecure: true
-      otlphttp/prometheus:
-        endpoint: http://prometheus:9090/api/v1/otlp
-        tls:
-          insecure: true
       otlphttp/victoriametrics:
         compression: gzip
         encoding: proto
@@ -43,7 +39,6 @@ data:
         metrics:
           receivers: [otlp]
           processors: []
-          #exporters: [otlphttp/prometheus, debug]
           exporters: [otlphttp/victoriametrics, debug]
 
 ---
