@@ -271,7 +271,7 @@ data:
               "refId": "A"
             }
           ],
-          "title": "単位時間当たりのリクエスト数の推移",
+          "title": "リクエスト数の推移",
           "type": "timeseries"
         },
         {
@@ -1170,7 +1170,7 @@ data:
               "refId": "A"
             }
           ],
-          "title": "レイテンシ分布 [1/s]",
+          "title": "レイテンシ分布",
           "type": "heatmap"
         }
       ],
