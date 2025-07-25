@@ -170,7 +170,7 @@ data:
                 "uid": "victoriametrics"
               },
               "editorMode": "code",
-              "expr": "sum(increase(traces_spanmetrics_calls_total{span_kind=\"SPAN_KIND_SERVER\"}[$__rate_interval]))",
+              "expr": "sum(rate(traces_spanmetrics_calls_total{span_kind=\"SPAN_KIND_SERVER\"}[$__rate_interval]))",
               "range": true,
               "refId": "A"
             }
@@ -328,7 +328,7 @@ data:
                 "uid": "victoriametrics"
               },
               "editorMode": "code",
-              "expr": "sum(increase(traces_spanmetrics_calls_total{span_kind=\"SPAN_KIND_SERVER\", status_code=\"STATUS_CODE_ERROR\"}[$__rate_interval]))",
+              "expr": "sum(rate(traces_spanmetrics_calls_total{span_kind=\"SPAN_KIND_SERVER\", status_code=\"STATUS_CODE_ERROR\"}[$__rate_interval]))",
               "range": true,
               "refId": "A"
             }
@@ -423,7 +423,7 @@ data:
                 "uid": "victoriametrics"
               },
               "editorMode": "code",
-              "expr": "sum(increase(traces_spanmetrics_calls_total{span_kind=\"SPAN_KIND_SERVER\", status_code=\"STATUS_CODE_ERROR\"}[$__rate_interval]))",
+              "expr": "sum(rate(traces_spanmetrics_calls_total{span_kind=\"SPAN_KIND_SERVER\", status_code=\"STATUS_CODE_ERROR\"}[$__rate_interval]))",
               "range": true,
               "refId": "A"
             }
@@ -494,7 +494,7 @@ data:
                 "uid": "victoriametrics"
               },
               "editorMode": "code",
-              "expr": "sum(increase(traces_spanmetrics_calls_total{span_kind=\"SPAN_KIND_SERVER\"}[$__rate_interval]))",
+              "expr": "sum(rate(traces_spanmetrics_calls_total{span_kind=\"SPAN_KIND_SERVER\"}[$__rate_interval]))",
               "hide": true,
               "legendFormat": "__auto",
               "range": true,
@@ -506,7 +506,7 @@ data:
                 "uid": "victoriametrics"
               },
               "editorMode": "code",
-              "expr": "sum(increase(traces_spanmetrics_calls_total{span_kind=\"SPAN_KIND_SERVER\", status_code=\"STATUS_CODE_ERROR\"}[$__rate_interval]))",
+              "expr": "sum(rate(traces_spanmetrics_calls_total{span_kind=\"SPAN_KIND_SERVER\", status_code=\"STATUS_CODE_ERROR\"}[$__rate_interval]))",
               "hide": true,
               "legendFormat": "__auto",
               "range": true,
