@@ -267,6 +267,7 @@ func proxy(next http.Handler) http.Handler {
 			writeJSON(w, http.StatusInternalServerError, map[string]string{"message": err.Error()})
 			return
 		}
+		req.Header = r.Header
 		resp, err := client.Do(req)
 		if err != nil {
 			slog.Error("failed to send request", slog.String("err", err.Error()))
