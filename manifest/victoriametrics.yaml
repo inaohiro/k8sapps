@@ -20,6 +20,7 @@ spec:
           image: victoriametrics/victoria-metrics:v1.122.0
           imagePullPolicy: IfNotPresent
           args:
+            - -search.maxConcurrentRequests=16
             - -opentelemetry.usePrometheusNaming
           ports:
             - containerPort: 8428
