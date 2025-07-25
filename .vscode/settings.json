@@ -1,6 +1,5 @@
 {
   "github.copilot.chat.codeGeneration.useInstructionFiles": true,
-  "biome.lsp.bin": "./frontend/node_modules/.bin/biome",
   "editor.formatOnSave": true,
   "[typescript]": {
     "editor.defaultFormatter": "biomejs.biome"

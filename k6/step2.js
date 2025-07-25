@@ -1,4 +1,4 @@
-import { sleep } from 'k6';
+import { sleep } from "k6";
 import { fakeName, retry } from "./common.js";
 
 const url = "http://gateway:8080/api";
@@ -7,7 +7,7 @@ const url = "http://gateway:8080/api";
  * Deployment, Service を作成する
  */
 export default function () {
-  const namespace = fakeName()
+  const namespace = fakeName();
 
   // token 発行
   const issueTokenReq = { namespace: namespace };
@@ -64,15 +64,17 @@ export default function () {
     retry("del", `${url}/services/${name}`, headers);
   }
 
-  retry("del", `${url}/deployments/${name}`, headers)
-  while(true) {
-    res = retry("get", `${url}/deployments/${name}`, headers, null, 10)
+  retry("del", `${url}/deployments/${name}`, headers);
+  while (true) {
+    res = retry("get", `${url}/deployments/${name}`, headers, null, 10);
     if (res.status == 404) {
-      break
+      break;
     }
-    sleep(1)
+    sleep(1);
   }
 
   // 終わったら namespace を消す
-  retry("del", `${url}/namespace/${namespace}`, headers, null, -10)
+  retry("del", `${url}/namespace/${namespace}`, {
+    headers: Object.assign({}, headers.heaaders, { "X-Skip-Error": "true" }),
+  });
 }

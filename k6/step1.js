@@ -1,4 +1,3 @@
-import { sleep } from 'k6';
 import { fakeName, retry } from "./common.js";
 
 const url = "http://gateway:8080/api";
@@ -51,5 +50,7 @@ export default function () {
   retry("get", `${url}/flavors`, headers);
 
   // 終わったら namespace を消す
-  retry("del", `${url}/namespace/${namespace}`, headers, null, -10);
+  retry("del", `${url}/namespace/${namespace}`, {
+    headers: Object.assign({}, headers.heaaders, { "X-Skip-Error": "true" }),
+  });
 }
