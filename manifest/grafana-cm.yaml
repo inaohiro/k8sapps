@@ -170,7 +170,7 @@ data:
                 "uid": "victoriametrics"
               },
               "editorMode": "code",
-              "expr": "sum(rate(traces_spanmetrics_calls_total{span_kind=\"SPAN_KIND_SERVER\"}[$__rate_interval]))",
+              "expr": "running_sum(sum(rate(traces_spanmetrics_calls_total{span_kind=\"SPAN_KIND_SERVER\"}[$__rate_interval])))",
               "range": true,
               "refId": "A"
             }
@@ -282,7 +282,8 @@ data:
           "fieldConfig": {
             "defaults": {
               "color": {
-                "mode": "thresholds"
+                "fixedColor": "text",
+                "mode": "fixed"
               },
               "mappings": [],
               "thresholds": {
@@ -290,9 +291,14 @@ data:
                 "steps": [
                   {
                     "color": "green"
+                  },
+                  {
+                    "color": "red",
+                    "value": 80
                   }
                 ]
-              }
+              },
+              "unit": "short"
             },
             "overrides": []
           },
@@ -304,7 +310,7 @@ data:
           },
           "id": 9,
           "options": {
-            "colorMode": "none",
+            "colorMode": "value",
             "graphMode": "none",
             "justifyMode": "auto",
             "orientation": "auto",
@@ -328,7 +334,7 @@ data:
                 "uid": "victoriametrics"
               },
               "editorMode": "code",
-              "expr": "sum(rate(traces_spanmetrics_calls_total{span_kind=\"SPAN_KIND_SERVER\", status_code=\"STATUS_CODE_ERROR\"}[$__rate_interval]))",
+              "expr": "running_sum(sum(rate(traces_spanmetrics_calls_total{span_kind=\"SPAN_KIND_SERVER\", status_code=\"STATUS_CODE_ERROR\"}[$__rate_interval])))",
               "range": true,
               "refId": "A"
             }
@@ -494,7 +500,7 @@ data:
                 "uid": "victoriametrics"
               },
               "editorMode": "code",
-              "expr": "sum(rate(traces_spanmetrics_calls_total{span_kind=\"SPAN_KIND_SERVER\"}[$__rate_interval]))",
+              "expr": "running_sum(sum(rate(traces_spanmetrics_calls_total{span_kind=\"SPAN_KIND_SERVER\"}[$__rate_interval])))",
               "hide": true,
               "legendFormat": "__auto",
               "range": true,
@@ -506,7 +512,7 @@ data:
                 "uid": "victoriametrics"
               },
               "editorMode": "code",
-              "expr": "sum(rate(traces_spanmetrics_calls_total{span_kind=\"SPAN_KIND_SERVER\", status_code=\"STATUS_CODE_ERROR\"}[$__rate_interval]))",
+              "expr": "running_sum(sum(rate(traces_spanmetrics_calls_total{span_kind=\"SPAN_KIND_SERVER\", status_code=\"STATUS_CODE_ERROR\"}[$__rate_interval])))",
               "hide": true,
               "legendFormat": "__auto",
               "range": true,
