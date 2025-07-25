@@ -12,8 +12,9 @@ import (
 // また、50% の確率で 503 エラーとなります
 func IntentionalError(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		xskiperr := r.Header.Get("X-Skip-Error")
-		if xskiperr != "" {
+		// X-Error がついていればわざとエラーにする
+		xerr := r.Header.Get("X-Error")
+		if xerr == "" {
 			next.ServeHTTP(w, r)
 			return
 		}

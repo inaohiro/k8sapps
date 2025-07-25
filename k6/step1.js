@@ -25,7 +25,10 @@ export default function () {
 
   // これ以降で必要な Authorization header
   const headers = {
-    headers: { Authorization: `Bearer ${token}` },
+    headers: {
+      Authorization: `Bearer ${token}`,
+      "X-Error": "true",
+    },
   };
 
   res = retry("get", `${url}/deployments`, headers);
@@ -51,6 +54,6 @@ export default function () {
 
   // 終わったら namespace を消す
   retry("del", `${url}/namespace/${namespace}`, {
-    headers: Object.assign({}, headers.heaaders, { "X-Skip-Error": "true" }),
+    headers: { Authorization: `Bearer ${token}` },
   });
 }

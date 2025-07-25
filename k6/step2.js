@@ -28,6 +28,7 @@ export default function () {
     headers: {
       Authorization: `Bearer ${token}`,
       "Content-Type": "application/json",
+      "X-Error": "true",
     },
   };
 
@@ -75,6 +76,6 @@ export default function () {
 
   // 終わったら namespace を消す
   retry("del", `${url}/namespace/${namespace}`, {
-    headers: Object.assign({}, headers.heaaders, { "X-Skip-Error": "true" }),
+    headers: { Authorization: `Bearer ${token}` },
   });
 }

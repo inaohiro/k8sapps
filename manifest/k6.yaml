@@ -68,7 +68,10 @@ data:
 
       // これ以降で必要な Authorization header
       const headers = {
-        headers: { Authorization: `Bearer ${token}` },
+        headers: {
+          Authorization: `Bearer ${token}`,
+          "X-Error": "true",
+        },
       };
 
       res = retry("get", `${url}/deployments`, headers);
@@ -94,7 +97,7 @@ data:
 
       // 終わったら namespace を消す
       retry("del", `${url}/namespace/${namespace}`, {
-        headers: Object.assign({}, headers.heaaders, { "X-Skip-Error": "true" }),
+        headers: { Authorization: `Bearer ${token}` },
       });
     }
 
@@ -129,6 +132,7 @@ data:
         headers: {
           Authorization: `Bearer ${token}`,
           "Content-Type": "application/json",
+          "X-Error": "true",
         },
       };
 
@@ -176,48 +180,49 @@ data:
 
       // 終わったら namespace を消す
       retry("del", `${url}/namespace/${namespace}`, {
-        headers: Object.assign({}, headers.heaaders, { "X-Skip-Error": "true" }),
+        headers: { Authorization: `Bearer ${token}` },
       });
     }
 
-  common.js: |
-    import { sleep } from 'k6';
-    import tempo from "./jslib.js";
 
-    const http = new tempo.Client({
-      propagator: "w3c",
-    });
+      common.js: |
+        import { sleep } from 'k6';
+        import tempo from "./jslib.js";
 
-    export function fakeName() {
-      return "a" + Math.random().toString(32).substring(2);
-    }
+        const http = new tempo.Client({
+          propagator: "w3c",
+        });
 
-    export function retry(method, url, params, body, count) {
-      if (count === undefined) {
-        count = 0;
-      }
+        export function fakeName() {
+          return "a" + Math.random().toString(32).substring(2);
+        }
 
-      var res;
-      if (method === "get") {
-        res = http[method](url, params);
-      } else if (method === "del") {
-        res = http[method](url, null, params);
-      } else {
-        res = http[method](url, body, params);
-      }
-      if (res.status < 300) {
-        return res;
-      }
+        export function retry(method, url, params, body, count) {
+          if (count === undefined) {
+            count = 0;
+          }
 
-      // 最大 5 回まで
-      if (count >= 5) {
-        return res;
-      }
+          var res;
+          if (method === "get") {
+            res = http[method](url, params);
+          } else if (method === "del") {
+            res = http[method](url, null, params);
+          } else {
+            res = http[method](url, body, params);
+          }
+          if (res.status < 300) {
+            return res;
+          }
 
-      sleep(1);
+          // 最大 5 回まで
+          if (count >= 5) {
+            return res;
+          }
 
-      return retry(method, url, params, body, count+1)
-    }
+          sleep(1);
+
+          return retry(method, url, params, body, count+1)
+        }
 
   jslib.js: |
     // Copy from https://github.com/grafana/jslib.k6.io/blob/main/lib/http-instrumentation-tempo/1.0.1/index.js
