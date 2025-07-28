@@ -44,6 +44,8 @@ data:
         remote_write:
           - url: http://victoriametrics:8428/api/v1/write
             send_exemplars: true
+          - url: http://prometheus:9090/api/v1/write
+            send_exemplars: true
       traces_storage:
         path: /var/tempo/generator/traces
       processor:
