@@ -5,6 +5,8 @@ import (
 	"database/sql"
 	"errors"
 	"k8soperation/core"
+	"math/rand/v2"
+	"time"
 )
 
 func ListImages(ctx context.Context) ([]Image, error) {
@@ -24,5 +26,9 @@ func ListImages(ctx context.Context) ([]Image, error) {
 			Name: v.Name,
 		})
 	}
+
+	// DB の実行に 300ms ~ 500ms の遅延を発生させる
+	time.Sleep(time.Duration(rand.IntN(200)+300) * time.Millisecond)
+
 	return result, nil
 }

@@ -22,14 +22,14 @@ func IntentionalError(next http.Handler) http.Handler {
 		t := fmt.Sprintf("%d", time.Now().Unix())
 
 		if "0" == t[len(t)-1:] {
-			w.WriteHeader(http.StatusInternalServerError)
+			w.WriteHeader(http.StatusServiceUnavailable)
 			w.Write([]byte(`{"error": "seconds end with 0. please wait a second}`))
 
 			return
 		}
 
 		if rand.IntN(100) > (100 - 25) {
-			w.WriteHeader(http.StatusInternalServerError)
+			w.WriteHeader(http.StatusServiceUnavailable)
 			w.Write([]byte(`{"error": "50/50 error. please try again}`))
 			return
 		}
