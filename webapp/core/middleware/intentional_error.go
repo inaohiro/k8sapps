@@ -7,9 +7,8 @@ import (
 	"time"
 )
 
-// この middleware は、middeware が実行される時間の秒数が 0 で終わるとき
-// 503 エラーを返します
-// また、50% の確率で 503 エラーとなります
+// この middleware は、middeware が実行される時間の秒数が 0 で終わるとき 503 エラーを返します
+// また、25% の確率で 503 エラーとなります
 func IntentionalError(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		// X-Error がついていればわざとエラーにする

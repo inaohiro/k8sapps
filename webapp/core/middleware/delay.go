@@ -8,7 +8,7 @@ import (
 
 // この middleware では以下の場合で遅延をはさみます
 // - 毎 5 分ごと, 1 分間
-// - 10% の確率
+// - 50%, 10% の確率
 func Delay(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		_, minute, _ := time.Now().Clock()
