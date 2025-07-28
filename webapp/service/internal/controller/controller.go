@@ -2,22 +2,27 @@ package controller
 
 import (
 	"encoding/json"
+	"fmt"
 	"log/slog"
 	"net/http"
 
 	"k8soperation/core"
+	"k8soperation/core/middleware"
 	"k8soperation/service/internal/models"
 	"k8soperation/service/internal/service"
 
 	"github.com/go-chi/chi/v5"
+	"go.opentelemetry.io/contrib/instrumentation/net/http/otelhttp"
 )
 
 func Controller() http.Handler {
 	r := chi.NewRouter()
-	r.Get("/", serviceIndex)
-	r.Get("/{serviceID}", serviceDetail)
-	r.Post("/", serviceCreate)
-	r.Delete("/{serviceID}", serviceDelete)
+	prefix := "/api/{namespace}/services"
+
+	r.Method(http.MethodGet, "/", otelhttp.NewHandler(middleware.IntentionalError(http.HandlerFunc(serviceIndex)), fmt.Sprintf("GET %s%s", prefix, "")))
+	r.Method(http.MethodGet, "/{service_name}", otelhttp.NewHandler(middleware.IntentionalError(http.HandlerFunc(serviceDetail)), fmt.Sprintf("GET %s%s", prefix, "/{service_name}")))
+	r.Method(http.MethodPost, "/", otelhttp.NewHandler(middleware.IntentionalError(http.HandlerFunc(serviceCreate)), fmt.Sprintf("POST %s%s", prefix, "")))
+	r.Method(http.MethodDelete, "/{service_name}", otelhttp.NewHandler(middleware.IntentionalError(http.HandlerFunc(serviceDelete)), fmt.Sprintf("DELETE %s%s", prefix, "/{service_name}")))
 	return r
 }
 
@@ -34,7 +39,7 @@ func serviceIndex(w http.ResponseWriter, r *http.Request) {
 
 func serviceDetail(w http.ResponseWriter, r *http.Request) {
 	namespace := chi.URLParam(r, "namespace")
-	serviceID := chi.URLParam(r, "serviceID")
+	serviceID := chi.URLParam(r, "service_name")
 	svc, err := service.GetService(r.Context(), namespace, serviceID)
 	if err != nil {
 		slog.Error(err.Error())
@@ -64,7 +69,7 @@ func serviceCreate(w http.ResponseWriter, r *http.Request) {
 
 func serviceDelete(w http.ResponseWriter, r *http.Request) {
 	namespace := chi.URLParam(r, "namespace")
-	serviceID := chi.URLParam(r, "serviceID")
+	serviceID := chi.URLParam(r, "service_name")
 	err := service.DeleteService(r.Context(), namespace, serviceID)
 	if err != nil {
 		slog.Error(err.Error())

@@ -2,22 +2,27 @@ package controller
 
 import (
 	"encoding/json"
+	"fmt"
 	"log/slog"
 	"net/http"
 
 	"k8soperation/core"
+	"k8soperation/core/middleware"
 	"k8soperation/deployment/internal/models"
 	"k8soperation/deployment/internal/service"
 
 	"github.com/go-chi/chi/v5"
+	"go.opentelemetry.io/contrib/instrumentation/net/http/otelhttp"
 )
 
 func Controller() http.Handler {
 	r := chi.NewRouter()
-	r.Get("/", deploymentIndex)
-	r.Get("/{deploymentName}", deploymentDetail)
-	r.Post("/", deploymentCreate)
-	r.Delete("/{deploymentName}", deploymentDelete)
+	prefix := "/api/{namespace}/deployments"
+
+	r.Method(http.MethodGet, "/", otelhttp.NewHandler(middleware.IntentionalError(http.HandlerFunc(deploymentIndex)), fmt.Sprintf("GET %s%s", prefix, "")))
+	r.Method(http.MethodGet, "/{deployment_name}", otelhttp.NewHandler(middleware.IntentionalError(http.HandlerFunc(deploymentDetail)), fmt.Sprintf("GET %s%s", prefix, "/{deployment_name}")))
+	r.Method(http.MethodPost, "/", otelhttp.NewHandler(middleware.IntentionalError(http.HandlerFunc(deploymentCreate)), fmt.Sprintf("POST %s%s", prefix, "")))
+	r.Method(http.MethodDelete, "/{deployment_name}", otelhttp.NewHandler(middleware.IntentionalError(http.HandlerFunc(deploymentDelete)), fmt.Sprintf("DELETE %s%s", prefix, "/{deployment_name}")))
 	return r
 }
 
@@ -34,8 +39,8 @@ func deploymentIndex(w http.ResponseWriter, r *http.Request) {
 
 func deploymentDetail(w http.ResponseWriter, r *http.Request) {
 	namespace := chi.URLParam(r, "namespace")
-	deploymentName := chi.URLParam(r, "deploymentName")
-	deployment, err := service.GetDeployment(r.Context(), namespace, deploymentName)
+	name := chi.URLParam(r, "deployment_name")
+	deployment, err := service.GetDeployment(r.Context(), namespace, name)
 	if err != nil {
 		status := core.GetErrorStatus(err)
 		http.Error(w, err.Error(), status)
@@ -63,8 +68,8 @@ func deploymentCreate(w http.ResponseWriter, r *http.Request) {
 
 func deploymentDelete(w http.ResponseWriter, r *http.Request) {
 	namespace := chi.URLParam(r, "namespace")
-	deploymentName := chi.URLParam(r, "deploymentName")
-	if err := service.DeleteDeployment(r.Context(), namespace, deploymentName); err != nil {
+	name := chi.URLParam(r, "deployment_name")
+	if err := service.DeleteDeployment(r.Context(), namespace, name); err != nil {
 		slog.Error(err.Error())
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return

@@ -2,16 +2,23 @@ package controller
 
 import (
 	"encoding/json"
+	"fmt"
+	"k8soperation/core/middleware"
 	"k8soperation/image/internal/service"
 	"log/slog"
 	"net/http"
 
 	"github.com/go-chi/chi/v5"
+	"go.opentelemetry.io/contrib/instrumentation/net/http/otelhttp"
 )
 
 func Controller() http.Handler {
 	r := chi.NewRouter()
-	r.Get("/", imageIndex)
+	prefix := "/api/images"
+	r.Method(http.MethodGet, "/", otelhttp.NewHandler(
+		middleware.IntentionalError(http.HandlerFunc(imageIndex)),
+		fmt.Sprintf("GET %s%s", prefix, ""),
+	))
 	return r
 }
 

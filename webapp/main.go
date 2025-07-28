@@ -22,7 +22,6 @@ import (
 	"github.com/go-chi/chi/v5"
 	"github.com/go-chi/chi/v5/middleware"
 
-	"go.opentelemetry.io/contrib/instrumentation/net/http/otelhttp"
 	"go.opentelemetry.io/otel"
 	"go.opentelemetry.io/otel/exporters/otlp/otlpmetric/otlpmetricgrpc"
 	"go.opentelemetry.io/otel/exporters/otlp/otlptrace/otlptracegrpc"
@@ -119,7 +118,8 @@ func main() {
 	r.Use(middleware.Timeout(10 * time.Second))
 	r.Use(mymiddleware.CreateNamespace)
 	r.Use(mymiddleware.Delay)
-	r.Use(mymiddleware.IntentionalError)
+	// ここで Use すると otelhttp が捉えられないため、Server Error とならない
+	// r.Use(mymiddleware.IntentionalError)
 
 	patternRouteMap := map[string]http.Handler{
 		"/api/{namespace}/pods":        pod.Routes,
@@ -130,7 +130,7 @@ func main() {
 		"/api/namespace":               namespace.Routes,
 	}
 	for pattern, handler := range patternRouteMap {
-		r.Mount(pattern, otelhttp.NewHandler(handler, pattern))
+		r.Mount(pattern, handler)
 	}
 
 	port := os.Getenv("HTTP_PORT")
