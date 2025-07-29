@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"log"
 	"log/slog"
+	"math/rand/v2"
 	"net/http"
 	"os"
 	"os/signal"
@@ -129,6 +130,16 @@ type Token struct {
 }
 
 func issueToken(w http.ResponseWriter, r *http.Request) {
+	// 意図的なエラー
+	xerr := r.Header.Get("X-Error")
+	if xerr != "" {
+		if rand.IntN(100) > (100 - 1) {
+			w.WriteHeader(http.StatusServiceUnavailable)
+			w.Write([]byte(`{"error": "1% error. please try again"}`))
+			return
+		}
+	}
+
 	var body IssueTokenRequest
 	if err := json.NewDecoder(r.Body).Decode(&body); err != nil {
 		slog.Error("不正な値がリクエストボディにセットされています")
