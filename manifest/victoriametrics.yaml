@@ -1,3 +1,32 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: victoriametrics-config
+  namespace: default
+data:
+  scrape.yaml: |
+    global:
+      scrape_interval:     15s
+      evaluation_interval: 15s
+
+    otlp:
+      promote_resource_attributes:
+        - service.instance.id
+        - service.name
+        - service.namespace
+        - cloud.availability_zone
+        - cloud.region
+        - container.name
+        - deployment.environment.name
+
+    scrape_configs:
+      - job_name: 'victoriametrics'
+        static_configs:
+          - targets: [ '${MY_POD_IP}:8428' ]
+      - job_name: 'tempo'
+        static_configs:
+          - targets: [ 'tempo:3200' ]
+---
 apiVersion: apps/v1
 kind: Deployment
 metadata:
@@ -22,6 +51,8 @@ spec:
           args:
             - -search.maxConcurrentRequests=16
             - -opentelemetry.usePrometheusNaming
+            - -retentionPeriod=6h
+            - -promscrape.config=/etc/victoriametrics/scrape.yaml
           ports:
             - containerPort: 8428
               protocol: TCP
@@ -30,6 +61,14 @@ spec:
               valueFrom:
                 fieldRef:
                   fieldPath: status.podIP
+          volumeMounts:
+            - name: victoriametrics-config
+              mountPath: /etc/victoriametrics
+              readOnly: true
+      volumes:
+        - name: victoriametrics-config
+          configMap:
+            name: victoriametrics-config
 ---
 apiVersion: v1
 kind: Service
