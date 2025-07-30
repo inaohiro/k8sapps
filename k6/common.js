@@ -6,7 +6,7 @@ const http = new tempo.Client({
 });
 
 export function fakeName() {
-  return "a" + Math.random().toString(32).substring(2);
+  return "k8sapps-" + Math.random().toString(32).substring(2);
 }
 
 export function retry(method, url, params, body, count) {
