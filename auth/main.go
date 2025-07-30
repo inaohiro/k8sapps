@@ -13,6 +13,7 @@ import (
 	"strconv"
 	"strings"
 	"sync"
+	"time"
 
 	"github.com/golang-jwt/jwt/v5"
 
@@ -139,6 +140,9 @@ func issueToken(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 	}
+
+	// 意図的な遅延
+	time.Sleep(time.Duration(rand.IntN(100)+100) * time.Millisecond)
 
 	var body IssueTokenRequest
 	if err := json.NewDecoder(r.Body).Decode(&body); err != nil {
