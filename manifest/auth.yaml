@@ -26,7 +26,7 @@ spec:
     spec:
       containers:
         - name: auth
-          image: ghcr.io/inaohiro/auth:v1
+          image: inaohiro/auth:v1
           ports:
             - containerPort: 8080
               protocol: TCP

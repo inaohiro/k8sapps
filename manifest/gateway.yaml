@@ -28,7 +28,7 @@ spec:
     spec:
       containers:
         - name: gateway
-          image: ghcr.io/inaohiro/gateway:v1
+          image: inaohiro/gateway:v1
           ports:
             - containerPort: 8080
               protocol: TCP
