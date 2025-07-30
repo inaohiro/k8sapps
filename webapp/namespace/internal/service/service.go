@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"k8soperation/core"
 	"strings"
+	"sync"
 
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 )
@@ -48,12 +49,16 @@ func DeleteAllNamespaces(ctx context.Context) error {
 		return err
 	}
 
+	var wg sync.WaitGroup
+	wg.Add(len(namespaces))
 	for _, name := range namespaces {
-		go DeleteNamespace(ctx, name)
-		if err != nil {
-			return err
-		}
+		go func() {
+			defer wg.Done()
+			DeleteNamespace(ctx, name)
+		}()
 	}
+
+	wg.Wait()
 
 	return nil
 }
