@@ -134,9 +134,9 @@ func issueToken(w http.ResponseWriter, r *http.Request) {
 	// 意図的なエラー
 	xerr := r.Header.Get("X-Error")
 	if xerr != "" {
-		if rand.IntN(100) > (100 - 1) {
+		if rand.IntN(100) >= (100 - 5) {
 			w.WriteHeader(http.StatusServiceUnavailable)
-			w.Write([]byte(`{"error": "1% error. please try again"}`))
+			w.Write([]byte(`{"error": "5% error. please try again"}`))
 			return
 		}
 	}

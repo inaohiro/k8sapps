@@ -17,5 +17,6 @@
   { "pattern": "DELETE /api/pods/{pod_name}", "verify_token": true, "proxy": true },
   { "pattern": "GET /api/images", "proxy": true },
   { "pattern": "GET /api/flavors", "proxy": true },
+  { "pattern": "DELETE /api/namespace/_all", "proxy": true },
   { "pattern": "DELETE /api/namespace/{namespace_name}", "proxy": true }
 ]

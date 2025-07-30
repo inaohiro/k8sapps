@@ -17,7 +17,7 @@ func IntentionalError(next http.Handler) http.Handler {
 		}
 
 		// 15% の確率でエラーとする
-		if rand.IntN(100) > (100 - 15) {
+		if rand.IntN(100) >= (100 - 15) {
 			w.WriteHeader(http.StatusServiceUnavailable)
 			w.Write([]byte(`{"error": "15% error. please try again}`))
 			return

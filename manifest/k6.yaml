@@ -26,20 +26,30 @@ data:
           executor: "per-vu-iterations",
           exec: "step1",
           vus: 5,
-          iterations: 1,
+          iterations: 5,
           startTime: "0s",
+          maxDuration: "20s",
         },
         step2: {
           executor: "per-vu-iterations",
           exec: "step2",
           vus: 5,
-          iterations: 1,
+          iterations: 5,
           startTime: "0s",
+          maxDuration: "20s",
+        },
+        step3: {
+          executor: "per-vu-iterations",
+          exec: "step3",
+          vus: 1,
+          iterations: 1,
+          startTime: "20s",
         },
       },
     };
 
     export default function () {}
+
   step1.js: |
     import { fakeName, retry } from "./common.js";
 
@@ -188,6 +198,15 @@ data:
       retry("del", `${url}/namespace/${namespace}`, {
         headers: { Authorization: `Bearer ${token}` },
       });
+    }
+
+  step3.js: |
+    import { retry } from "./common.js";
+
+    const url = "http://gateway:8080/api";
+
+    export default function () {
+      retry("del", `${url}/namespace/_all`);
     }
 
   common.js: |

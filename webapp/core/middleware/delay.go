@@ -21,11 +21,11 @@ func Delay(next http.Handler) http.Handler {
 		}
 
 		// 50% の確率で 300ms ~ 500ms の遅延
-		if rand.IntN(100) > (100 - 50) {
+		if rand.IntN(100) >= (100 - 50) {
 			time.Sleep(time.Duration(rand.IntN(200)+300) * time.Millisecond)
 
 			// 10% の確立で 500ms ~ 1000ms の遅延
-		} else if rand.IntN(100) > (100 - 10) {
+		} else if rand.IntN(100) >= (100 - 10) {
 			time.Sleep(time.Duration(rand.IntN(500)+500) * time.Millisecond)
 		}
 

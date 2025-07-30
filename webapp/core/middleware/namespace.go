@@ -1,6 +1,7 @@
 package middleware
 
 import (
+	"fmt"
 	"k8soperation/core"
 	"log/slog"
 	"net/http"
@@ -23,7 +24,7 @@ func CreateNamespace(next http.Handler) http.Handler {
 			next.ServeHTTP(w, r)
 			return
 		}
-		namespace := strings.Split(r.URL.Path, "/")[2]
+		namespace := fmt.Sprintf("%s-%s", "k8sapps", strings.Split(r.URL.Path, "/")[2])
 
 		// client-go 取得
 		clientset, err := core.GetKubeClient()
