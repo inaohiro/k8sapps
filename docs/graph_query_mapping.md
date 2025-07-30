@@ -45,13 +45,11 @@
 
   ```
   # total とする
-  running_sum\(sum\(rate\(traces_spanmetrics_calls_total{span_kind="SPAN_KIND_SERVER"}\[$__rate_interval])))
-
+  running_sum(sum(rate(traces_spanmetrics_calls_total{span_kind="SPAN_KIND_SERVER"}[$__rate_interval])))
   # error とする
-  running_sum\(sum\(rate\(traces_spanmetrics_calls_total{span_kind="SPAN_KIND_SERVER", status_code="STATUS_CODE_ERROR"}\[$\_\_rate_interval])))
-
+  running_sum(sum(rate(traces_spanmetrics_calls_total{span_kind="SPAN_KIND_SERVER", status_code="STATUS_CODE_ERROR"}[$__rate_interval])))
   # Expression
-  \($total - $error ) / $total \* 100
+  ($total - $error) / $total * 100
   ```
 
 ## レイテンシ

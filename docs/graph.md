@@ -96,13 +96,14 @@ VictoriaMetrics には `running_sum` という関数があり、累積値を求�
 今回は `histogram_quantile` は主にレイテンシのパーセンタイルを求める際に使います  
 メトリクスは `_bucket` で終わるものを選択します
 
-以下の例はレイテンシの 90 パーセンタイル値が求められます
+以下はレイテンシの 90 パーセンタイル値を求める際のクエリ例です
 
 ```
 histogram_quantile(0.9, sum by (le) (rate(http_request_duration_seconds_bucket[$__rate_interval])))
 ```
 
 ここでの `le` は `less than or equal to` の略です  
+`_bucket` で終わるメトリクスにはこの `le` が含まれおり、どの程度のレイテンシのリクエストが、どれくらいあったかを表しています  
 例えば以下の表のような場合、0.2 秒以下のリクエストは 3 件, 0.4 秒以下は 4 件なため、0.2 ~ 0.4 のリクエストは 1 件ある、といったことが分かります
 
 | le   | count |
@@ -159,7 +160,7 @@ histogram_quantile(0.9, sum by (le) (rate(http_request_duration_seconds_bucket[$
 > running_sum\(sum\(rate\(http_client_request_duration_seconds_count\[$\_\_rate_interval])))
 
 いい感じです  
-表示期間を 5m, 15m, 30m と変えてみても同じようなグラフになっています
+表示期間を 5m, 15m, 30m と変えてみても単調増加のグラフとなっており、累積値が求められていそうです
 
 最後にグラフタイプを Stat に変更して数字が表示されるようにしましょう
 

@@ -6,5 +6,5 @@ k6 でリクエストを送信するとき、namespace を作っています
 k6 のシナリオ実行後消すようにしていますが、消えずに残っている場合以下を実行してください
 
 ```sh
-kubectl get ns -o name | xargs kubectl delete
+kubectl get ns -o name | grep k8sapps | xargs kubectl delete
 ```

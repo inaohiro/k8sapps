@@ -86,7 +86,7 @@ Explore 画面を開くと `Search`, `TraceQL`, `Service Graph` を選択でき�
 
 ### Search
 
-OpenTelemetry データを検索できる画面です  
+OpenTelemetry のトレースを検索できる画面です  
 例えば Service Name: webapp, Span Name: 'GET /api/flavors' で検索し、表示された結果の TraceID をクリックしたものが以下の画面です
 
 <img src="./assets/grafana_explore_search.png" width=512>
@@ -106,7 +106,7 @@ TraceQL というフォーマットでクエリを書いて検索ができます
 ### Service Graph
 
 Service Graph では OpenTelemetry のデータを使って見えるサービスの構成をグラフで見ることができます  
-今回のアプリケーションは gateway, auth, webapp, db の 4 つあり、すべて表示できていれば ok です
+今回のアプリケーションは gateway, auth, webapp, db の 4 つからなることが分かります
 
 <img src="./assets/grafana_service_graph.png" width=512>
 
