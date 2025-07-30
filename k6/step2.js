@@ -15,7 +15,10 @@ export default function () {
     "post",
     `${url}/tokens`,
     {
-      headers: { "Content-Type": "application/json" },
+      headers: {
+        "Content-Type": "application/json",
+        "X-Error": "true",
+      },
     },
     JSON.stringify(issueTokenReq)
   );
