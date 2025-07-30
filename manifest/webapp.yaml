@@ -51,7 +51,7 @@ spec:
       serviceAccountName: admin-sa
       containers:
         - name: webapp
-          image: webapp:v1
+          image: ghcr.io/inaohiro/webapp:v1
           ports:
             - containerPort: 8080
               protocol: TCP

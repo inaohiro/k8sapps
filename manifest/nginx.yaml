@@ -41,7 +41,7 @@ spec:
     spec:
       containers:
         - name: nginx
-          image: nginx:v1
+          image: ghcr.io/inaohiro/nginx:v1
           ports:
             - containerPort: 80
               protocol: TCP

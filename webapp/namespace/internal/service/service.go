@@ -20,7 +20,7 @@ func ListNamespaces(ctx context.Context) ([]string, error) {
 		return nil, err
 	}
 
-	result := make([]string, len(namespaceList.Items), 0)
+	result := make([]string, 0, len(namespaceList.Items))
 	for _, v := range namespaceList.Items {
 		if strings.HasPrefix(v.Name, "k8sapps") {
 			result = append(result, v.Name)
@@ -49,7 +49,7 @@ func DeleteAllNamespaces(ctx context.Context) error {
 	}
 
 	for _, name := range namespaces {
-		err := DeleteNamespace(ctx, name)
+		go DeleteNamespace(ctx, name)
 		if err != nil {
 			return err
 		}
