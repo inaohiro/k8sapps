@@ -23,6 +23,12 @@ Service type: LoadBalancer で用意しているものが 3 つあります
 - VictoriaMetrics
   - `http://<IP アドレス>:8428`
 
+## 注意点
+
+PV (PersistentVolume) を使っていません  
+Grafana で作ったダッシュボードや Prometheus, VictoriaMetrics に保存されたデータは、Pod の再起動で消えます  
+長期間データを保存したい場合は PV の利用を検討してください
+
 ## Troubleshooting
 
 ### ghcr.io からイメージをダウンロードする
