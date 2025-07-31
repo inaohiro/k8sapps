@@ -1,4 +1,6 @@
-# 環境構築手順
+# k8sapps
+
+## 環境構築手順
 
 manifest 以下に kubernetes のマニフェストファイルを用意しています  
 `kubectl apply` を実行してください
@@ -9,7 +11,21 @@ git clone https://github.com/inaohiro/k8sapps.git
 kubectl apply -f manifest/
 ```
 
-# ghcr.io からイメージをダウンロードする
+## 動作確認
+
+Service type: LoadBalancer で用意しているものが 3 つあります  
+それぞれアクセスできることを確認してください
+
+- ブラウザからアクセスできる画面
+  - `http://<IP アドレス>:8080`
+- Grafana
+  - `http://<IP アドレス>:3000`
+- VictoriaMetrics
+  - `http://<IP アドレス>:8428`
+
+## Troubleshooting
+
+### ghcr.io からイメージをダウンロードする
 
 コンテナイメージを ghcr.io から取得することもできます  
 その場合、以下の修正が必要となります
@@ -19,7 +35,7 @@ kubectl apply -f manifest/
 ```yaml
 apiVersion: v1
 data:
-  .dockerconfigjson: <ここに base64 エンコードした docker.config を貼る>
+  .dockerconfigjson: <ここに base64 エンコードした ~/.docker/config.json を貼る>
 kind: Secret
 metadata:
   name: regcred
