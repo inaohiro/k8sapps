@@ -38,10 +38,7 @@ Grafana でグラフ作成の手順や Prometheus クエリ (VictoriaMetrics ク
 
 ### Prometheus 関数
 
-利用する関数は適宜説明をいれます  
-ここではざっくり紹介します
-
-主に利用するのは以下の 4 種類かなと思います
+クエリ内で使う関数は、主に以下の 4 種類かなと思います
 
 - rate
 - sum
@@ -62,7 +59,7 @@ rate(http_requests_total{job="api-server"}[5m])
 `[5m]` としている部分には以下の 3 種類の変数も使えますが、rate 関数を使うときは $\_\_rate_interval を使うとよいです
 
 > https://grafana.com/docs/grafana/latest/datasources/prometheus/template-variables/#use-__rate_interval  
-> Grafana recommends using $**rate_interval with the rate and increase functions instead of $**interval or a fixed interval value
+> Grafana recommends using $\_\_rate_interval with the rate and increase functions instead of $\_\_interval or a fixed interval value
 
 - $\_\_range
 - $\_\_interval
@@ -74,7 +71,10 @@ rate(http_requests_total{job="api-server"}[5m])
 例えば以下のクエリの場合、各データポイントは過去 5 分間のリクエスト数となります
 
 > Grafana, Prometheus における sum は 複数データを束ねる (集約) という意味だと思っています  
-> 例えば http_request_total のデータが HTTP メソッド毎に分かれている場合、sum をすることで、ひとまとめにできる、という意味です
+> 実際 Proemetheus ドキュメントにも Aggregation operators として sum があります  
+> https://prometheus.io/docs/prometheus/latest/querying/operators/#aggregation-operators
+>
+> Time series のグラフで複数の線が表示されるとき、sum することで 1 本にまとめる (集約する) ことができる、という意味です
 
 ```
 sum(rate(http_requests_total{job="api-server"}[5m]))
