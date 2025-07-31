@@ -86,5 +86,5 @@ spec:
   selector:
     app: victoriametrics
   ports:
-    - port: 8429
+    - port: 8428
       targetPort: 8428
