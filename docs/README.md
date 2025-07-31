@@ -30,7 +30,7 @@ Service type: LoadBalancer で用意しているものが 3 つあります
 コンテナイメージを ghcr.io から取得することもできます  
 その場合、以下の修正が必要となります
 
-## 1. secret.yaml の作成
+#### 1. secret.yaml の作成
 
 ```yaml
 apiVersion: v1
@@ -46,7 +46,7 @@ type: kubernetes.io/dockerconfigjson
 kubectl apply -f secret.yaml
 ```
 
-## 2. Deployment に imagePullSecret を追加、イメージ名を変更
+#### 2. Deployment に imagePullSecret を追加、イメージ名を変更
 
 spec.template.spec 以下に imagePullSecrets を追加してください
 また、イメージ名を ghcr.io から始まるようにしてください
